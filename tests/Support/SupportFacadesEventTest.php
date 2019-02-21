@@ -15,7 +15,7 @@ class SupportFacadesEventTest extends TestCase
 {
     private $events;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
