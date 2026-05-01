@@ -1781,6 +1781,30 @@ class TestResponse implements ArrayAccess
     }
 
     /**
+     * Assert that the session is missing a given key in the flashed input array.
+     *
+     * @param  string|array  $key
+     * @return $this
+     */
+    public function assertSessionMissingInput($key)
+    {
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                $this->assertSessionMissingInput($k);
+            }
+
+            return $this;
+        }
+
+        PHPUnit::withResponse($this)->assertFalse(
+            $this->session()->hasOldInput($key),
+            "Session has unexpected key [{$key}]."
+        );
+
+        return $this;
+    }
+
+    /**
      * Get the current session store.
      *
      * @return \Illuminate\Session\Store
