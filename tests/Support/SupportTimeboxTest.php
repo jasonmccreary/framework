@@ -26,7 +26,7 @@ class SupportTimeboxTest extends TestCase
         $mock->call(function () {
         }, 10000);
 
-        $mock->shouldHaveReceived('usleep')->once();
+        $mock->received('usleep')->times(1);
     }
 
     public function testMakeShouldNotSleepWhenEarlyReturnHasBeenFlagged()
@@ -36,7 +36,7 @@ class SupportTimeboxTest extends TestCase
             $timebox->returnEarly();
         }, 10000);
 
-        $mock->shouldNotHaveReceived('usleep');
+        $mock->received('usleep')->never();
     }
 
     public function testMakeShouldSleepWhenDontEarlyReturnHasBeenFlagged()
@@ -49,7 +49,7 @@ class SupportTimeboxTest extends TestCase
             $timebox->dontReturnEarly();
         }, 10000);
 
-        $mock->shouldHaveReceived('usleep')->once();
+        $mock->received('usleep')->times(1);
     }
 
     public function testMakeWaitsForMicrosecondsWhenExceptionIsThrown()
@@ -64,7 +64,7 @@ class SupportTimeboxTest extends TestCase
                 throw new Exception('Exception within Timebox callback.');
             }, 10000);
         } finally {
-            $mock->shouldHaveReceived('usleep')->once();
+            $mock->received('usleep')->times(1);
         }
     }
 
@@ -80,7 +80,7 @@ class SupportTimeboxTest extends TestCase
                 throw new Exception('Exception within Timebox callback.');
             }, 10000);
         } finally {
-            $mock->shouldNotHaveReceived('usleep');
+            $mock->received('usleep')->never();
         }
     }
 }

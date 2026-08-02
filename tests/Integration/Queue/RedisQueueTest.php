@@ -313,7 +313,7 @@ class RedisQueueTest extends TestCase
         // Push an item into queue
         $job = new RedisQueueIntegrationTestJob(10);
         $this->queue->push($job);
-        $this->container->shouldHaveReceived('bound')->with('events')->times(4);
+        $this->container->received('bound')->with('events')->times(4);
 
         // Pop and check it is popped correctly
         $before = $this->currentTime();
