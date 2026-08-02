@@ -137,7 +137,7 @@ class ViewMakeCommand extends GeneratorCommand
 
         $contents = preg_replace(
             ['/\{{ namespace \}}/', '/\{{ class \}}/', '/\{{ name \}}/'],
-            [$this->testNamespace(), $this->testClassName(), $this->testViewName()],
+            [$this->testNamespace(), $this->test()->className(), $this->testViewName()],
             File::get($this->getTestStub()),
         );
 
