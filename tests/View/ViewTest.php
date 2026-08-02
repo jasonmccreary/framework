@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\TestDouble;
 use ArrayAccess;
 use BadMethodCallException;
 use Closure;
@@ -13,6 +12,7 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class ViewTest extends TestCase
@@ -50,12 +50,12 @@ class ViewTest extends TestCase
     public function testRenderHandlingCallbackReturnValues()
     {
         $view = $this->getView();
-        $view->getFactory()->expects('incrementRender');
-        $view->getFactory()->expects('callComposer');
+        $view->getFactory()->allows('incrementRender');
+        $view->getFactory()->allows('callComposer');
         $view->getFactory()->allows('getShared')->returns(['shared' => 'foo']);
         $view->getEngine()->allows('get')->returns('contents');
-        $view->getFactory()->expects('decrementRender');
-        $view->getFactory()->expects('flushStateIfDoneRendering');
+        $view->getFactory()->allows('decrementRender');
+        $view->getFactory()->allows('flushStateIfDoneRendering');
 
         $this->assertSame('new contents', $view->render(function () {
             return 'new contents';

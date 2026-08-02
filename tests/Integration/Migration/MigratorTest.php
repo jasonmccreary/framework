@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Integration\Migration;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Stringable;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,14 +40,14 @@ class MigratorTest extends TestCase
 
     public function testMigrate()
     {
+        $this->output->allows('writeln');
+
         $this->expectInfo('Running migrations.');
 
         $this->expectTask('2014_10_12_000000_create_people_table', 'DONE');
         $this->expectTask('2015_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2016_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2017_10_04_000000_add_age_to_people', 'SKIPPED');
-
-        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/fixtures']);
 
@@ -95,13 +95,13 @@ class MigratorTest extends TestCase
         $this->subject->getRepository()->log('2015_10_04_000000_modify_people_table', 1);
         $this->subject->getRepository()->log('2016_10_04_000000_modify_people_table', 1);
 
+        $this->output->allows('writeln');
+
         $this->expectInfo('Rolling back migrations.');
 
         $this->expectTask('2016_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2015_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2014_10_12_000000_create_people_table', 'DONE');
-
-        $this->output->expects('writeln');
 
         $this->subject->rollback([__DIR__.'/fixtures']);
 
@@ -110,6 +110,8 @@ class MigratorTest extends TestCase
 
     public function testPretendMigrate()
     {
+        $this->output->expects('writeln')->times(3);
+
         $this->expectInfo('Running migrations.');
 
         $this->expectTwoColumnDetail('CreatePeopleTable');
@@ -123,8 +125,6 @@ class MigratorTest extends TestCase
 
         $this->expectTwoColumnDetail('2016_10_04_000000_modify_people_table');
         $this->expectBulletList(['alter table "people" add column "last_name" varchar']);
-
-        $this->output->expects('writeln')->times(3);
 
         $this->subject->run([__DIR__.'/fixtures'], ['pretend' => true]);
 
@@ -201,16 +201,18 @@ class MigratorTest extends TestCase
     public function testIgnorePretendModeForCallbackOutputDynamicContentIsShown()
     {
         // Persist data to table we can work with.
+        $this->output->allows('writeln');
+
         $this->expectInfo('Running migrations.');
         $this->expectTask('2014_10_12_000000_create_people_is_dynamic_table', 'DONE');
-
-        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2014_10_12_000000_create_people_is_dynamic_table.php'], ['pretend' => false]);
 
         $this->assertTrue(DB::getSchemaBuilder()->hasTable('people'));
 
         // Test the actual functionality.
+        $this->output->expects('writeln');
+
         $this->expectInfo('Running migrations.');
         $this->expectTwoColumnDetail('DynamicContentIsShown');
         $this->expectBulletList([
@@ -222,8 +224,6 @@ class MigratorTest extends TestCase
             'insert into "blogs" ("id", "name") values (2, \'John Doe Blog\')',
         ]);
 
-        $this->output->expects('writeln');
-
         $this->subject->run([__DIR__.'/pretending/2023_10_17_000000_dynamic_content_is_shown.php'], ['pretend' => true]);
 
         $this->assertFalse(DB::getSchemaBuilder()->hasTable('blogs'));
@@ -234,16 +234,18 @@ class MigratorTest extends TestCase
     public function testIgnorePretendModeForCallbackOutputDynamicContentNotShown()
     {
         // Persist data to table we can work with.
+        $this->output->allows('writeln');
+
         $this->expectInfo('Running migrations.');
         $this->expectTask('2014_10_12_000000_create_people_non_dynamic_table', 'DONE');
-
-        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2014_10_12_000000_create_people_non_dynamic_table.php'], ['pretend' => false]);
 
         $this->assertTrue(DB::getSchemaBuilder()->hasTable('people'));
 
         // Test the actual functionality.
+        $this->output->expects('writeln');
+
         $this->expectInfo('Running migrations.');
         $this->expectTwoColumnDetail('DynamicContentNotShown');
         $this->expectBulletList([
@@ -252,8 +254,6 @@ class MigratorTest extends TestCase
             'ALTER TABLE \'pseudo_table_name\' MODIFY \'column_name\' VARCHAR(191)',
             'select * from "people"',
         ]);
-
-        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2023_10_17_000000_dynamic_content_not_shown.php'], ['pretend' => true]);
 
@@ -269,7 +269,7 @@ class MigratorTest extends TestCase
 
     protected function expectTwoColumnDetail($first, $second = null)
     {
-        $this->output->expects('writeln')->with(Argument::satisfies(function ($argument) use ($first, $second) {
+        $this->output->allows('writeln')->with(Argument::satisfies(function ($argument) use ($first, $second) {
             $result = (new Stringable($argument))->contains($first);
 
             if ($result && $second) {
@@ -290,13 +290,13 @@ class MigratorTest extends TestCase
     protected function expectTask($description, $result): void
     {
         // Ignore dots...
-        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>'])), Argument::any(), Argument::any());
+        $this->output->allows('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>'])), Argument::any(), Argument::any());
 
         // Ignore duration...
-        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['ms</>'])), Argument::any(), Argument::any());
+        $this->output->allows('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['ms</>'])), Argument::any(), Argument::any());
 
         $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($description)), Argument::any(), Argument::any());
 
-        $this->output->expects('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($result)), Argument::any());
+        $this->output->allows('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($result)), Argument::any());
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -11,6 +10,7 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMigratorIntegrationTest extends TestCase
@@ -59,9 +59,9 @@ class DatabaseMigratorIntegrationTest extends TestCase
         );
 
         $output = TestDouble::for(OutputStyle::class);
-        $output->expects('write');
-        $output->expects('writeln');
-        $output->expects('newLinesWritten');
+        $output->allows('write');
+        $output->allows('writeln');
+        $output->allows('newLinesWritten');
 
         $this->migrator->setOutput($output);
 

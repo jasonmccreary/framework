@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Broadcasting\FakePendingBroadcast;
 use Illuminate\Container\Container;
@@ -15,6 +14,7 @@ use Illuminate\Foundation\Mix;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -58,8 +58,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->expects('get')->with('app.mix_url');
-        $app['config']->expects('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -74,8 +74,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->expects('get')->with('app.mix_url');
-        $app['config']->expects('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
         mix('unversioned.css');
@@ -90,8 +90,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->expects('get')->with('app.mix_url');
-        $app['config']->expects('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -114,8 +114,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->expects('get')->with('app.mix_url');
-        $app['config']->expects('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         mkdir($directory = __DIR__.'/mix');
         $manifest = $this->makeManifest('mix');

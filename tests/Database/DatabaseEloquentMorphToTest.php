@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Tests\Database\stubs\TestEnum;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentMorphToTest extends TestCase
@@ -222,10 +222,8 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function testIsModelWithIntegerParentKey()
     {
         $parent = TestDouble::for(Model::class);
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
+        // addConstraints returns the foreign value first, then getParentKey wants an integer
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', 1);
 
         $relation = $this->getRelation($parent);
 
@@ -242,10 +240,8 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function testIsModelWithIntegerRelatedKey()
     {
         $parent = TestDouble::for(Model::class);
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return a string
-        $parent->expects('getAttribute')->with('foreign_key')->returns('1');
+        // addConstraints returns the foreign value first, then getParentKey wants a string
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', '1');
 
         $relation = $this->getRelation($parent);
 
@@ -263,10 +259,8 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
+        // addConstraints returns the foreign value first, then getParentKey wants an integer
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', 1);
 
         $relation = $this->getRelation($parent);
 
@@ -284,11 +278,8 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return null
-
-        $parent->expects('getAttribute')->with('foreign_key')->returns(null);
+        // addConstraints returns the foreign value first, then getParentKey wants null
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', null);
 
         $relation = $this->getRelation($parent);
 

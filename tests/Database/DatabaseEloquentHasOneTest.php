@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasOneTest extends TestCase
@@ -205,8 +205,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $parentQuery = TestDouble::for(BaseBuilder::class);
         $parentQuery->from = 'two';
 
-        $builder->expects('getQuery')->returns($baseQuery);
-        $builder->expects('getQuery')->returns($parentQuery);
+        $builder->expects('getQuery')->times(2)->returns($baseQuery, $parentQuery);
 
         $builder->shouldReceive('select')->once()->with(m::type(Expression::class))->andReturnSelf();
         $relation->getParent()->allows('qualifyColumn')->returns('table.id');

@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToTest extends TestCase
@@ -255,10 +255,8 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
+        // addConstraints returns the foreign value first, then getParentKey wants an integer
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', 1);
 
         $relation = $this->getRelation($parent);
 
@@ -276,10 +274,8 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return a string
-        $parent->expects('getAttribute')->with('foreign_key')->returns('1');
+        // addConstraints returns the foreign value first, then getParentKey wants a string
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', '1');
 
         $relation = $this->getRelation($parent);
 
@@ -297,10 +293,8 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
+        // addConstraints returns the foreign value first, then getParentKey wants an integer
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', 1);
 
         $relation = $this->getRelation($parent);
 
@@ -318,10 +312,8 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $parent = TestDouble::for(Model::class);
 
-        // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
-        // when getParentKey is called we want to return null
-        $parent->expects('getAttribute')->with('foreign_key')->returns(null);
+        // addConstraints returns the foreign value first, then getParentKey wants null
+        $parent->expects('getAttribute')->with('foreign_key')->times(2)->returns('foreign.value', null);
 
         $relation = $this->getRelation($parent);
 

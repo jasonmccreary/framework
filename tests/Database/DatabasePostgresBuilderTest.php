@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\PostgresBuilder;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabasePostgresBuilderTest extends TestCase
@@ -46,7 +46,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileTableExists')->returns('sql');
         $connection->allows('scalar')->with('sql')->returns(1);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -61,7 +61,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileTableExists')->returns('sql');
         $connection->allows('scalar')->with('sql')->returns(1);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -77,7 +77,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileTableExists')->returns('sql');
         $connection->allows('scalar')->with('sql')->returns(1);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -93,7 +93,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileTableExists')->returns('sql');
         $connection->allows('scalar')->with('sql')->returns(1);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -108,7 +108,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileTableExists')->returns('sql');
         $connection->allows('scalar')->with('sql')->returns(1);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('myapp.foo'));
@@ -135,7 +135,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
         $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
         $connection->allows('getPostProcessor')->returns($processor);
         $processor->allows('processColumns')->returns([['name' => 'some_column']]);
@@ -152,7 +152,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
         $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
         $connection->allows('getPostProcessor')->returns($processor);
         $processor->allows('processColumns')->returns([['name' => 'some_column']]);
@@ -170,7 +170,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
         $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
         $connection->allows('getPostProcessor')->returns($processor);
         $processor->allows('processColumns')->returns([['name' => 'some_column']]);
@@ -187,7 +187,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->expects('getSchemaGrammar')->returns($grammar);
         $grammar->allows('compileColumns')->with('myapp', 'foo')->returns('sql');
         $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
-        $connection->expects('getTablePrefix');
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
         $connection->allows('getPostProcessor')->returns($processor);
         $processor->allows('processColumns')->returns([['name' => 'some_column']]);
