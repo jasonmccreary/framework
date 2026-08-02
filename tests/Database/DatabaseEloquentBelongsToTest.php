@@ -20,11 +20,11 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation()->withDefault();
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentBelongsToModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
     }
@@ -35,11 +35,11 @@ class DatabaseEloquentBelongsToTest extends TestCase
             $newModel->username = 'taylor';
         });
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentBelongsToModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -50,11 +50,11 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation()->withDefault(['username' => 'taylor']);
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentBelongsToModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -64,9 +64,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testEagerConstraintsAreProperlyAdded()
     {
         $relation = $this->getRelation();
-        $relation->getRelated()->shouldReceive('getKeyName')->andReturn('id');
-        $relation->getRelated()->shouldReceive('getKeyType')->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('relation.id', ['foreign.value', 'foreign.value.two']);
+        $relation->getRelated()->allows('getKeyName')->returns('id');
+        $relation->getRelated()->allows('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', ['foreign.value', 'foreign.value.two']);
         $models = [new EloquentBelongsToModelStub, new EloquentBelongsToModelStub, new AnotherEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -74,9 +74,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testIdsInEagerConstraintsCanBeZero()
     {
         $relation = $this->getRelation();
-        $relation->getRelated()->shouldReceive('getKeyName')->andReturn('id');
-        $relation->getRelated()->shouldReceive('getKeyType')->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('relation.id', [0, 'foreign.value']);
+        $relation->getRelated()->allows('getKeyName')->returns('id');
+        $relation->getRelated()->allows('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', [0, 'foreign.value']);
         $models = [new EloquentBelongsToModelStub, new EloquentBelongsToModelStubWithZeroId];
         $relation->addEagerConstraints($models);
     }
@@ -84,9 +84,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testIdsInEagerConstraintsCanBeBackedEnum()
     {
         $relation = $this->getRelation();
-        $relation->getRelated()->shouldReceive('getKeyName')->andReturn('id');
-        $relation->getRelated()->shouldReceive('getKeyType')->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('relation.id', [5, 'foreign.value']);
+        $relation->getRelated()->allows('getKeyName')->returns('id');
+        $relation->getRelated()->allows('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', [5, 'foreign.value']);
         $models = [new EloquentBelongsToModelStub, new EloquentBelongsToModelStubWithBackedEnumCast];
         $relation->addEagerConstraints($models);
     }
@@ -95,7 +95,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('setRelation')->once()->with('foo', null);
+        $model->expects('setRelation')->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
         $this->assertEquals([$model], $models);
@@ -163,12 +163,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testAssociateMethodSetsForeignKeyOnModel()
     {
         $parent = TestDouble::for(Model::class);
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         $relation = $this->getRelation($parent);
         $associate = TestDouble::for(Model::class);
-        $associate->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
-        $parent->shouldReceive('setAttribute')->once()->with('foreign_key', 1);
-        $parent->shouldReceive('setRelation')->once()->with('relation', $associate);
+        $associate->expects('getAttribute')->with('id')->returns(1);
+        $parent->expects('setAttribute')->with('foreign_key', 1);
+        $parent->expects('setRelation')->with('relation', $associate);
 
         $relation->associate($associate);
     }
@@ -176,12 +176,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDissociateMethodUnsetsForeignKeyOnModel()
     {
         $parent = TestDouble::for(Model::class);
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         $relation = $this->getRelation($parent);
-        $parent->shouldReceive('setAttribute')->once()->with('foreign_key', null);
+        $parent->expects('setAttribute')->with('foreign_key', null);
 
         // Always set relation when we received Model
-        $parent->shouldReceive('setRelation')->once()->with('relation', null);
+        $parent->expects('setRelation')->with('relation', null);
 
         $relation->dissociate();
     }
@@ -189,13 +189,13 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testAssociateMethodSetsForeignKeyOnModelById()
     {
         $parent = TestDouble::for(Model::class);
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         $relation = $this->getRelation($parent);
-        $parent->shouldReceive('setAttribute')->once()->with('foreign_key', 1);
+        $parent->expects('setAttribute')->with('foreign_key', 1);
 
         // Always unset relation when we received id, regardless of dirtiness
-        $parent->shouldReceive('isDirty')->never();
-        $parent->shouldReceive('unsetRelation')->once()->with($relation->getRelationName());
+        $parent->expects('isDirty')->never();
+        $parent->expects('unsetRelation')->with($relation->getRelationName());
 
         $relation->associate(1);
     }
@@ -203,9 +203,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenIncrementing()
     {
         $relation = $this->getRelation();
-        $relation->getRelated()->shouldReceive('getKeyName')->andReturn('id');
-        $relation->getRelated()->shouldReceive('getKeyType')->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('relation.id', m::mustBe([]));
+        $relation->getRelated()->allows('getKeyName')->returns('id');
+        $relation->getRelated()->allows('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', m::mustBe([]));
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -213,7 +213,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenIncrementingAndNonIntKeyType()
     {
         $relation = $this->getRelation(null, 'string');
-        $relation->getQuery()->shouldReceive('whereIn')->once()->with('relation.id', m::mustBe([]));
+        $relation->getQuery()->expects('whereIn')->with('relation.id', m::mustBe([]));
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -221,9 +221,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenNotIncrementing()
     {
         $relation = $this->getRelation();
-        $relation->getRelated()->shouldReceive('getKeyName')->andReturn('id');
-        $relation->getRelated()->shouldReceive('getKeyType')->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('relation.id', m::mustBe([]));
+        $relation->getRelated()->allows('getKeyName')->returns('id');
+        $relation->getRelated()->allows('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', m::mustBe([]));
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -232,7 +232,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is(null));
     }
@@ -241,12 +241,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
-        $model->shouldReceive('getTable')->once()->andReturn('relation');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -256,18 +256,18 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return an integer
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('1');
-        $model->shouldReceive('getTable')->once()->andReturn('relation');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns('1');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -277,18 +277,18 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return a string
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('1');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('1');
 
         $relation = $this->getRelation($parent);
 
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
-        $model->shouldReceive('getTable')->once()->andReturn('relation');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns(1);
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -298,18 +298,18 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return an integer
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
-        $model->shouldReceive('getTable')->once()->andReturn('relation');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns(1);
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -319,18 +319,18 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return null
-        $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(null);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(null);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -339,12 +339,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(null);
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns(null);
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -353,12 +353,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value.two');
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value.two');
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -367,12 +367,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
-        $model->shouldReceive('getTable')->once()->andReturn('table.two');
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('table.two');
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -381,12 +381,12 @@ class DatabaseEloquentBelongsToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
-        $model->shouldReceive('getTable')->once()->andReturn('relation');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('relation.two');
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation.two');
 
         $this->assertFalse($relation->is($model));
     }
@@ -394,13 +394,13 @@ class DatabaseEloquentBelongsToTest extends TestCase
     protected function getRelation($parent = null, $keyType = 'int')
     {
         $this->builder = TestDouble::for(Builder::class);
-        $this->builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
+        $this->builder->expects('where')->with('relation.id', '=', 'foreign.value');
         $this->related = TestDouble::for(Model::class);
-        $this->related->shouldReceive('getKeyType')->andReturn($keyType);
-        $this->related->shouldReceive('getKeyName')->andReturn('id');
-        $this->related->shouldReceive('getTable')->andReturn('relation');
-        $this->related->shouldReceive('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
-        $this->builder->shouldReceive('getModel')->andReturn($this->related);
+        $this->related->allows('getKeyType')->returns($keyType);
+        $this->related->allows('getKeyName')->returns('id');
+        $this->related->allows('getTable')->returns('relation');
+        $this->related->allows('qualifyColumn')->resolves(fn (string $column) => "relation.{$column}");
+        $this->builder->allows('getModel')->returns($this->related);
         $parent = $parent ?: new EloquentBelongsToModelStub;
 
         return new BelongsTo($this->builder, $parent, 'foreign_key', 'id', 'relation');

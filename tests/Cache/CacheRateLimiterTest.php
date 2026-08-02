@@ -14,10 +14,10 @@ class CacheRateLimiterTest extends TestCase
     public function testTooManyAttemptsReturnTrueIfAlreadyLockedOut()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->once()->with('key', 0)->andReturn(1);
-        $cache->shouldReceive('has')->once()->with('key:timer')->andReturn(true);
-        $cache->shouldReceive('add')->never();
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with('key', 0)->returns(1);
+        $cache->expects('has')->with('key:timer')->returns(true);
+        $cache->expects('add')->never();
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $this->assertTrue($rateLimiter->tooManyAttempts('key', 1));
@@ -26,10 +26,10 @@ class CacheRateLimiterTest extends TestCase
     public function testHitProperlyIncrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 1)->andReturn(true);
-        $cache->shouldReceive('add')->once()->with('key', 0, 1)->andReturn(true);
-        $cache->shouldReceive('increment')->once()->with('key', 1)->andReturn(1);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key', 0, 1)->returns(true);
+        $cache->expects('increment')->with('key', 1)->returns(1);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->hit('key', 1);
@@ -38,10 +38,10 @@ class CacheRateLimiterTest extends TestCase
     public function testIncrementProperlyIncrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 1)->andReturn(true);
-        $cache->shouldReceive('add')->once()->with('key', 0, 1)->andReturn(true);
-        $cache->shouldReceive('increment')->once()->with('key', 5)->andReturn(5);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key', 0, 1)->returns(true);
+        $cache->expects('increment')->with('key', 5)->returns(5);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->increment('key', 1, 5);
@@ -50,10 +50,10 @@ class CacheRateLimiterTest extends TestCase
     public function testDecrementProperlyDecrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 1)->andReturn(true);
-        $cache->shouldReceive('add')->once()->with('key', 0, 1)->andReturn(true);
-        $cache->shouldReceive('increment')->once()->with('key', -5)->andReturn(-5);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key', 0, 1)->returns(true);
+        $cache->expects('increment')->with('key', -5)->returns(-5);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->decrement('key', 1, 5);
@@ -62,11 +62,11 @@ class CacheRateLimiterTest extends TestCase
     public function testHitHasNoMemoryLeak()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 1)->andReturn(true);
-        $cache->shouldReceive('add')->once()->with('key', 0, 1)->andReturn(false);
-        $cache->shouldReceive('increment')->once()->with('key', 1)->andReturn(1);
-        $cache->shouldReceive('put')->once()->with('key', 1, 1);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key', 0, 1)->returns(false);
+        $cache->expects('increment')->with('key', 1)->returns(1);
+        $cache->expects('put')->with('key', 1, 1);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->hit('key', 1);
@@ -75,11 +75,11 @@ class CacheRateLimiterTest extends TestCase
     public function testIncrementWithCustomAmountHasNoMemoryLeak()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 60)->andReturn(true);
-        $cache->shouldReceive('add')->once()->with('key', 0, 60)->andReturn(false);
-        $cache->shouldReceive('increment')->once()->with('key', 2)->andReturn(2);
-        $cache->shouldReceive('put')->once()->with('key', 2, 60);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('add')->with('key:timer', m::type('int'), 60)->returns(true);
+        $cache->expects('add')->with('key', 0, 60)->returns(false);
+        $cache->expects('increment')->with('key', 2)->returns(2);
+        $cache->expects('put')->with('key', 2, 60);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->increment('key', 60, 2);
@@ -88,8 +88,8 @@ class CacheRateLimiterTest extends TestCase
     public function testRemainingIsNotNegative(): void
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->with('key', 0)->andReturn(5);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->allows('get')->with('key', 0)->returns(5);
+        $cache->allows('getStore')->returns(new ArrayStore);
 
         $rateLimiter = new RateLimiter($cache);
 
@@ -100,8 +100,8 @@ class CacheRateLimiterTest extends TestCase
     public function testRetriesLeftReturnsCorrectCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->once()->with('key', 0)->andReturn(3);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with('key', 0)->returns(3);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $this->assertEquals(2, $rateLimiter->retriesLeft('key', 5));
@@ -110,9 +110,9 @@ class CacheRateLimiterTest extends TestCase
     public function testClearClearsTheCacheKeys()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('forget')->once()->with('key');
-        $cache->shouldReceive('forget')->once()->with('key:timer');
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('forget')->with('key');
+        $cache->expects('forget')->with('key:timer');
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $rateLimiter->clear('key');
@@ -121,8 +121,8 @@ class CacheRateLimiterTest extends TestCase
     public function testAvailableInReturnsPositiveValues()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->andReturn(Carbon::now()->subMinute()->getTimestamp(), null);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->allows('get')->returns(Carbon::now()->subMinute()->getTimestamp(), null);
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $this->assertTrue($rateLimiter->availableIn('key:timer') >= 0);
@@ -132,11 +132,11 @@ class CacheRateLimiterTest extends TestCase
     public function testAttemptsCallbackReturnsTrue()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->once()->with('key', 0)->andReturn(0);
-        $cache->shouldReceive('add')->once()->with('key:timer', m::type('int'), 1);
-        $cache->shouldReceive('add')->once()->with('key', 0, 1)->andReturns(1);
-        $cache->shouldReceive('increment')->once()->with('key', 1)->andReturn(1);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with('key', 0)->returns(0);
+        $cache->expects('add')->with('key:timer', m::type('int'), 1);
+        $cache->expects('add')->with('key', 0, 1)->returns(1);
+        $cache->expects('increment')->with('key', 1)->returns(1);
+        $cache->allows('getStore')->returns(new ArrayStore);
 
         $executed = false;
 
@@ -151,11 +151,11 @@ class CacheRateLimiterTest extends TestCase
     public function testAttemptsCallbackReturnsCallbackReturn()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->times(6)->with('key', 0)->andReturn(0);
-        $cache->shouldReceive('add')->times(6)->with('key:timer', m::type('int'), 1);
-        $cache->shouldReceive('add')->times(6)->with('key', 0, 1)->andReturns(1);
-        $cache->shouldReceive('increment')->times(6)->with('key', 1)->andReturn(1);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->times(6)->with('key', 0)->returns(0);
+        $cache->expects('add')->times(6)->with('key:timer', m::type('int'), 1);
+        $cache->expects('add')->times(6)->with('key', 0, 1)->returns(1);
+        $cache->expects('increment')->times(6)->with('key', 1)->returns(1);
+        $cache->allows('getStore')->returns(new ArrayStore);
 
         $rateLimiter = new RateLimiter($cache);
 
@@ -187,9 +187,9 @@ class CacheRateLimiterTest extends TestCase
     public function testAttemptsCallbackReturnsFalse()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->once()->with('key', 0)->andReturn(2);
-        $cache->shouldReceive('has')->once()->with('key:timer')->andReturn(true);
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with('key', 0)->returns(2);
+        $cache->expects('has')->with('key:timer')->returns(true);
+        $cache->allows('getStore')->returns(new ArrayStore);
 
         $executed = false;
 
@@ -204,10 +204,10 @@ class CacheRateLimiterTest extends TestCase
     public function testKeysAreSanitizedFromUnicodeCharacters()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->shouldReceive('get')->once()->with('john', 0)->andReturn(1);
-        $cache->shouldReceive('has')->once()->with('john:timer')->andReturn(true);
-        $cache->shouldReceive('add')->never();
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with('john', 0)->returns(1);
+        $cache->expects('has')->with('john:timer')->returns(true);
+        $cache->expects('add')->never();
+        $cache->allows('getStore')->returns(new ArrayStore);
         $rateLimiter = new RateLimiter($cache);
 
         $this->assertTrue($rateLimiter->tooManyAttempts('jôhn', 1));
@@ -221,10 +221,10 @@ class CacheRateLimiterTest extends TestCase
         $key = "john'doe";
         $cleanedKey = $rateLimiter->cleanRateLimiterKey($key);
 
-        $cache->shouldReceive('get')->once()->with($cleanedKey, 0)->andReturn(1);
-        $cache->shouldReceive('has')->once()->with("$cleanedKey:timer")->andReturn(true);
-        $cache->shouldReceive('add')->never();
-        $cache->shouldReceive('getStore')->andReturn(new ArrayStore);
+        $cache->expects('get')->with($cleanedKey, 0)->returns(1);
+        $cache->expects('has')->with("$cleanedKey:timer")->returns(true);
+        $cache->expects('add')->never();
+        $cache->allows('getStore')->returns(new ArrayStore);
 
         $this->assertTrue($rateLimiter->tooManyAttempts($key, 1));
     }

@@ -30,23 +30,19 @@ class SeedCommandTest extends TestCase
         $seeder = TestDouble::for(Seeder::class);
         $seeder->shouldReceive('setContainer')->once()->andReturnSelf();
         $seeder->shouldReceive('setCommand')->once()->andReturnSelf();
-        $seeder->shouldReceive('__invoke')->once();
+        $seeder->expects('__invoke');
 
         $resolver = TestDouble::for(ConnectionResolverInterface::class);
-        $resolver->shouldReceive('getDefaultConnection')->once();
-        $resolver->shouldReceive('setDefaultConnection')->once()->with('sqlite');
+        $resolver->expects('getDefaultConnection');
+        $resolver->expects('setDefaultConnection')->with('sqlite');
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('call');
-        $container->shouldReceive('environment')->once()->andReturn('testing');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->shouldReceive('make')->with('DatabaseSeeder')->andReturn($seeder);
-        $container->shouldReceive('make')->with(OutputStyle::class, m::any())->andReturn(
-            $outputStyle
-        );
-        $container->shouldReceive('make')->with(Factory::class, m::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('call');
+        $container->expects('environment')->returns('testing');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->allows('make')->with('DatabaseSeeder')->returns($seeder);
+        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -75,20 +71,16 @@ class SeedCommandTest extends TestCase
         $seeder->shouldReceive('setCommand')->once()->andReturnSelf();
 
         $resolver = TestDouble::for(ConnectionResolverInterface::class);
-        $resolver->shouldReceive('getDefaultConnection')->once();
-        $resolver->shouldReceive('setDefaultConnection')->once()->with('sqlite');
+        $resolver->expects('getDefaultConnection');
+        $resolver->expects('setDefaultConnection')->with('sqlite');
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('call');
-        $container->shouldReceive('environment')->once()->andReturn('testing');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->shouldReceive('make')->with(UserWithoutModelEventsSeeder::class)->andReturn($seeder);
-        $container->shouldReceive('make')->with(OutputStyle::class, m::any())->andReturn(
-            $outputStyle
-        );
-        $container->shouldReceive('make')->with(Factory::class, m::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('call');
+        $container->expects('environment')->returns('testing');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->allows('make')->with(UserWithoutModelEventsSeeder::class)->returns($seeder);
+        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -113,14 +105,10 @@ class SeedCommandTest extends TestCase
         $resolver = TestDouble::for(ConnectionResolverInterface::class);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('call');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->shouldReceive('make')->with(OutputStyle::class, m::any())->andReturn(
-            $outputStyle
-        );
-        $container->shouldReceive('make')->with(Factory::class, m::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('call');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);

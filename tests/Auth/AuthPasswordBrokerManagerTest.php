@@ -18,7 +18,7 @@ class AuthPasswordBrokerManagerTest extends TestCase
         $broker = TestDouble::for(PasswordBroker::class);
 
         $manager = m::mock(PasswordBrokerManager::class, [$app])->makePartial()->shouldAllowMockingProtectedMethods();
-        $manager->shouldReceive('resolve')->with('users')->andReturn($broker);
+        $manager->allows('resolve')->with('users')->returns($broker);
 
         $result1 = $manager->broker(PasswordBrokerName::Users);
         $result2 = $manager->broker('users');

@@ -31,8 +31,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent = new HasManyThroughCreateOrFirstTestParentModel();
         $parent->id = 123;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
         $parent->getConnection()->expects('insert')->with(
             'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
             ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
@@ -55,8 +55,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
@@ -103,8 +103,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -138,8 +138,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -178,8 +178,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -236,8 +236,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -274,8 +274,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -322,8 +322,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $parent->getConnection()
             ->expects('select')
@@ -389,18 +389,18 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $processor = new $processorClass;
         $connection = m::mock(Connection::class, ['getPostProcessor' => $processor]);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new Builder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
+        $connection->allows('getDatabaseName')->returns('database');
         $resolver = m::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
 
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
 
-        $connection->shouldReceive('getPdo')->andReturn($pdo = TestDouble::for(PDO::class));
+        $connection->allows('getPdo')->returns($pdo = TestDouble::for(PDO::class));
 
         foreach ($lastInsertIds as $id) {
             $pdo->expects('lastInsertId')->andReturn($id);

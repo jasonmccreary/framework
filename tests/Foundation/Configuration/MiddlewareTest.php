@@ -269,10 +269,10 @@ class MiddlewareTest extends TestCase
         $configuration = new Middleware();
 
         $mode = TestDouble::for(MaintenanceMode::class);
-        $mode->shouldReceive('active')->andReturn(true);
-        $mode->shouldReceive('date')->andReturn([]);
+        $mode->allows('active')->returns(true);
+        $mode->allows('date')->returns([]);
         $app = TestDouble::for(Application::class);
-        $app->shouldReceive('maintenanceMode')->andReturn($mode);
+        $app->allows('maintenanceMode')->returns($mode);
         $middleware = new PreventRequestsDuringMaintenance($app);
 
         $reflection = new ReflectionClass($middleware);

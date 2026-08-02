@@ -536,7 +536,7 @@ class QueueTest extends TestCase
         $this->fakeEvents();
         [$queue, $client] = $this->mockedQueue();
 
-        $client->shouldReceive('receiveMessage')->once()->andReturn(new Result([
+        $client->expects('receiveMessage')->returns(new Result([
             'Messages' => [[
                 'MessageId' => 'message-id',
                 'ReceiptHandle' => 'receipt-handle',
@@ -559,7 +559,7 @@ class QueueTest extends TestCase
         $this->fakeEvents();
         [$queue, $client] = $this->mockedQueue();
 
-        $client->shouldReceive('receiveMessage')->once()->andReturn(new Result(['Messages' => null]));
+        $client->expects('receiveMessage')->returns(new Result(['Messages' => null]));
 
         $this->assertNull($queue->pop());
     }
@@ -916,8 +916,8 @@ class QueueTest extends TestCase
         Cloud::bootManagedQueues($this->app);
         $eventsFake = $this->fakeEvents();
         [$queue, $client] = $this->mockedQueue();
-        $client->shouldReceive('sendMessage')->times(5)->andReturn(new Result());
-        $client->shouldReceive('sendMessageBatch')->once()->andReturnUsing(fn ($args) => new Result([
+        $client->expects('sendMessage')->times(5)->returns(new Result());
+        $client->expects('sendMessageBatch')->resolves(fn ($args) => new Result([
             'Successful' => array_map(fn ($entry) => ['Id' => $entry['Id'], 'MessageId' => 'id'], $args['Entries']),
         ]));
 
@@ -1196,8 +1196,8 @@ class QueueTest extends TestCase
         $eventsFake = $this->fakeEvents();
         $this->app['config']->set('queue.connections.cloud.connection.after_commit', true);
         [$queue, $client] = $this->mockedQueue();
-        $client->shouldReceive('sendMessage')->times(5)->andReturn(new Result());
-        $client->shouldReceive('sendMessageBatch')->once()->andReturnUsing(fn ($args) => new Result([
+        $client->expects('sendMessage')->times(5)->returns(new Result());
+        $client->expects('sendMessageBatch')->resolves(fn ($args) => new Result([
             'Successful' => array_map(fn ($entry) => ['Id' => $entry['Id'], 'MessageId' => 'id'], $args['Entries']),
         ]));
 
@@ -1488,7 +1488,7 @@ class QueueTest extends TestCase
         Cloud::bootManagedQueues($this->app);
         $eventsFake = $this->fakeEvents();
         [$queue, $client] = $this->mockedQueue();
-        $client->shouldReceive('sendMessage')->times(1)->andReturn(new Result());
+        $client->expects('sendMessage')->times(1)->returns(new Result());
 
         unset($_SERVER['SQS_PREFIX'], $_SERVER['SQS_SUFFIX']);
 
@@ -1503,7 +1503,7 @@ class QueueTest extends TestCase
         Cloud::bootManagedQueues($this->app);
         $eventsFake = $this->fakeEvents();
         [$queue, $client] = $this->mockedQueue();
-        $client->shouldReceive('sendMessage')->times(1)->andReturn(new Result());
+        $client->expects('sendMessage')->times(1)->returns(new Result());
 
         $queue->push(new FakeJob, queue: 'orders.fifo');
 
@@ -1518,7 +1518,7 @@ class QueueTest extends TestCase
     private function mockedQueue()
     {
         $client = $this->mock(SqsClient::class);
-        $client->shouldReceive('getHandlerList')->andReturn(new HandlerList());
+        $client->allows('getHandlerList')->returns(new HandlerList());
 
         $this->app->instance(QueueConnector::class, new QueueConnector(new class($client) implements ConnectorInterface
         {

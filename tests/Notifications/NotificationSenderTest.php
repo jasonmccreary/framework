@@ -26,13 +26,13 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch');
+        $bus->expects('dispatch');
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -43,7 +43,7 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
             ->once()
@@ -57,7 +57,7 @@ class NotificationSenderTest extends TestCase
             });
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -71,7 +71,7 @@ class NotificationSenderTest extends TestCase
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldNotReceive('dispatch');
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -82,11 +82,11 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldNotReceive('dispatch');
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -103,10 +103,10 @@ class NotificationSenderTest extends TestCase
                 return $job->middleware[0] instanceof TestNotificationMiddleware;
             });
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $events->expects('listen');
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -117,9 +117,9 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
             ->once()
@@ -137,7 +137,7 @@ class NotificationSenderTest extends TestCase
                 return empty($job->middleware);
             });
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -148,7 +148,7 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
             ->once()
@@ -162,7 +162,7 @@ class NotificationSenderTest extends TestCase
             });
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -173,7 +173,7 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
             ->once()
@@ -187,7 +187,7 @@ class NotificationSenderTest extends TestCase
             });
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -198,9 +198,9 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn('notification-queue');
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn('notification-connection');
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns('notification-queue');
+        $manager->allows('resolveConnectionFromQueueRoute')->returns('notification-connection');
 
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
@@ -210,7 +210,7 @@ class NotificationSenderTest extends TestCase
             });
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -223,14 +223,14 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
+        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $response = TestDouble::for(ResponseInterface::class);
-        $driver->shouldReceive('send')->andThrow(new HttpTransportException('Transport error', $response));
+        $driver->allows('send')->throws(new HttpTransportException('Transport error', $response));
         $bus = TestDouble::for(BusDispatcher::class);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $events->shouldReceive('until')->with(m::type(NotificationSending::class))->andReturn(true);
+        $events->expects('listen');
+        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
         $events->shouldReceive('dispatch')->once()->withArgs(function ($event) {
             return $event instanceof NotificationFailed && $event->data['exception'] instanceof TransportException;
         });
@@ -244,16 +244,16 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
+        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $driver->shouldReceive('send')->once()->withArgs(function ($notifiable, $notification) {
             return $notification->channelData === 'default';
         });
         $bus = TestDouble::for(BusDispatcher::class);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $events->shouldReceive('until')->with(m::type(NotificationSending::class))->andReturn(true);
-        $events->shouldReceive('dispatch')->once();
+        $events->expects('listen');
+        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->expects('dispatch');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -276,12 +276,12 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->expects('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
@@ -309,12 +309,12 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->expects('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')
@@ -347,12 +347,12 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->expects('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
         $bus->shouldReceive('dispatch')

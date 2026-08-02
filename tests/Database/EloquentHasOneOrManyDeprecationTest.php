@@ -28,7 +28,7 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
         $model2 = new HasOneOrManyDeprecationModelStub;
         $model2->id = null;
 
-        $relation->getRelated()->shouldReceive('newCollection')->andReturnUsing(function ($array) {
+        $relation->getRelated()->allows('newCollection')->resolves(function ($array) {
             return new Collection($array);
         });
 
@@ -60,14 +60,14 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
         $builder = m::mock(Builder::class, [$queryBuilder]);
-        $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
-        $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
+        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = TestDouble::for(Model::class);
-        $builder->shouldReceive('getModel')->andReturn($related);
+        $builder->allows('getModel')->returns($related);
         $parent = TestDouble::for(Model::class);
-        $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
-        $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
+        $parent->allows('getAttribute')->with('id')->returns(1);
+        $parent->allows('getCreatedAtColumn')->returns('created_at');
+        $parent->allows('getUpdatedAtColumn')->returns('updated_at');
 
         return new HasMany($builder, $parent, 'table.foreign_key', 'id');
     }
@@ -76,14 +76,14 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
         $builder = m::mock(Builder::class, [$queryBuilder]);
-        $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
-        $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
+        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = TestDouble::for(Model::class);
-        $builder->shouldReceive('getModel')->andReturn($related);
+        $builder->allows('getModel')->returns($related);
         $parent = TestDouble::for(Model::class);
-        $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
-        $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
+        $parent->allows('getAttribute')->with('id')->returns(1);
+        $parent->allows('getCreatedAtColumn')->returns('created_at');
+        $parent->allows('getUpdatedAtColumn')->returns('updated_at');
 
         return new HasOne($builder, $parent, 'table.foreign_key', 'id');
     }

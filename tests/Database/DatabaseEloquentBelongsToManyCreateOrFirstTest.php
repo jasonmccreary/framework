@@ -36,8 +36,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             'SQLite',
             [456],
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()->expects('insert')->with(
             'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
@@ -68,8 +68,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
@@ -116,8 +116,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()
             ->expects('select')
@@ -161,8 +161,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
@@ -233,8 +233,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()
             ->expects('select')
@@ -318,8 +318,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()
             ->expects('select')
@@ -428,8 +428,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()
             ->expects('update')
@@ -535,8 +535,8 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $source->getConnection()
             ->expects('update')
@@ -574,12 +574,12 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         $processor = new $processorClass;
         $connection = m::mock(Connection::class, ['getPostProcessor' => $processor]);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new BaseBuilder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
+        $connection->allows('getDatabaseName')->returns('database');
         $resolver = m::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
 
         foreach ($models as $model) {
@@ -588,7 +588,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             $class::setConnectionResolver($resolver);
         }
 
-        $connection->shouldReceive('getPdo')->andReturn($pdo = TestDouble::for(PDO::class));
+        $connection->allows('getPdo')->returns($pdo = TestDouble::for(PDO::class));
 
         foreach ($lastInsertIds as $id) {
             $pdo->expects('lastInsertId')->andReturn($id);

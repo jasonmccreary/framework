@@ -150,19 +150,17 @@ class DatabaseLockTest extends DatabaseTestCase
         $insertBuilder = TestDouble::for(Builder::class);
         $deleteBuilder = TestDouble::for(Builder::class);
 
-        $insertBuilder->shouldReceive('insert')->once()->andReturn(true);
+        $insertBuilder->expects('insert')->returns(true);
 
         $deleteBuilder->shouldReceive('where')->with('expiration', '<=', m::any())->once()->andReturnSelf();
-        $deleteBuilder->shouldReceive('delete')->once()->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where expiration <= ?',
                 [],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->shouldReceive('table')->with('cache_locks')->andReturn($insertBuilder, $deleteBuilder);
+        $connection->allows('table')->with('cache_locks')->returns($insertBuilder, $deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 0, lottery: [1, 1]);
 
@@ -185,16 +183,14 @@ class DatabaseLockTest extends DatabaseTestCase
 
         $deleteBuilder->shouldReceive('where')->with('key', 'foo')->once()->andReturnSelf();
         $deleteBuilder->shouldReceive('where')->with('owner', $owner)->once()->andReturnSelf();
-        $deleteBuilder->shouldReceive('delete')->once()->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where key = ? and owner = ?',
                 ['foo', $owner],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->shouldReceive('table')->with('cache_locks')->andReturn($deleteBuilder);
+        $connection->allows('table')->with('cache_locks')->returns($deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 10, $owner); // same owner...
 

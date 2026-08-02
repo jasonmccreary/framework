@@ -15,7 +15,7 @@ class DatabasePostgresSchemaBuilderTest extends TestCase
     {
         $connection = TestDouble::for(Connection::class);
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
+        $connection->allows('getSchemaGrammar')->returns($grammar);
         $builder = new PostgresBuilder($connection);
         $grammar->shouldReceive('compileTableExists')->twice()->andReturn('sql');
         $connection->shouldReceive('getTablePrefix')->twice()->andReturn('prefix_');
@@ -30,13 +30,13 @@ class DatabasePostgresSchemaBuilderTest extends TestCase
         $connection = TestDouble::for(Connection::class);
         $grammar = TestDouble::for(PostgresGrammar::class);
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $grammar->shouldReceive('compileColumns')->with(null, 'prefix_table')->once()->andReturn('sql');
-        $processor->shouldReceive('processColumns')->once()->andReturn([['name' => 'column']]);
+        $connection->allows('getSchemaGrammar')->returns($grammar);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $grammar->expects('compileColumns')->with(null, 'prefix_table')->returns('sql');
+        $processor->expects('processColumns')->returns([['name' => 'column']]);
         $builder = new PostgresBuilder($connection);
-        $connection->shouldReceive('getTablePrefix')->once()->andReturn('prefix_');
-        $connection->shouldReceive('selectFromWriteConnection')->once()->with('sql')->andReturn([['name' => 'column']]);
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('selectFromWriteConnection')->with('sql')->returns([['name' => 'column']]);
 
         $this->assertEquals(['column'], $builder->getColumnListing('table'));
     }
