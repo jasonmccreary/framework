@@ -7,7 +7,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\MailManager;
 use Illuminate\Support\Testing\Fakes\MailFake;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
@@ -31,9 +31,8 @@ class SupportTestingMailFakeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mailManager = m::mock(MailManager::class, function ($mock) {
-            $mock->allows('getDefaultDriver')->returns('smtp');
-        });
+        $this->mailManager = TestDouble::for(MailManager::class);
+        $this->mailManager->allows('getDefaultDriver')->returns('smtp');
         $this->fake = new MailFake($this->mailManager);
         $this->mailable = new MailableStub;
     }

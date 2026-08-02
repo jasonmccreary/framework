@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Bus;
 
-use JMac\Testing\TestDouble;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
@@ -30,6 +29,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -57,7 +57,7 @@ class BusBatchTest extends TestCase
             $container->instance(Factory::class, $queue);
             $container->alias(Factory::class, 'queue');
 
-            $dispatcher = m::mock(Dispatcher::class, [$container]);
+            $dispatcher = TestDouble::for(new Dispatcher($container));
 
             $dispatcher->shouldReceive('batch')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
                 $pendingBatch = TestDouble::for(PendingBatch::class);
@@ -68,7 +68,7 @@ class BusBatchTest extends TestCase
             })->byDefault();
 
             $dispatcher->shouldReceive('chain')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
-                $pendingChain = m::mock(PendingChain::class, [$jobs, \stdClass::class]);
+                $pendingChain = TestDouble::for(new PendingChain($jobs, \stdClass::class));
                 $pendingChain->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(TestDouble::for(Batch::class));
 
                 return $pendingChain;
@@ -711,17 +711,17 @@ class BusBatchTest extends TestCase
         $connection = TestDouble::for(PostgresConnection::class);
 
         $connection->allows('table->useWritePdo->where->first')->returns($m = (object) [
-                'id' => '',
-                'name' => '',
-                'total_jobs' => '',
-                'pending_jobs' => '',
-                'failed_jobs' => '',
-                'failed_job_ids' => '[]',
-                'options' => $serialize,
-                'created_at' => Carbon::now()->getTimestamp(),
-                'cancelled_at' => null,
-                'finished_at' => null,
-            ]);
+            'id' => '',
+            'name' => '',
+            'total_jobs' => '',
+            'pending_jobs' => '',
+            'failed_jobs' => '',
+            'failed_job_ids' => '[]',
+            'options' => $serialize,
+            'created_at' => Carbon::now()->getTimestamp(),
+            'cancelled_at' => null,
+            'finished_at' => null,
+        ]);
 
         $batch = (new DatabaseBatchRepository($factory, $connection, 'job_batches'));
 

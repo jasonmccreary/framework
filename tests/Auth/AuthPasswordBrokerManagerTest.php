@@ -2,11 +2,12 @@
 
 namespace Illuminate\Tests\Auth;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
+use JMac\Testing\TestDouble;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class AuthPasswordBrokerManagerTest extends TestCase
@@ -17,8 +18,14 @@ class AuthPasswordBrokerManagerTest extends TestCase
 
         $broker = TestDouble::for(PasswordBroker::class);
 
-        $manager = m::mock(PasswordBrokerManager::class, [$app])->makePartial()->shouldAllowMockingProtectedMethods();
-        $manager->allows('resolve')->with('users')->returns($broker);
+        // TODO: no direct TestDouble equivalent — needs manual review. `resolve()` is a
+        // protected method invoked internally (via `$this->resolve()`) from `broker()`.
+        // TestDouble::for()->passthru() delegates unstubbed calls to a separate real
+        // instance, so a self-call made from inside that real instance's own method never
+        // routes back through the double's `allows()`/`expects()` interception the way a
+        // Mockery partial mock (a single self-referencing object) does.
+        $manager = Mockery::mock(PasswordBrokerManager::class, [$app])->makePartial()->shouldAllowMockingProtectedMethods();
+        $manager->allows('resolve')->with('users')->andReturn($broker);
 
         $result1 = $manager->broker(PasswordBrokerName::Users);
         $result2 = $manager->broker('users');

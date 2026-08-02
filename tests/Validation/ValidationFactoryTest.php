@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Translation\Translator as TranslatorInterface;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\PresenceVerifierInterface;
 use Illuminate\Validation\Validator;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class ValidationFactoryTest extends TestCase
@@ -56,7 +56,7 @@ class ValidationFactoryTest extends TestCase
     {
         $validator = TestDouble::for(Validator::class);
         $translator = TestDouble::for(TranslatorInterface::class);
-        $factory = m::mock(Factory::class.'[make]', [$translator]);
+        $factory = TestDouble::for(new Factory($translator))->passthru();
 
         $factory->expects('make')->with(['foo' => 'bar', 'baz' => 'boom'], ['foo' => 'required'], [], [])->returns($validator);
 

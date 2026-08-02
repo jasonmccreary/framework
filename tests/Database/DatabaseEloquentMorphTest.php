@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Foo\Bar\EloquentModelNamespacedStub;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentMorphTest extends TestCase
@@ -72,8 +72,8 @@ class DatabaseEloquentMorphTest extends TestCase
         $relation = $this->getManyRelation();
 
         $relation->getQuery()->expects('upsert')->with([
-                ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
-            ],
+            ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
+        ],
             ['email'],
             ['name']);
 
@@ -84,9 +84,9 @@ class DatabaseEloquentMorphTest extends TestCase
         );
 
         $relation->getQuery()->expects('upsert')->with([
-                ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
-                ['name' => 'bar2', 'email' => 'foo2', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
-            ],
+            ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
+            ['name' => 'bar2', 'email' => 'foo2', $relation->getForeignKeyName() => $relation->getParentKey(), $relation->getMorphType() => $relation->getMorphClass()],
+        ],
             ['email'],
             ['name']);
 
@@ -474,7 +474,7 @@ class DatabaseEloquentMorphTest extends TestCase
     protected function getOneRelation()
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
-        $builder = m::mock(Builder::class, [$queryBuilder]);
+        $builder = TestDouble::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.morph_id');
         $builder->expects('where')->with('table.morph_id', '=', 1);
         $related = TestDouble::for(Model::class);

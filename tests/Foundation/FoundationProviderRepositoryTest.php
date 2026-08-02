@@ -2,13 +2,14 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
+use JMac\Testing\TestDouble;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -18,9 +19,14 @@ class FoundationProviderRepositoryTest extends TestCase
     {
         $app = TestDouble::for(Application::class);
 
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // load() must run and internally call the stubbed loadManifest()/
+        // shouldRecompile() on the *same* object); TestDouble::for()'s passthru mode
+        // only delegates to a separate real instance, so self-calls never route back
+        // through the double.
         $repo = m::mock(ProviderRepository::class.'[createProvider,loadManifest,shouldRecompile]', [$app, TestDouble::for(Filesystem::class), [__DIR__.'/services.php']]);
-        $repo->expects('loadManifest')->returns(['eager' => ['foo'], 'deferred' => ['deferred'], 'providers' => ['providers'], 'when' => []]);
-        $repo->expects('shouldRecompile')->returns(false);
+        $repo->shouldReceive('loadManifest')->andReturn(['eager' => ['foo'], 'deferred' => ['deferred'], 'providers' => ['providers'], 'when' => []]);
+        $repo->shouldReceive('shouldRecompile')->andReturn(false);
 
         $app->expects('register')->with('foo');
         $app->allows('runningInConsole')->returns(false);
@@ -33,21 +39,26 @@ class FoundationProviderRepositoryTest extends TestCase
     {
         $app = TestDouble::for(Application::class);
 
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // load() must run and internally call the stubbed loadManifest()/
+        // writeManifest()/shouldRecompile() on the *same* object); TestDouble::for()'s
+        // passthru mode only delegates to a separate real instance, so self-calls
+        // never route back through the double.
         $repo = m::mock(ProviderRepository::class.'[createProvider,loadManifest,writeManifest,shouldRecompile]', [$app, TestDouble::for(Filesystem::class), [__DIR__.'/services.php']]);
 
-        $repo->expects('loadManifest')->returns(['eager' => [], 'deferred' => ['deferred']]);
-        $repo->expects('shouldRecompile')->returns(true);
+        $repo->shouldReceive('loadManifest')->andReturn(['eager' => [], 'deferred' => ['deferred']]);
+        $repo->shouldReceive('shouldRecompile')->andReturn(true);
 
         // foo mock is just a deferred provider
-        $repo->expects('createProvider')->with('foo')->returns($fooMock = TestDouble::for(stdClass::class));
+        $repo->shouldReceive('createProvider')->with('foo')->andReturn($fooMock = TestDouble::for(stdClass::class));
         $fooMock->expects('isDeferred')->returns(true);
         $fooMock->expects('provides')->returns(['foo.provides1', 'foo.provides2']);
         $fooMock->expects('when')->returns([]);
 
         // bar mock is added to eagers since it's not reserved
-        $repo->expects('createProvider')->with('bar')->returns($barMock = TestDouble::for(ServiceProvider::class));
+        $repo->shouldReceive('createProvider')->with('bar')->andReturn($barMock = TestDouble::for(ServiceProvider::class));
         $barMock->expects('isDeferred')->returns(false);
-        $repo->expects('writeManifest')->resolves(function ($manifest) {
+        $repo->shouldReceive('writeManifest')->andReturnUsing(function ($manifest) {
             return $manifest;
         });
 

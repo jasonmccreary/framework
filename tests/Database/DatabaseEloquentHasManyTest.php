@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -172,10 +172,11 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $relation->getRelated()->shouldReceive('newInstance')->once()->with(['foo' => 'bar', 'baz' => 'qux'])->andReturn(m::mock(Model::class, function ($model) {
-            $model->expects('setAttribute')->with('foreign_key', 1);
-            $model->expects('save')->throws(new UniqueConstraintViolationException('mysql', 'example mysql', [], new Exception('SQLSTATE[23000]: Integrity constraint violation: 1062')));
-        }));
+        $model = TestDouble::for(Model::class);
+        $model->expects('setAttribute')->with('foreign_key', 1);
+        $model->expects('save')->throws(new UniqueConstraintViolationException('mysql', 'example mysql', [], new Exception('SQLSTATE[23000]: Integrity constraint violation: 1062')));
+
+        $relation->getRelated()->shouldReceive('newInstance')->once()->with(['foo' => 'bar', 'baz' => 'qux'])->andReturn($model);
 
         $relation->getQuery()->expects('withSavepointIfNeeded')->resolves(function ($scope) {
             return $scope();
@@ -251,8 +252,8 @@ class DatabaseEloquentHasManyTest extends TestCase
         $relation = $this->getRelation();
 
         $relation->getQuery()->expects('upsert')->with([
-                ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey()],
-            ],
+            ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey()],
+        ],
             ['email'],
             ['name']);
 
@@ -263,9 +264,9 @@ class DatabaseEloquentHasManyTest extends TestCase
         );
 
         $relation->getQuery()->expects('upsert')->with([
-                ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey()],
-                ['name' => 'bar2', 'email' => 'foo2', $relation->getForeignKeyName() => $relation->getParentKey()],
-            ],
+            ['email' => 'foo3', 'name' => 'bar', $relation->getForeignKeyName() => $relation->getParentKey()],
+            ['name' => 'bar2', 'email' => 'foo2', $relation->getForeignKeyName() => $relation->getParentKey()],
+        ],
             ['email'],
             ['name']);
 
@@ -371,7 +372,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     protected function getRelation()
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
-        $builder = m::mock(Builder::class, [$queryBuilder]);
+        $builder = TestDouble::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = TestDouble::for(Model::class);

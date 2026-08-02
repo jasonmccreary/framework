@@ -2,11 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Grammars\Grammar;
+use JMac\Testing\TestDouble;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -58,6 +59,10 @@ class DatabaseSchemaBuilderTest extends TestCase
         $connection = TestDouble::for(Connection::class);
         $grammar = TestDouble::for(stdClass::class);
         $connection->allows('getSchemaGrammar')->returns($grammar);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // hasColumns() must run and internally call the stubbed getColumnListing() on
+        // the *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $builder = m::mock(Builder::class.'[getColumnListing]', [$connection]);
         $builder->shouldReceive('getColumnListing')->with('users')->twice()->andReturn(['id', 'firstname']);
 

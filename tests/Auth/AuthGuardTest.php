@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Auth;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Authenticated;
@@ -18,6 +17,8 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Support\Timebox;
+use JMac\Testing\TestDouble;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,9 +29,14 @@ class AuthGuardTest extends TestCase
     public function testBasicReturnsNullOnValidAttempt()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class.'[check,attempt]', ['default', $provider, $session]);
-        $guard->expects('check')->returns(false);
-        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret'])->returns(true);
+        $guard->expects('check')->andReturn(false);
+        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret'])->andReturn(true);
         $request = Request::create('/', 'GET', [], [], [], ['PHP_AUTH_USER' => 'foo@bar.com', 'PHP_AUTH_PW' => 'secret']);
         $guard->setRequest($request);
 
@@ -40,8 +46,13 @@ class AuthGuardTest extends TestCase
     public function testBasicReturnsNullWhenAlreadyLoggedIn()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class.'[check]', ['default', $provider, $session]);
-        $guard->expects('check')->returns(true);
+        $guard->expects('check')->andReturn(true);
         $guard->expects('attempt')->never();
         $request = Request::create('/', 'GET', [], [], [], ['PHP_AUTH_USER' => 'foo@bar.com', 'PHP_AUTH_PW' => 'secret']);
         $guard->setRequest($request);
@@ -54,9 +65,14 @@ class AuthGuardTest extends TestCase
         $this->expectException(UnauthorizedHttpException::class);
 
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class.'[check,attempt]', ['default', $provider, $session]);
-        $guard->expects('check')->returns(false);
-        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret'])->returns(false);
+        $guard->expects('check')->andReturn(false);
+        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret'])->andReturn(false);
         $request = Request::create('/', 'GET', [], [], [], ['PHP_AUTH_USER' => 'foo@bar.com', 'PHP_AUTH_PW' => 'secret']);
         $guard->setRequest($request);
         $guard->basic('email');
@@ -65,9 +81,14 @@ class AuthGuardTest extends TestCase
     public function testBasicWithExtraConditions()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class.'[check,attempt]', ['default', $provider, $session]);
-        $guard->expects('check')->returns(false);
-        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret', 'active' => 1])->returns(true);
+        $guard->expects('check')->andReturn(false);
+        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret', 'active' => 1])->andReturn(true);
         $request = Request::create('/', 'GET', [], [], [], ['PHP_AUTH_USER' => 'foo@bar.com', 'PHP_AUTH_PW' => 'secret']);
         $guard->setRequest($request);
 
@@ -77,9 +98,14 @@ class AuthGuardTest extends TestCase
     public function testBasicWithExtraArrayConditions()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class.'[check,attempt]', ['default', $provider, $session]);
-        $guard->expects('check')->returns(false);
-        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret', 'active' => 1, 'type' => [1, 2, 3]])->returns(true);
+        $guard->expects('check')->andReturn(false);
+        $guard->expects('attempt')->with(['email' => 'foo@bar.com', 'password' => 'secret', 'active' => 1, 'type' => [1, 2, 3]])->andReturn(true);
         $request = Request::create('/', 'GET', [], [], [], ['PHP_AUTH_USER' => 'foo@bar.com', 'PHP_AUTH_PW' => 'secret']);
         $guard->setRequest($request);
 
@@ -551,6 +577,11 @@ class AuthGuardTest extends TestCase
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
 
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session])->makePartial();
 
         $user = TestDouble::for(Authenticatable::class);
@@ -563,6 +594,11 @@ class AuthGuardTest extends TestCase
     public function testLoginUsingIdFailure()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session])->makePartial();
 
         $guard->getProvider()->expects('retrieveById')->with(11)->returns(null);
@@ -574,6 +610,11 @@ class AuthGuardTest extends TestCase
     public function testOnceUsingIdSetsUser()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session])->makePartial();
 
         $user = TestDouble::for(Authenticatable::class);
@@ -586,6 +627,11 @@ class AuthGuardTest extends TestCase
     public function testOnceUsingIdFailure()
     {
         [$session, $provider, $request, $cookie] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session])->makePartial();
 
         $guard->getProvider()->expects('retrieveById')->with(11)->returns(null);
@@ -613,6 +659,11 @@ class AuthGuardTest extends TestCase
     public function testLoginOnceSetsUser()
     {
         [$session, $provider, $request, $cookie, $timebox] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session, $request, $timebox])->makePartial();
         $user = TestDouble::for(Authenticatable::class);
         $timebox->shouldReceive('call')->once()->andReturnUsing(function ($callback) use ($timebox) {
@@ -628,6 +679,11 @@ class AuthGuardTest extends TestCase
     public function testLoginOnceFailure()
     {
         [$session, $provider, $request, $cookie, $timebox] = $this->getMocks();
+        // TODO: no direct TestDouble equivalent — needs manual review. This partial
+        // mock stubs specific SessionGuard methods while real methods (e.g. basic(),
+        // loginUsingId(), once()) call them via `$this->...` internally; TestDouble's
+        // passthru() delegates to a separate real instance, so those internal self-calls
+        // never route back through the double's expects()/allows() interception.
         $guard = m::mock(SessionGuard::class, ['default', $provider, $session, $request, $timebox])->makePartial();
         $user = TestDouble::for(Authenticatable::class);
         $timebox->expects('call')->resolves(function ($callback) use ($timebox) {

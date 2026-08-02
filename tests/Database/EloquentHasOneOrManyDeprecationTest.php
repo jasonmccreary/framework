@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class EloquentHasOneOrManyDeprecationTest extends TestCase
@@ -59,7 +59,7 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     protected function getHasManyRelation(): HasMany
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
-        $builder = m::mock(Builder::class, [$queryBuilder]);
+        $builder = TestDouble::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = TestDouble::for(Model::class);
@@ -75,7 +75,7 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     protected function getHasOneRelation(): HasOne
     {
         $queryBuilder = TestDouble::for(QueryBuilder::class);
-        $builder = m::mock(Builder::class, [$queryBuilder]);
+        $builder = TestDouble::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = TestDouble::for(Model::class);

@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\TestDouble;
 use ArrayAccess;
 use BadMethodCallException;
 use Closure;
@@ -13,6 +12,7 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class ViewTest extends TestCase
@@ -72,13 +72,13 @@ class ViewTest extends TestCase
 
     public function testRenderSectionsReturnsEnvironmentSections()
     {
-        $view = m::mock(View::class.'[render]', [
+        $view = TestDouble::for(new View(
             TestDouble::for(Factory::class),
             TestDouble::for(Engine::class),
             'view',
             'path',
             [],
-        ]);
+        ))->passthru();
 
         $view->expects('render')->with(m::type(Closure::class))->returns($sections = ['foo' => 'bar']);
 

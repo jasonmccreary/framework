@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
 use Illuminate\Http\Request;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -22,7 +22,7 @@ class PusherBroadcasterTest extends TestCase
         parent::setUp();
 
         $this->pusher = TestDouble::for('Pusher\Pusher');
-        $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->pusher])->makePartial();
+        $this->broadcaster = TestDouble::for(new PusherBroadcaster($this->pusher))->passthru();
     }
 
     public function testAuthCallValidAuthenticationResponseWithPrivateChannelWhenCallbackReturnTrue()
@@ -143,9 +143,9 @@ class PusherBroadcasterTest extends TestCase
     public function testUserAuthenticationForPusher()
     {
         $this->pusher->allows('getSettings')->returns([
-                'auth_key' => '278d425bdf160c739803',
-                'secret' => '7ad3773142a6692b25b8',
-            ]);
+            'auth_key' => '278d425bdf160c739803',
+            'secret' => '7ad3773142a6692b25b8',
+        ]);
 
         $this->broadcaster = new PusherBroadcaster($this->pusher);
 

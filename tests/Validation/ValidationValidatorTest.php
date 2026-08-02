@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\TestDouble;
 use Countable;
 use DateTime;
 use DateTimeImmutable;
@@ -31,8 +30,7 @@ use Illuminate\Validation\ValidationData;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
-use Mockery as m;
-use Mockery\MockInterface;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
@@ -1118,7 +1116,8 @@ class ValidationValidatorTest extends TestCase
 
         $v = new Validator($trans, ['name' => ''], ['name' => 'required']);
 
-        $exception = new class($v) extends ValidationException {
+        $exception = new class($v) extends ValidationException
+        {
         };
         $v->setException($exception);
 
@@ -5329,17 +5328,8 @@ class ValidationValidatorTest extends TestCase
     public function testValidateActiveUrl($data, $outcome)
     {
         $trans = $this->getIlluminateArrayTranslator();
-        $v = m::mock(
-            new Validator($trans, $data, ['x' => 'active_url']),
-            function (MockInterface $mock) {
-                $mock
-                    ->shouldAllowMockingProtectedMethods()
-                    ->shouldReceive('getDnsRecords')
-                    ->withAnyArgs()
-                    ->zeroOrMoreTimes()
-                    ->andReturn(['hit']);
-            }
-        );
+        $v = TestDouble::for(new Validator($trans, $data, ['x' => 'active_url']))->passthru();
+        $v->allows('getDnsRecords')->returns(['hit']);
         $this->assertEquals($outcome, $v->passes());
     }
 

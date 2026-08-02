@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Container\Container;
@@ -20,7 +19,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueRoutes;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use JMac\Testing\TestDouble;
 use Laravel\SerializableClosure\SerializableClosure;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class NotificationChannelManagerTest extends TestCase
@@ -39,8 +40,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
-        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
         $events->expects('listen');
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
         $driver->expects('send');
@@ -77,11 +82,15 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
         $events->expects('until')->with(m::type(NotificationSending::class))->returns(false);
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
-        $manager->expects('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->once()->andReturn($driver = TestDouble::for(\stdClass::class));
         $driver->expects('send');
         $events->expects('dispatch')->with(m::type(NotificationSent::class));
 
@@ -95,6 +104,10 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
@@ -111,10 +124,14 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
-        $manager->expects('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->once()->andReturn($driver = TestDouble::for(\stdClass::class));
         $driver->expects('send');
         $events->expects('dispatch')->with(m::type(NotificationSent::class));
 
@@ -130,8 +147,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
-        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
         $driver->allows('send')->throws(new Exception());
         $events->expects('listen');
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
@@ -150,8 +171,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(Dispatcher::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
-        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
         $driver->allows('send')->resolves(function ($notifiable, $notification) use ($events) {
             $events->dispatch(new NotificationFailed($notifiable, $notification, 'test'));
             throw new Exception();
@@ -229,6 +254,10 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->with(m::type(SendQueuedNotifications::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -248,6 +277,10 @@ class NotificationChannelManagerTest extends TestCase
         $bus->expects('dispatch')->with(m::type(TestSendQueuedNotifications::class));
         $container->bind(SendQueuedNotifications::class, TestSendQueuedNotifications::class);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -276,6 +309,10 @@ class NotificationChannelManagerTest extends TestCase
             return true;
         });
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -306,6 +343,10 @@ class NotificationChannelManagerTest extends TestCase
             return true;
         });
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -334,6 +375,10 @@ class NotificationChannelManagerTest extends TestCase
             return true;
         });
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -362,6 +407,10 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -388,6 +437,10 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -417,6 +470,10 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -440,6 +497,10 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -464,6 +525,10 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->expects('listen');
 
@@ -478,8 +543,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         Container::setInstance($container);
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // send()/sendNow() must run and internally call the stubbed driver() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
-        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
+        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
         $events->expects('listen');
         $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
         $driver->expects('send')->returns($response = TestDouble::for(\stdClass::class));

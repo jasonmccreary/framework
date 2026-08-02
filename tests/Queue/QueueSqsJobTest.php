@@ -2,14 +2,13 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\TestDouble;
 use Aws\Sqs\SqsClient;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Queue\Jobs\SqsJob;
 use Illuminate\Queue\SqsQueue;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -79,7 +78,7 @@ class QueueSqsJobTest extends TestCase
     public function testDeleteRemovesTheJobFromSqs()
     {
         $this->mockedSqsClient = TestDouble::for(SqsClient::class)->makePartial();
-        $queue = m::mock(SqsQueue::class, [$this->mockedSqsClient, $this->queueName, $this->account])->makePartial();
+        $queue = TestDouble::for(new SqsQueue($this->mockedSqsClient, $this->queueName, $this->account))->passthru();
         $queue->setContainer($this->mockedContainer);
         $job = $this->getJob();
         $job->getSqs()->expects('deleteMessage')->with(['QueueUrl' => $this->queueUrl, 'ReceiptHandle' => $this->mockedReceiptHandle]);
@@ -89,7 +88,7 @@ class QueueSqsJobTest extends TestCase
     public function testReleaseProperlyReleasesTheJobOntoSqs()
     {
         $this->mockedSqsClient = TestDouble::for(SqsClient::class)->makePartial();
-        $queue = m::mock(SqsQueue::class, [$this->mockedSqsClient, $this->queueName, $this->account])->makePartial();
+        $queue = TestDouble::for(new SqsQueue($this->mockedSqsClient, $this->queueName, $this->account))->passthru();
         $queue->setContainer($this->mockedContainer);
         $job = $this->getJob();
         $job->getSqs()->expects('changeMessageVisibility')->with(['QueueUrl' => $this->queueUrl, 'ReceiptHandle' => $this->mockedReceiptHandle, 'VisibilityTimeout' => $this->releaseDelay]);

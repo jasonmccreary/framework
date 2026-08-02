@@ -92,7 +92,7 @@
         "symfony/http-client": "^8.1.0",
         "symfony/psr-http-message-bridge": "^8.1.0",
         "symfony/translation": "^8.1.0",
-        "jasonmccreary/test-double": "^0.1"
+        "jasonmccreary/test-double": "^0.2"
     },
     "replace": {
         "illuminate/auth": "self.version",

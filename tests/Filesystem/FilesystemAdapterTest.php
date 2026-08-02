@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Filesystem;
 
-use JMac\Testing\TestDouble;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -14,12 +13,14 @@ use Illuminate\Image\Image;
 use Illuminate\Support\Carbon;
 use Illuminate\Testing\Assert;
 use InvalidArgumentException;
+use JMac\Testing\TestDouble;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Flysystem\UnableToWriteFile;
+use Mockery as m;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -70,6 +71,10 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // response() must run and internally call the stubbed mimeType() on the *same*
+        // object); TestDouble::for()'s passthru mode only delegates to a separate real
+        // instance, so self-calls never route back through the double.
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
         $files->expects('mimeType')->never();
 
@@ -82,6 +87,10 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // response() must run and internally call the stubbed size() on the *same*
+        // object); TestDouble::for()'s passthru mode only delegates to a separate real
+        // instance, so self-calls never route back through the double.
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
         $files->expects('size')->never();
 
@@ -94,6 +103,10 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
+        // TODO: no direct TestDouble equivalent — this is a true partial mock (real
+        // response() must run and internally call the stubbed fallbackName() on the
+        // *same* object); TestDouble::for()'s passthru mode only delegates to a
+        // separate real instance, so self-calls never route back through the double.
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
