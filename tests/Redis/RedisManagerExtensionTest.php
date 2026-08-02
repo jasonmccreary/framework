@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Redis\Connector;
 use Illuminate\Foundation\Application;
 use Illuminate\Redis\RedisManager;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class RedisManagerExtensionTest extends TestCase
@@ -73,7 +73,7 @@ class RedisManagerExtensionTest extends TestCase
             ],
         ]);
         $redis->extend('my_custom_driver', function () use ($config) {
-            return m::mock(Connector::class)
+            return TestDouble::for(Connector::class)
                 ->shouldReceive('connectToCluster')
                 ->once()
                 ->withArgs(function ($configArg) use ($config) {

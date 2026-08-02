@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Tests\Database\stubs\TestEnum;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentMorphToTest extends TestCase
@@ -151,12 +151,12 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyAndTypeOnModel()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
 
-        $associate = m::mock(Model::class);
+        $associate = TestDouble::for(Model::class);
         $associate->shouldReceive('getAttribute')->andReturn(1);
         $associate->shouldReceive('getMorphClass')->andReturn('Model');
 
@@ -169,7 +169,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testAssociateMethodIgnoresNullValue()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
@@ -183,7 +183,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testDissociateMethodDeletesUnsetsKeyAndTypeOnModel()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelation($parent);
@@ -211,7 +211,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -221,7 +221,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerParentKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
         // when getParentKey is called we want to return an integer
@@ -231,7 +231,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('1');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -241,7 +241,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerRelatedKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
         // when getParentKey is called we want to return a string
@@ -251,7 +251,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -261,7 +261,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerKeys()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -272,7 +272,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -282,7 +282,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsNotModelWithNullParentKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -294,7 +294,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -308,7 +308,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -322,7 +322,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value.two');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -336,7 +336,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -350,7 +350,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation.two');
@@ -368,8 +368,8 @@ class DatabaseEloquentMorphToTest extends TestCase
             }
         };
 
-        $builder = m::mock(Builder::class);
-        $related = m::mock(Model::class);
+        $builder = TestDouble::for(Builder::class);
+        $related = TestDouble::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
 
         $parent = new EloquentMorphToModelStub;
@@ -382,7 +382,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $relation->addEagerConstraints([$parent]);
 
-        $result = m::mock(Model::class);
+        $result = TestDouble::for(Model::class);
         $result->shouldReceive('getKey')->once()->andReturn($uuidObject);
 
         $relation->callMatchToMorphParents('type_1', new EloquentCollection([$result]));
@@ -392,9 +392,9 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     protected function getRelationAssociate($parent)
     {
-        $builder = m::mock(Builder::class);
+        $builder = TestDouble::for(Builder::class);
         $builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
-        $related = m::mock(Model::class);
+        $related = TestDouble::for(Model::class);
         $related->shouldReceive('getKey')->andReturn(1);
         $related->shouldReceive('getTable')->andReturn('relation');
         $related->shouldReceive('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
@@ -405,9 +405,9 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function getRelation($parent = null, $builder = null)
     {
-        $this->builder = $builder ?: m::mock(Builder::class);
+        $this->builder = $builder ?: TestDouble::for(Builder::class);
         $this->builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
-        $this->related = m::mock(Model::class);
+        $this->related = TestDouble::for(Model::class);
         $this->related->shouldReceive('getKeyName')->andReturn('id');
         $this->related->shouldReceive('getTable')->andReturn('relation');
         $this->related->shouldReceive('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");

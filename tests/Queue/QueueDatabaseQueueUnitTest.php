@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Batchable;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +17,6 @@ use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Queue\Queue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -31,10 +31,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
             return $uuid;
         });
 
-        $queue = $this->getMockBuilder(DatabaseQueue::class)->onlyMethods(['currentTime'])->setConstructorArgs([$database = m::mock(Connection::class), 'table', 'default'])->getMock();
+        $queue = $this->getMockBuilder(DatabaseQueue::class)->onlyMethods(['currentTime'])->setConstructorArgs([$database = TestDouble::for(Connection::class), 'table', 'default'])->getMock();
         $queue->method('currentTime')->willReturn('time');
-        $queue->setContainer($container = m::spy(Container::class));
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $queue->setContainer($container = TestDouble::for(Container::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insertGetId')->once()->andReturnUsing(function ($array) use ($uuid, $displayNameStartsWith, $jobStartsWith) {
             $payload = json_decode($array['payload'], true);
             $this->assertSame($uuid, $payload['uuid']);
@@ -78,11 +78,11 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue = $this->getMockBuilder(DatabaseQueue::class)
             ->onlyMethods(['currentTime'])
-            ->setConstructorArgs([$database = m::mock(Connection::class), 'table', 'default'])
+            ->setConstructorArgs([$database = TestDouble::for(Connection::class), 'table', 'default'])
             ->getMock();
         $queue->method('currentTime')->willReturn('time');
-        $queue->setContainer($container = m::spy(Container::class));
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $queue->setContainer($container = TestDouble::for(Container::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insertGetId')->once()->andReturnUsing(function ($array) use ($uuid, $time) {
             $this->assertSame('default', $array['queue']);
             $this->assertSame(json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'delay' => 10]), $array['payload']);
@@ -108,10 +108,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $job = (new MyBatchableJob)->withBatchId('test-batch-id');
 
-        $queue = $this->getMockBuilder(DatabaseQueue::class)->onlyMethods(['currentTime'])->setConstructorArgs([$database = m::mock(Connection::class), 'table', 'default'])->getMock();
+        $queue = $this->getMockBuilder(DatabaseQueue::class)->onlyMethods(['currentTime'])->setConstructorArgs([$database = TestDouble::for(Connection::class), 'table', 'default'])->getMock();
         $queue->method('currentTime')->willReturn('time');
-        $queue->setContainer($container = m::spy(Container::class));
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $queue->setContainer($container = TestDouble::for(Container::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insertGetId')->once()->andReturnUsing(function ($array) {
             $payload = json_decode($array['payload'], true);
             $this->assertSame('test-batch-id', $payload['data']['batchId']);
@@ -126,9 +126,9 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testPushUsesPropertiesDeclaredOnChildClassOverInheritedAttributes()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer($container = m::spy(Container::class));
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer($container = TestDouble::for(Container::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insertGetId')->once()->andReturnUsing(function ($array) {
             $payload = json_decode($array['payload'], true);
 
@@ -146,9 +146,9 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testPushStillUsesAttributesDeclaredOnSameClassOverDefaultProperties()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer($container = m::spy(Container::class));
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer($container = TestDouble::for(Container::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insertGetId')->once()->andReturnUsing(function ($array) {
             $payload = json_decode($array['payload'], true);
 
@@ -171,7 +171,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $job = new stdClass;
         $job->invalid = "\xc3\x28";
 
-        $queue = m::mock(Queue::class)->makePartial();
+        $queue = TestDouble::for(Queue::class)->makePartial();
         $class = new ReflectionClass(Queue::class);
 
         $createPayload = $class->getMethod('createPayload');
@@ -185,7 +185,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
     {
         $this->expectException('InvalidArgumentException');
 
-        $queue = m::mock(Queue::class)->makePartial();
+        $queue = TestDouble::for(Queue::class)->makePartial();
         $class = new ReflectionClass(Queue::class);
 
         $createPayload = $class->getMethod('createPayload');
@@ -206,11 +206,11 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $time = Carbon::now();
         Carbon::setTestNow($time);
 
-        $database = m::mock(Connection::class);
+        $database = TestDouble::for(Connection::class);
         $queue = $this->getMockBuilder(DatabaseQueue::class)->onlyMethods(['currentTime', 'availableAt'])->setConstructorArgs([$database, 'table', 'default'])->getMock();
         $queue->method('currentTime')->willReturn('created');
         $queue->method('availableAt')->willReturn('available');
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('insert')->once()->andReturnUsing(function ($records) use ($uuid, $time) {
             $this->assertEquals([[
                 'queue' => 'queue',
@@ -236,7 +236,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testBuildDatabaseRecordWithPayloadAtTheEnd()
     {
-        $queue = m::mock(DatabaseQueue::class);
+        $queue = TestDouble::for(DatabaseQueue::class);
         $record = $queue->buildDatabaseRecord('queue', 'any_payload', 0);
         $this->assertArrayHasKey('payload', $record);
         $this->assertArrayHasKey('payload', array_slice($record, -1, 1, true));
@@ -244,12 +244,12 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testPendingJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyTestJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('where')->with('queue', 'default')->andReturnSelf();
         $query->shouldReceive('whereNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('where')->with('available_at', '<=', m::any())->andReturnSelf();
@@ -269,12 +269,12 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testDelayedJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyDelayedJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('where')->with('queue', 'default')->andReturnSelf();
         $query->shouldReceive('whereNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('where')->with('available_at', '>', m::any())->andReturnSelf();
@@ -294,12 +294,12 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testReservedJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyTestJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('where')->with('queue', 'default')->andReturnSelf();
         $query->shouldReceive('whereNotNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('get')->andReturn(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 1, 'reserved_at' => Carbon::now()->getTimestamp()]]));
@@ -318,13 +318,13 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testAllPendingJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload1 = json_encode(['uuid' => 'uuid-1', 'displayName' => 'JobA', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('whereNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('where')->with('available_at', '<=', m::any())->andReturnSelf();
         $query->shouldReceive('get')->andReturn(collect([
@@ -349,13 +349,13 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testAllDelayedJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload1 = json_encode(['uuid' => 'uuid-1', 'displayName' => 'JobA', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('whereNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('where')->with('available_at', '>', m::any())->andReturnSelf();
         $query->shouldReceive('get')->andReturn(collect([
@@ -380,13 +380,13 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testAllReservedJobs()
     {
-        $queue = new DatabaseQueue($database = m::mock(Connection::class), 'table', 'default');
-        $queue->setContainer(m::spy(Container::class));
+        $queue = new DatabaseQueue($database = TestDouble::for(Connection::class), 'table', 'default');
+        $queue->setContainer(TestDouble::for(Container::class));
 
         $payload1 = json_encode(['uuid' => 'uuid-1', 'displayName' => 'JobA', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
-        $database->shouldReceive('table')->with('table')->andReturn($query = m::mock(stdClass::class));
+        $database->shouldReceive('table')->with('table')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('whereNotNull')->with('reserved_at')->andReturnSelf();
         $query->shouldReceive('get')->andReturn(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 1, 'reserved_at' => 1000005],
@@ -411,10 +411,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
     public function testGetLockForPoppingIsCached()
     {
-        $database = m::mock(Connection::class);
+        $database = TestDouble::for(Connection::class);
         $queue = new DatabaseQueue($database, 'table', 'default');
 
-        $pdo = m::mock(\PDO::class);
+        $pdo = TestDouble::for(\PDO::class);
         $pdo->shouldReceive('getAttribute')->with(\PDO::ATTR_DRIVER_NAME)->once()->andReturn('mysql');
         $pdo->shouldReceive('getAttribute')->with(\PDO::ATTR_SERVER_VERSION)->once()->andReturn('8.0.36');
 

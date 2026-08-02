@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Factory as QueueContract;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Testing\Fakes\QueueFake;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class SupportFacadesQueueTest extends TestCase
@@ -19,7 +19,7 @@ class SupportFacadesQueueTest extends TestCase
     {
         parent::setUp();
 
-        $this->queueManager = m::mock(Factory::class);
+        $this->queueManager = TestDouble::for(Factory::class);
 
         $container = new Container;
         $container->instance('queue', $this->queueManager);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Exception;
 use Illuminate\Database\Connection;
@@ -14,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -288,7 +288,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = m::mock(BelongsToMany::class)->makePartial();
+                $relation = TestDouble::for(BelongsToMany::class)->makePartial();
                 $relation->__construct(...func_get_args());
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
@@ -361,7 +361,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = m::mock(BelongsToMany::class)->makePartial();
+                $relation = TestDouble::for(BelongsToMany::class)->makePartial();
                 $relation->__construct(...func_get_args());
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
@@ -403,7 +403,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = m::mock(BelongsToMany::class)->makePartial();
+                $relation = TestDouble::for(BelongsToMany::class)->makePartial();
                 $relation->__construct(...func_get_args());
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
@@ -455,7 +455,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = m::mock(BelongsToMany::class)->makePartial();
+                $relation = TestDouble::for(BelongsToMany::class)->makePartial();
                 $relation->__construct(...func_get_args());
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
@@ -505,7 +505,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = m::mock(BelongsToMany::class)->makePartial();
+                $relation = TestDouble::for(BelongsToMany::class)->makePartial();
                 $relation->__construct(...func_get_args());
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
@@ -588,7 +588,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             $class::setConnectionResolver($resolver);
         }
 
-        $connection->shouldReceive('getPdo')->andReturn($pdo = m::mock(PDO::class));
+        $connection->shouldReceive('getPdo')->andReturn($pdo = TestDouble::for(PDO::class));
 
         foreach ($lastInsertIds as $id) {
             $pdo->expects('lastInsertId')->andReturn($id);

@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Events\SchemaLoaded;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -18,7 +18,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 {
     public function testBasicMigrationsCallMigratorWithProperArguments()
     {
-        $command = new MigrateCommand($migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class));
+        $command = new MigrateCommand($migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class));
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -37,19 +37,19 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 
     public function testMigrationsCanBeRunWithStoredSchema()
     {
-        $command = new MigrateCommand($migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class));
+        $command = new MigrateCommand($migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class));
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
         $migrator->shouldReceive('paths')->once()->andReturn([]);
         $migrator->shouldReceive('hasRunAnyMigrations')->andReturn(false);
-        $migrator->shouldReceive('resolveConnection')->andReturn($connection = m::mock(stdClass::class));
+        $migrator->shouldReceive('resolveConnection')->andReturn($connection = TestDouble::for(stdClass::class));
         $connection->shouldReceive('getName')->andReturn('mysql');
         $migrator->shouldReceive('usingConnection')->once()->andReturnUsing(function ($name, $callback) {
             return $callback();
         });
         $migrator->shouldReceive('deleteRepository')->once();
-        $connection->shouldReceive('getSchemaState')->andReturn($schemaState = m::mock(stdClass::class));
+        $connection->shouldReceive('getSchemaState')->andReturn($schemaState = TestDouble::for(stdClass::class));
         $schemaState->shouldReceive('handleOutputUsing')->andReturnSelf();
         $schemaState->shouldReceive('load')->once()->with(__DIR__.'/stubs/schema.sql');
         $dispatcher->shouldReceive('dispatch')->once()->with(m::type(SchemaLoaded::class));
@@ -63,7 +63,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 
     public function testMigrationRepositoryCreatedWhenNecessary()
     {
-        $params = [$migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class)];
+        $params = [$migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class)];
         $command = $this->getMockBuilder(MigrateCommand::class)->onlyMethods(['callSilent'])->setConstructorArgs($params)->getMock();
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
@@ -83,7 +83,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 
     public function testTheCommandMayBePretended()
     {
-        $command = new MigrateCommand($migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class));
+        $command = new MigrateCommand($migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class));
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -101,7 +101,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 
     public function testTheDatabaseMayBeSet()
     {
-        $command = new MigrateCommand($migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class));
+        $command = new MigrateCommand($migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class));
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -119,7 +119,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
 
     public function testStepMayBeSet()
     {
-        $command = new MigrateCommand($migrator = m::mock(Migrator::class), $dispatcher = m::mock(Dispatcher::class));
+        $command = new MigrateCommand($migrator = TestDouble::for(Migrator::class), $dispatcher = TestDouble::for(Dispatcher::class));
         $app = new ApplicationDatabaseMigrationStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -145,7 +145,7 @@ class ApplicationDatabaseMigrationStub extends Application
 {
     public function __construct(array $data = [])
     {
-        $mutex = m::mock(CommandMutex::class);
+        $mutex = TestDouble::for(CommandMutex::class);
         $mutex->shouldReceive('create')->andReturn(true);
         $mutex->shouldReceive('release')->andReturn(true);
         $this->instance(CommandMutex::class, $mutex);

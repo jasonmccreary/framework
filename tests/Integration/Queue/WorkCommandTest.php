@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
@@ -14,7 +15,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
-use Mockery as m;
 use Orchestra\Testbench\Attributes\WithMigration;
 use RuntimeException;
 
@@ -193,11 +193,11 @@ class WorkCommandTest extends QueueTestCase
 
         Worker::$restartable = false;
 
-        $cache = m::mock(Repository::class);
+        $cache = TestDouble::for(Repository::class);
         $cache->shouldNotReceive('get')->with('illuminate:queue:restart');
         $cache->shouldReceive('many')->andReturn([]);
 
-        $cacheManager = m::mock(CacheManager::class);
+        $cacheManager = TestDouble::for(CacheManager::class);
         $cacheManager->shouldReceive('driver')->andReturn($cache);
         $cacheManager->shouldReceive('store')->andReturn($cache);
 
@@ -222,12 +222,12 @@ class WorkCommandTest extends QueueTestCase
 
         Worker::$pausable = false;
 
-        $cache = m::mock(Repository::class);
+        $cache = TestDouble::for(Repository::class);
 
         $cache->shouldReceive('get')->with('illuminate:queue:restart')->andReturn(null);
         $cache->shouldNotReceive('many');
 
-        $cacheManager = m::mock(CacheManager::class);
+        $cacheManager = TestDouble::for(CacheManager::class);
         $cacheManager->shouldReceive('driver')->andReturn($cache);
         $cacheManager->shouldReceive('store')->andReturn($cache);
 

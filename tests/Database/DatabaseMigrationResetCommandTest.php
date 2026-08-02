@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\Console\Migrations\ResetCommand;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -22,7 +22,7 @@ class DatabaseMigrationResetCommandTest extends TestCase
 
     public function testResetCommandCallsMigratorWithProperArguments()
     {
-        $command = new ResetCommand($migrator = m::mock(Migrator::class));
+        $command = new ResetCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseResetStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -39,7 +39,7 @@ class DatabaseMigrationResetCommandTest extends TestCase
 
     public function testResetCommandCanBePretended()
     {
-        $command = new ResetCommand($migrator = m::mock(Migrator::class));
+        $command = new ResetCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseResetStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -56,7 +56,7 @@ class DatabaseMigrationResetCommandTest extends TestCase
 
     public function testRefreshCommandExitsWhenProhibited()
     {
-        $command = new ResetCommand($migrator = m::mock(Migrator::class));
+        $command = new ResetCommand($migrator = TestDouble::for(Migrator::class));
 
         $app = new ApplicationDatabaseResetStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);

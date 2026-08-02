@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
 use Illuminate\Database\Seeder;
@@ -31,13 +32,13 @@ class DatabaseSeederTest extends TestCase
     public function testCallResolveTheClassAndCallsRun()
     {
         $seeder = new TestSeeder;
-        $seeder->setContainer($container = m::mock(Container::class));
-        $output = m::mock(OutputInterface::class);
+        $seeder->setContainer($container = TestDouble::for(Container::class));
+        $output = TestDouble::for(OutputInterface::class);
         $output->shouldReceive('writeln')->times(3);
-        $command = m::mock(Command::class);
+        $command = TestDouble::for(Command::class);
         $command->shouldReceive('getOutput')->times(3)->andReturn($output);
         $seeder->setCommand($command);
-        $container->shouldReceive('make')->once()->with('ClassName')->andReturn($child = m::mock(Seeder::class));
+        $container->shouldReceive('make')->once()->with('ClassName')->andReturn($child = TestDouble::for(Seeder::class));
         $child->shouldReceive('setContainer')->once()->with($container)->andReturn($child);
         $child->shouldReceive('setCommand')->once()->with($command)->andReturn($child);
         $child->shouldReceive('__invoke')->once();
@@ -48,20 +49,20 @@ class DatabaseSeederTest extends TestCase
     public function testSetContainer()
     {
         $seeder = new TestSeeder;
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $this->assertEquals($seeder->setContainer($container), $seeder);
     }
 
     public function testSetCommand()
     {
         $seeder = new TestSeeder;
-        $command = m::mock(Command::class);
+        $command = TestDouble::for(Command::class);
         $this->assertEquals($seeder->setCommand($command), $seeder);
     }
 
     public function testInjectDependenciesOnRunMethod()
     {
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('call');
 
         $seeder = new TestDepsSeeder;
@@ -74,7 +75,7 @@ class DatabaseSeederTest extends TestCase
 
     public function testSendParamsOnCallMethodWithDeps()
     {
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('call');
 
         $seeder = new TestDepsSeeder;

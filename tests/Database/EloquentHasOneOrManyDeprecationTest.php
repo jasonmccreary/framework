@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class EloquentHasOneOrManyDeprecationTest extends TestCase
@@ -58,13 +58,13 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
 
     protected function getHasManyRelation(): HasMany
     {
-        $queryBuilder = m::mock(QueryBuilder::class);
+        $queryBuilder = TestDouble::for(QueryBuilder::class);
         $builder = m::mock(Builder::class, [$queryBuilder]);
         $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $related = m::mock(Model::class);
+        $related = TestDouble::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
         $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
@@ -74,13 +74,13 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
 
     protected function getHasOneRelation(): HasOne
     {
-        $queryBuilder = m::mock(QueryBuilder::class);
+        $queryBuilder = TestDouble::for(QueryBuilder::class);
         $builder = m::mock(Builder::class, [$queryBuilder]);
         $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $related = m::mock(Model::class);
+        $related = TestDouble::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
         $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');

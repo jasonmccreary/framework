@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Migrations\MigrationCreator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMigrationCreatorTest extends TestCase
@@ -140,7 +140,7 @@ class DatabaseMigrationCreatorTest extends TestCase
 
     public function testOverriddenCreateMethodRetainsExistingDatePrefixBehavior()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldNotReceive('glob');
 
         $creator = new class($files, 'stubs') extends MigrationCreator
@@ -159,7 +159,7 @@ class DatabaseMigrationCreatorTest extends TestCase
 
     protected function getCreator()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $customStubs = 'stubs';
 
         return $this->getMockBuilder(MigrationCreator::class)

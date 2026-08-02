@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -14,7 +14,7 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 {
     public function testRollbackCommandCallsMigratorWithProperArguments()
     {
-        $command = new RollbackCommand($migrator = m::mock(Migrator::class));
+        $command = new RollbackCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -30,7 +30,7 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCallsMigratorWithStepOption()
     {
-        $command = new RollbackCommand($migrator = m::mock(Migrator::class));
+        $command = new RollbackCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -46,7 +46,7 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCanBePretended()
     {
-        $command = new RollbackCommand($migrator = m::mock(Migrator::class));
+        $command = new RollbackCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
@@ -62,7 +62,7 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCanBePretendedWithStepOption()
     {
-        $command = new RollbackCommand($migrator = m::mock(Migrator::class));
+        $command = new RollbackCommand($migrator = TestDouble::for(Migrator::class));
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);

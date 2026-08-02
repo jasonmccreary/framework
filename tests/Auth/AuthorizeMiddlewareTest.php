@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\Middleware\Authorize;
@@ -15,7 +16,6 @@ use Illuminate\Routing\CallableDispatcher;
 use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContract;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Router;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -325,7 +325,7 @@ class AuthorizeMiddlewareTest extends TestCase
 
     public function testModelInstanceAsParameter()
     {
-        $instance = m::mock(Model::class);
+        $instance = TestDouble::for(Model::class);
 
         $this->gate()->define('success', function ($user, $model) use ($instance) {
             $this->assertSame($model, $instance);
@@ -333,7 +333,7 @@ class AuthorizeMiddlewareTest extends TestCase
             return true;
         });
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
 
         $next = function () {
             //

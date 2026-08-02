@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
+use JMac\Testing\TestDouble;
 use ErrorException;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Env;
-use Mockery as m;
 use Monolog\Handler\NullHandler;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -21,7 +21,7 @@ class HandleExceptionsTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->app = m::mock(Application::setInstance(new Application));
+        $this->app = TestDouble::for(Application::setInstance(new Application));
 
         $this->app->instance('config', $this->config = new Config());
     }
@@ -43,7 +43,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testPhpDeprecations()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -65,7 +65,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testPhpDeprecationsWithStackTraces()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -101,7 +101,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testNullValueAsChannelUsesNullDriver()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -133,7 +133,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testUserDeprecations()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -155,7 +155,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testUserDeprecationsWithStackTraces()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -191,7 +191,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testErrors()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
 
         $logger->shouldNotReceive('channel');
@@ -210,7 +210,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testEnsuresDeprecationsDriver()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -244,7 +244,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testEnsuresNullDeprecationsDriver()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -267,7 +267,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testEnsuresNullLogDriver()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -290,7 +290,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testDoNotOverrideExistingNullLogDriver()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $this->app->instance(LogManager::class, $logger);
         $this->app->expects('runningUnitTests')->andReturn(false);
         $this->app->expects('hasBeenBootstrapped')->andReturn(true);
@@ -358,7 +358,7 @@ class HandleExceptionsTest extends TestCase
 
     public function testItCanForceViaConfigDeprecationLoggingWhenRunningUnitTests()
     {
-        $logger = m::mock(LogManager::class);
+        $logger = TestDouble::for(LogManager::class);
         $logger->expects('channel')->andReturnSelf();
         $logger->expects('warning');
         $this->app->instance(LogManager::class, $logger);
@@ -396,7 +396,7 @@ class HandleExceptionsTest extends TestCase
 
         $this->assertSame($this->app, $appResolver());
 
-        $instance->bootstrap($newApp = tap(m::mock(Application::class), function ($app) {
+        $instance->bootstrap($newApp = tap(TestDouble::for(Application::class), function ($app) {
             $app->expects('environment')->andReturn(true);
         }));
 

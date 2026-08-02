@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Notifications;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Notifications\Channels\DatabaseChannel;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class NotificationDatabaseChannelTest extends TestCase
@@ -15,7 +15,7 @@ class NotificationDatabaseChannelTest extends TestCase
     {
         $notification = new NotificationDatabaseChannelTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $notifiable->shouldReceive('routeNotificationFor->create')->with([
             'id' => 1,
@@ -32,7 +32,7 @@ class NotificationDatabaseChannelTest extends TestCase
     {
         $notification = new NotificationDatabaseChannelTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $notifiable->shouldReceive('routeNotificationFor->create')->with([
             'id' => 1,
@@ -50,7 +50,7 @@ class NotificationDatabaseChannelTest extends TestCase
     {
         $notification = new NotificationDatabaseChannelCustomizeTypeTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $notifiable->shouldReceive('routeNotificationFor->create')->with([
             'id' => 1,

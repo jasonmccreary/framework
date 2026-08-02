@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
@@ -40,7 +41,7 @@ class CommandMutexTest extends TestCase
             }
         };
 
-        $this->commandMutex = m::mock(CommandMutex::class);
+        $this->commandMutex = TestDouble::for(CommandMutex::class);
 
         $app = new Application;
         $app->instance(CommandMutex::class, $this->commandMutex);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Lock;
@@ -20,7 +21,6 @@ use Illuminate\Queue\QueueRoutes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class QueuedEventsTest extends TestCase
@@ -28,7 +28,7 @@ class QueuedEventsTest extends TestCase
     public function testQueuedEventHandlersAreQueued()
     {
         $d = new Dispatcher;
-        $queue = m::mock(Queue::class);
+        $queue = TestDouble::for(Queue::class);
 
         $queue->shouldReceive('connection')->once()->with(null)->andReturnSelf();
 
@@ -77,7 +77,7 @@ class QueuedEventsTest extends TestCase
     public function testQueueIsSetByGetConnection()
     {
         $d = new Dispatcher;
-        $queue = m::mock(Queue::class);
+        $queue = TestDouble::for(Queue::class);
 
         $queue->shouldReceive('connection')->once()->with('some_other_connection')->andReturnSelf();
 
@@ -94,7 +94,7 @@ class QueuedEventsTest extends TestCase
     public function testDelayIsSetByWithDelay()
     {
         $d = new Dispatcher;
-        $queue = m::mock(Queue::class);
+        $queue = TestDouble::for(Queue::class);
 
         $queue->shouldReceive('connection')->once()->with(null)->andReturnSelf();
 
@@ -178,7 +178,7 @@ class QueuedEventsTest extends TestCase
     public function testDelayIsSetByWithDelayDynamically()
     {
         $d = new Dispatcher;
-        $queue = m::mock(Queue::class);
+        $queue = TestDouble::for(Queue::class);
 
         $queue->shouldReceive('connection')->once()->with(null)->andReturnSelf();
 
@@ -328,7 +328,7 @@ class QueuedEventsTest extends TestCase
     public function testDispatchesOnQueueDefinedWithEnum()
     {
         $d = new Dispatcher;
-        $queue = m::mock(Queue::class);
+        $queue = TestDouble::for(Queue::class);
 
         $fakeQueue = new QueueFake(new Container);
 
@@ -348,8 +348,8 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
 
@@ -377,8 +377,8 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
 
@@ -401,8 +401,8 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
 
@@ -428,8 +428,8 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
 
@@ -467,8 +467,8 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
 
@@ -496,9 +496,9 @@ class QueuedEventsTest extends TestCase
         $d = new Dispatcher($container);
 
         $fakeQueue = new QueueFake($container);
-        $defaultCache = m::mock(Cache::class);
-        $uniqueCache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $defaultCache = TestDouble::for(Cache::class);
+        $uniqueCache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $defaultCache);
 
@@ -527,8 +527,8 @@ class QueuedEventsTest extends TestCase
     public function testUniqueLockIsReleasedOnProcessingWithListenerClassName()
     {
         $container = new Container;
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
         $container->instance(BusDispatcher::class, new BusDispatcher($container));
@@ -546,7 +546,7 @@ class QueuedEventsTest extends TestCase
             ->andReturn($lock);
         $lock->shouldReceive('forceRelease')->once();
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isDeleted')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -560,8 +560,8 @@ class QueuedEventsTest extends TestCase
     public function testUniqueUntilProcessingLockIsReleasedBeforeHandling()
     {
         $container = new Container;
-        $cache = m::mock(Cache::class);
-        $lock = m::mock(Lock::class);
+        $cache = TestDouble::for(Cache::class);
+        $lock = TestDouble::for(Lock::class);
 
         $container->instance(Cache::class, $cache);
         $container->instance(BusDispatcher::class, new BusDispatcher($container));
@@ -582,7 +582,7 @@ class QueuedEventsTest extends TestCase
             ->andReturn($lock);
         $lock->shouldReceive('forceRelease')->once();
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isDeleted')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -868,7 +868,7 @@ class TestDispatcherShouldBeUniqueUntilProcessing implements ShouldQueue, Should
 
     public function handle()
     {
-        $lock = m::mock(Lock::class);
+        $lock = TestDouble::for(Lock::class);
         $lock->shouldReceive('get')->andReturn(true);
         static::$cache->shouldReceive('lock')
             ->with(static::$expectedLockKey, 10)

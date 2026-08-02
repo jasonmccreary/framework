@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Tests\Database\Fixtures\Models\User;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSchemaBlueprintTest extends TestCase
@@ -685,7 +685,7 @@ class DatabaseSchemaBlueprintTest extends TestCase
 
     protected function getConnection(?string $grammar = null, string $prefix = '')
     {
-        $connection = m::mock(Connection::class)
+        $connection = TestDouble::for(Connection::class)
             ->shouldReceive('getTablePrefix')->andReturn($prefix)
             ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(true)
             ->getMock();
@@ -695,7 +695,7 @@ class DatabaseSchemaBlueprintTest extends TestCase
         $builderClass = 'Illuminate\Database\Schema\\'.$grammar.'Builder';
 
         $connection->shouldReceive('getSchemaGrammar')->andReturn(new $grammarClass($connection));
-        $connection->shouldReceive('getSchemaBuilder')->andReturn(m::mock($builderClass));
+        $connection->shouldReceive('getSchemaBuilder')->andReturn(TestDouble::for($builderClass));
 
         if ($grammar === 'SQLite') {
             $connection->shouldReceive('getServerVersion')->andReturn('3.35');

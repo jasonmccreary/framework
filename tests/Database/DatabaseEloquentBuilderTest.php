@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Closure;
 use Illuminate\Database\Connection;
@@ -20,7 +21,6 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
-use Mockery as m;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -110,7 +110,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $model = $this->getMockModel();
         $model->shouldReceive('getKeyType')->once()->andReturn('int');
-        $model->shouldReceive('findOrNew')->once()->andReturn(m::mock(Model::class));
+        $model->shouldReceive('findOrNew')->once()->andReturn(TestDouble::for(Model::class));
 
         $builder = m::mock(Builder::class.'[first]', [$this->getMockQueryBuilder()]);
         $builder->setModel($model);
@@ -306,7 +306,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testQualifyColumn()
     {
-        $builder = new Builder(m::mock(BaseBuilder::class));
+        $builder = new Builder(TestDouble::for(BaseBuilder::class));
         $builder->shouldReceive('from')->with('foo_table');
 
         $builder->setModel(new EloquentBuilderTestStubStringPrimaryKey);
@@ -316,7 +316,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testQualifyColumns()
     {
-        $builder = new Builder(m::mock(BaseBuilder::class));
+        $builder = new Builder(TestDouble::for(BaseBuilder::class));
         $builder->shouldReceive('from')->with('foo_table');
 
         $builder->setModel(new EloquentBuilderTestStubStringPrimaryKey);
@@ -408,7 +408,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('limit')->times(3)->with(2)->andReturnSelf();
         $builder->shouldReceive('get')->times(3)->andReturn($chunk1, $chunk2, $chunk3);
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk1);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk2);
         $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk3);
@@ -432,7 +432,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('limit')->twice()->with(2)->andReturnSelf();
         $builder->shouldReceive('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk1);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk2);
 
@@ -455,7 +455,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('limit')->once()->with(2)->andReturnSelf();
         $builder->shouldReceive('get')->times(1)->andReturn($chunk1);
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk1);
         $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk2);
 
@@ -497,7 +497,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('forPageAfterId')->once()->with(2, 11, 'someIdField')->andReturnSelf();
         $builder->shouldReceive('get')->times(3)->andReturn($chunk1, $chunk2, $chunk3);
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk1);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk2);
         $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk3);
@@ -520,7 +520,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('forPageAfterId')->once()->with(2, 2, 'someIdField')->andReturnSelf();
         $builder->shouldReceive('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk1);
         $callbackAssertor->shouldReceive('doSomething')->once()->with($chunk2);
 
@@ -539,7 +539,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->shouldReceive('forPageAfterId')->never();
         $builder->shouldReceive('get')->never();
 
-        $callbackAssertor = m::mock(stdClass::class);
+        $callbackAssertor = TestDouble::for(stdClass::class);
         $callbackAssertor->shouldReceive('doSomething')->never();
 
         $builder->chunkById(0, function () {
@@ -762,9 +762,9 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         unset($_SERVER['__test.builder']);
         $builder = new Builder(new BaseBuilder(
-            m::mock(ConnectionInterface::class),
-            m::mock(Grammar::class),
-            m::mock(Processor::class)
+            TestDouble::for(ConnectionInterface::class),
+            TestDouble::for(Grammar::class),
+            TestDouble::for(Processor::class)
         ));
         $builder->macro('fooBar', function ($builder) {
             $_SERVER['__test.builder'] = $builder;
@@ -810,7 +810,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $records[] = ['name' => 'taylor', 'age' => 26];
         $records[] = ['name' => 'dayle', 'age' => 28];
         $builder->getQuery()->shouldReceive('get')->once()->with(['foo'])->andReturn(new BaseCollection($records));
-        $model = m::mock(Model::class.'[getTable,hydrate]');
+        $model = TestDouble::for(Model::class.'[getTable,hydrate]');
         $model->shouldReceive('getTable')->once()->andReturn('foo_table');
         $builder->setModel($model);
         $model->shouldReceive('hydrate')->once()->with($records)->andReturn(new Collection(['hydrated']));
@@ -854,7 +854,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->setEagerLoads(['orders' => function ($query) {
             $_SERVER['__eloquent.constrain'] = $query;
         }]);
-        $relation = m::mock(stdClass::class);
+        $relation = TestDouble::for(stdClass::class);
         $relation->shouldReceive('addEagerConstraints')->once()->with(['models']);
         $relation->shouldReceive('initRelation')->once()->with(['models'], 'orders')->andReturn(['models']);
         $relation->shouldReceive('getEager')->once()->andReturn(['results']);
@@ -881,7 +881,7 @@ class DatabaseEloquentBuilderTest extends TestCase
             new EloquentBuilderTestModelSelfRelatedStub,
             new EloquentBuilderTestModelSelfRelatedStub,
         ];
-        $relation = m::mock($model->parentFoo());
+        $relation = TestDouble::for($model->parentFoo());
 
         $builder->shouldReceive('getRelation')->once()->with('parentFoo')->andReturn($relation);
 
@@ -894,8 +894,8 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $builder = $this->getBuilder();
         $builder->setModel($this->getMockModel());
-        $builder->getModel()->shouldReceive('newInstance->orders')->once()->andReturn($relation = m::mock(stdClass::class));
-        $relationQuery = m::mock(stdClass::class);
+        $builder->getModel()->shouldReceive('newInstance->orders')->once()->andReturn($relation = TestDouble::for(stdClass::class));
+        $relationQuery = TestDouble::for(stdClass::class);
         $relation->shouldReceive('getQuery')->andReturn($relationQuery);
         $relationQuery->shouldReceive('with')->once()->with(['lines' => null, 'lines.details' => null]);
         $builder->setEagerLoads(['orders' => null, 'orders.lines' => null, 'orders.lines.details' => null]);
@@ -907,13 +907,13 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $builder = $this->getBuilder();
         $builder->setModel($this->getMockModel());
-        $builder->getModel()->shouldReceive('newInstance->orders')->once()->andReturn($relation = m::mock(stdClass::class));
-        $builder->getModel()->shouldReceive('newInstance->ordersGroups')->once()->andReturn($groupsRelation = m::mock(stdClass::class));
+        $builder->getModel()->shouldReceive('newInstance->orders')->once()->andReturn($relation = TestDouble::for(stdClass::class));
+        $builder->getModel()->shouldReceive('newInstance->ordersGroups')->once()->andReturn($groupsRelation = TestDouble::for(stdClass::class));
 
-        $relationQuery = m::mock(stdClass::class);
+        $relationQuery = TestDouble::for(stdClass::class);
         $relation->shouldReceive('getQuery')->andReturn($relationQuery);
 
-        $groupRelationQuery = m::mock(stdClass::class);
+        $groupRelationQuery = TestDouble::for(stdClass::class);
         $groupsRelation->shouldReceive('getQuery')->andReturn($groupRelationQuery);
         $groupRelationQuery->shouldReceive('with')->once()->with(['lines' => null, 'lines.details' => null]);
 
@@ -1061,7 +1061,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testNestedWhere()
     {
-        $nestedQuery = m::mock(Builder::class);
+        $nestedQuery = TestDouble::for(Builder::class);
         $nestedRawQuery = $this->getMockQueryBuilder();
         $nestedQuery->shouldReceive('getQuery')->once()->andReturn($nestedRawQuery);
         $nestedQuery->shouldReceive('getEagerLoads')->once()->andReturn([]);
@@ -1124,7 +1124,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testWhereNot()
     {
-        $nestedQuery = m::mock(Builder::class);
+        $nestedQuery = TestDouble::for(Builder::class);
         $nestedRawQuery = $this->getMockQueryBuilder();
         $nestedQuery->shouldReceive('getQuery')->once()->andReturn($nestedRawQuery);
         $nestedQuery->shouldReceive('getEagerLoads')->once()->andReturn([]);
@@ -1154,7 +1154,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testOrWhereNot()
     {
-        $nestedQuery = m::mock(Builder::class);
+        $nestedQuery = TestDouble::for(Builder::class);
         $nestedRawQuery = $this->getMockQueryBuilder();
         $nestedQuery->shouldReceive('getQuery')->once()->andReturn($nestedRawQuery);
         $nestedQuery->shouldReceive('getEagerLoads')->once()->andReturn([]);
@@ -2593,9 +2593,9 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2609,9 +2609,9 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testUpdateWithTimestampValue()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2625,9 +2625,9 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testUpdateWithQualifiedTimestampValue()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2641,9 +2641,9 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testUpdateWithoutTimestamp()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStubWithoutTimestamp;
         $this->mockConnectionForModel($model, '');
@@ -2659,9 +2659,9 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2677,9 +2677,9 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2695,7 +2695,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table')->andReturn('foo_table');
         $query->from = 'foo_table';
 
@@ -2718,7 +2718,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table')->andReturn('foo_table');
         $query->from = 'foo_table';
 
@@ -2737,7 +2737,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table')->andReturn('foo_table');
         $query->from = 'foo_table';
 
@@ -2756,7 +2756,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         Carbon::setTestNow($now = '2017-10-10 10:10:10');
 
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table')->andReturn('foo_table');
         $query->from = 'foo_table';
 
@@ -2773,7 +2773,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testTouchWithoutUpdatedAtColumn()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('table')->andReturn('table');
         $query->from = 'table';
 
@@ -2800,9 +2800,9 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testClone()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = new Builder($query);
         $builder->select('*')->from('users');
         $clone = $builder->clone()->where('email', 'foo');
@@ -2814,9 +2814,9 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testCloneModelMakesAFreshCopyOfTheModel()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), m::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), TestDouble::for(Processor::class));
         $builder = (new Builder($query))->setModel(new EloquentBuilderTestStub);
         $builder->select('*')->from('users');
 
@@ -2842,7 +2842,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testToRawSql()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('toRawSql')
             ->andReturn('select * from "users" where "email" = \'foo\'');
 
@@ -2853,7 +2853,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testPassthruMethodsCallsAreNotCaseSensitive()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
 
         $mockResponse = 'select 1';
         $query
@@ -2870,7 +2870,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testPassthruArrayElementsMustAllBeLowercase()
     {
-        $builder = new class(m::mock(BaseBuilder::class)) extends Builder
+        $builder = new class(TestDouble::for(BaseBuilder::class)) extends Builder
         {
             // expose protected member for test
             public function getPassthru(): array
@@ -2945,7 +2945,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testIncrementEachCallsToBaseWithUpdatedAt()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table');
         $query->from = 'foo_table';
         $query->shouldReceive('incrementEach')->once()->withArgs(function ($columns, $extra) {
@@ -2968,7 +2968,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testDecrementEachCallsToBaseWithUpdatedAt()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table');
         $query->from = 'foo_table';
         $query->shouldReceive('decrementEach')->once()->withArgs(function ($columns, $extra) {
@@ -2991,7 +2991,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     public function testIncrementEachWithoutTimestamps()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table');
         $query->shouldReceive('incrementEach')->once()->with(['votes' => 1], [])->andReturn(1);
 
@@ -3006,7 +3006,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     protected function getMockModel()
     {
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getKeyName')->andReturn('foo');
         $model->shouldReceive('getTable')->andReturn('foo_table');
         $model->shouldReceive('getQualifiedKeyName')->andReturn('foo_table.foo');
@@ -3016,7 +3016,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
     protected function getMockQueryBuilder()
     {
-        $query = m::mock(BaseBuilder::class);
+        $query = TestDouble::for(BaseBuilder::class);
         $query->shouldReceive('from')->with('foo_table');
 
         return $query;

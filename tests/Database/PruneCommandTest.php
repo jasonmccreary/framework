@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -11,7 +12,6 @@ use Illuminate\Database\Events\ModelPruningStarting;
 use Illuminate\Database\Events\ModelsPruned;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -235,7 +235,7 @@ class PruneCommandTest extends TestCase
 
     public function testTheCommandDispatchesEvents()
     {
-        $dispatcher = m::mock(DispatcherContract::class);
+        $dispatcher = TestDouble::for(DispatcherContract::class);
 
         $dispatcher->shouldReceive('dispatch')->once()->withArgs(function ($event) {
             return get_class($event) === ModelPruningStarting::class &&

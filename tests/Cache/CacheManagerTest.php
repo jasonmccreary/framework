@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\NullStore;
@@ -12,7 +13,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Events\Dispatcher as Event;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -109,7 +109,7 @@ class CacheManagerTest extends TestCase
     {
         $disk = new ArrayFilesystem;
 
-        $filesystem = m::mock();
+        $filesystem = TestDouble::for(\stdClass::class);
         $filesystem->shouldReceive('disk')->with('s3')->once()->andReturn($disk);
 
         $app = $this->getApp([
@@ -268,7 +268,7 @@ class CacheManagerTest extends TestCase
 
     public function testForgetDriver()
     {
-        $cacheManager = m::mock(CacheManager::class)
+        $cacheManager = TestDouble::for(CacheManager::class)
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
 

@@ -2,19 +2,19 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\PendingBroadcast;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Events\Dispatcher;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class BroadcastedEventsTest extends TestCase
 {
     public function testShouldBroadcastSuccess()
     {
-        $d = m::mock(Dispatcher::class);
+        $d = TestDouble::for(Dispatcher::class);
 
         $d->makePartial()->shouldAllowMockingProtectedMethods();
 
@@ -30,8 +30,8 @@ class BroadcastedEventsTest extends TestCase
     public function testShouldBroadcastAsQueuedAndCallNormalListeners()
     {
         unset($_SERVER['__event.test']);
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $broadcast->shouldReceive('queue')->once();
         $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
 
@@ -46,7 +46,7 @@ class BroadcastedEventsTest extends TestCase
 
     public function testShouldBroadcastFail()
     {
-        $d = m::mock(Dispatcher::class);
+        $d = TestDouble::for(Dispatcher::class);
 
         $d->makePartial()->shouldAllowMockingProtectedMethods();
 
@@ -61,8 +61,8 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithMultipleChannels()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $broadcast->shouldReceive('queue')->once();
         $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
 
@@ -79,8 +79,8 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomConnectionName()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $broadcast->shouldReceive('queue')->once();
         $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
 
@@ -99,8 +99,8 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomEventName()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $broadcast->shouldReceive('queue')->once();
         $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
 
@@ -122,8 +122,8 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomPayload()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $broadcast->shouldReceive('queue')->once();
         $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
 
@@ -148,14 +148,14 @@ class BroadcastedEventsTest extends TestCase
     public function testEventBroadcastsUsingNamedArguments()
     {
         $container = new Container;
-        $broadcast = m::mock(BroadcastFactory::class);
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $container->instance(BroadcastFactory::class, $broadcast);
 
         $originalContainer = Container::getInstance();
         Container::setInstance($container);
 
         try {
-            $pendingBroadcast = m::mock(PendingBroadcast::class);
+            $pendingBroadcast = TestDouble::for(PendingBroadcast::class);
 
             $broadcast->shouldReceive('event')
                 ->once()

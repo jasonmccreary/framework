@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use ArrayIterator;
 use BadMethodCallException;
 use DateInterval;
@@ -23,7 +24,6 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -247,7 +247,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testCacheAddCallsRedisStoreAdd()
     {
-        $store = m::mock(RedisStore::class);
+        $store = TestDouble::for(RedisStore::class);
         $store->shouldReceive('add')->once()->with('k', 'v', 60)->andReturn(true);
         $repository = new Repository($store);
         $this->assertTrue($repository->add('k', 'v', 60));
@@ -255,12 +255,12 @@ class CacheRepositoryTest extends TestCase
 
     public function testAddMethodCanAcceptDateIntervals()
     {
-        $storeWithAdd = m::mock(RedisStore::class);
+        $storeWithAdd = TestDouble::for(RedisStore::class);
         $storeWithAdd->shouldReceive('add')->once()->with('k', 'v', 61)->andReturn(true);
         $repository = new Repository($storeWithAdd);
         $this->assertTrue($repository->add('k', 'v', DateInterval::createFromDateString('61 seconds')));
 
-        $storeWithoutAdd = m::mock(ArrayStore::class);
+        $storeWithoutAdd = TestDouble::for(ArrayStore::class);
         $this->assertFalse(method_exists(ArrayStore::class, 'add'), 'This store should not have add method on it.');
         $storeWithoutAdd->shouldReceive('get')->once()->with('k')->andReturn(null);
         $storeWithoutAdd->shouldReceive('put')->once()->with('k', 'v', 60)->andReturn(true);
@@ -270,12 +270,12 @@ class CacheRepositoryTest extends TestCase
 
     public function testAddMethodCanAcceptDateTimeInterface()
     {
-        $withAddStore = m::mock(RedisStore::class);
+        $withAddStore = TestDouble::for(RedisStore::class);
         $withAddStore->shouldReceive('add')->once()->with('k', 'v', 61)->andReturn(true);
         $repository = new Repository($withAddStore);
         $this->assertTrue($repository->add('k', 'v', Carbon::now()->addSeconds(61)));
 
-        $noAddStore = m::mock(ArrayStore::class);
+        $noAddStore = TestDouble::for(ArrayStore::class);
         $this->assertFalse(method_exists(ArrayStore::class, 'add'), 'This store should not have add method on it.');
         $noAddStore->shouldReceive('get')->once()->with('k')->andReturn(null);
         $noAddStore->shouldReceive('put')->once()->with('k', 'v', 62)->andReturn(true);
@@ -394,10 +394,10 @@ class CacheRepositoryTest extends TestCase
 
     public function testAllTagsArePassedToTaggableStore()
     {
-        $store = m::mock(ArrayStore::class);
+        $store = TestDouble::for(ArrayStore::class);
         $repo = new Repository($store);
 
-        $taggedCache = m::mock();
+        $taggedCache = TestDouble::for(\stdClass::class);
         $taggedCache->shouldReceive('setDefaultCacheTime');
         $store->shouldReceive('tags')->once()->with(['foo', 'bar', 'baz'])->andReturn($taggedCache);
         $repo->tags('foo', 'bar', 'baz');
@@ -455,7 +455,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testFlushLocksDelegatesToStore()
     {
-        $flushable = m::mock(RedisStore::class);
+        $flushable = TestDouble::for(RedisStore::class);
         $flushable->shouldReceive('flushLocks')->once()->andReturn(true);
 
         $repo = new Repository($flushable);
@@ -465,7 +465,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testTaggableRepositoriesSupportTags()
     {
-        $taggable = m::mock(TaggableStore::class);
+        $taggable = TestDouble::for(TaggableStore::class);
         $taggableRepo = new Repository($taggable);
 
         $this->assertTrue($taggableRepo->supportsTags());
@@ -473,7 +473,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testNonTaggableRepositoryDoesNotSupportTags()
     {
-        $nonTaggable = m::mock(FileStore::class);
+        $nonTaggable = TestDouble::for(FileStore::class);
         $nonTaggableRepo = new Repository($nonTaggable);
 
         $this->assertFalse($nonTaggableRepo->supportsTags());
@@ -481,7 +481,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testFlushableLockRepositorySupportsFlushingLocks()
     {
-        $flushable = m::mock(RedisStore::class);
+        $flushable = TestDouble::for(RedisStore::class);
         $flushableRepo = new Repository($flushable);
 
         $this->assertTrue($flushableRepo->supportsFlushingLocks());
@@ -489,7 +489,7 @@ class CacheRepositoryTest extends TestCase
 
     public function testNonFlushableLockRepositoryDoesNotSupportFlushingLocks()
     {
-        $nonFlushable = m::mock(MemcachedStore::class);
+        $nonFlushable = TestDouble::for(MemcachedStore::class);
         $nonFlushableRepo = new Repository($nonFlushable);
 
         $this->assertFalse($nonFlushableRepo->supportsFlushingLocks());
@@ -499,7 +499,7 @@ class CacheRepositoryTest extends TestCase
     {
         $this->expectException(BadMethodCallException::class);
 
-        $nonFlushable = m::mock(MemcachedStore::class);
+        $nonFlushable = TestDouble::for(MemcachedStore::class);
         $nonFlushableRepo = new Repository($nonFlushable);
 
         $nonFlushableRepo->flushLocks();
@@ -559,9 +559,9 @@ class CacheRepositoryTest extends TestCase
 
     public function testAtomicPassesLockAndWaitSecondsToLock()
     {
-        $store = m::mock(Store::class, LockProvider::class);
+        $store = TestDouble::for(Store::class, LockProvider::class);
         $repo = new Repository($store);
-        $lock = m::mock(Lock::class);
+        $lock = TestDouble::for(Lock::class);
 
         $store->shouldReceive('lock')->once()->with('foo', 30, null)->andReturn($lock);
         $lock->shouldReceive('block')->once()->with(15, m::type('callable'))->andReturnUsing(function ($seconds, $callback) {
@@ -577,9 +577,9 @@ class CacheRepositoryTest extends TestCase
 
     public function testAtomicPassesOwnerToLock()
     {
-        $store = m::mock(Store::class, LockProvider::class);
+        $store = TestDouble::for(Store::class, LockProvider::class);
         $repo = new Repository($store);
-        $lock = m::mock(Lock::class);
+        $lock = TestDouble::for(Lock::class);
 
         $store->shouldReceive('lock')->once()->with('foo', 10, 'my-owner')->andReturn($lock);
         $lock->shouldReceive('block')->once()->with(10, m::type('callable'))->andReturnUsing(function ($seconds, $callback) {
@@ -663,8 +663,8 @@ class CacheRepositoryTest extends TestCase
 
     protected function getRepository()
     {
-        $dispatcher = new Dispatcher(m::mock(Container::class));
-        $repository = new Repository(m::mock(Store::class));
+        $dispatcher = new Dispatcher(TestDouble::for(Container::class));
+        $repository = new Repository(TestDouble::for(Store::class));
 
         $repository->setEventDispatcher($dispatcher);
 
