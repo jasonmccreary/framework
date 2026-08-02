@@ -9,7 +9,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Stringable;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
