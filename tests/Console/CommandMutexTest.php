@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Foundation\Application;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -90,11 +90,11 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunCommandAgainNonAutomated()
     {
-        $this->commandMutex->unused();
-
         $this->runCommand(false);
 
         $this->assertEquals(1, $this->command->ran);
+
+        $this->commandMutex->unused();
     }
 
     protected function runCommand($withIsolated = true)
