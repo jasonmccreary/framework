@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Http;
 
+use JMac\Testing\Matching\Argument;
 use Exception;
 use Illuminate\Http\StreamedEvent;
 use Illuminate\Support\Facades\Log;
@@ -55,7 +56,7 @@ class EventStreamResponseTest extends TestCase
 
         Log::shouldReceive('error')
             ->once()
-            ->with('Something went wrong during streaming', \Mockery::type('array'));
+            ->with('Something went wrong during streaming', Argument::type('array'));
 
         $response = $this->get('/stream');
         $content = $response->streamedContent();
@@ -77,7 +78,7 @@ class EventStreamResponseTest extends TestCase
 
         Log::shouldReceive('error')
             ->once()
-            ->with('Test exception reporting', \Mockery::type('array'));
+            ->with('Test exception reporting', Argument::type('array'));
 
         $response = $this->get('/stream');
         $response->streamedContent();
