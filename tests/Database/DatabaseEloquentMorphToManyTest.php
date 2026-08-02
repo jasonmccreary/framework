@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Mockery\Adapter\Phpunit\MockeryTestCase as TestCase;
-use Mockery as m;
 use SortDirection;
 use stdClass;
 
@@ -130,7 +130,10 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $grammar = TestDouble::for(Grammar::class);
         $grammar->allows('isExpression')->with(Argument::type(Expression::class))->returns(true);
         $grammar->allows('isExpression')->with(Argument::type('string'))->returns(false);
-        $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => $grammar]));
+
+        $query = TestDouble::for(QueryBuilder::class);
+        $query->allows('getGrammar')->returns($grammar);
+        $builder->allows('getQuery')->returns($query);
 
         return [$builder, $parent, 'taggable', 'taggables', 'taggable_id', 'tag_id', 'id', 'id', 'relation_name', false];
     }

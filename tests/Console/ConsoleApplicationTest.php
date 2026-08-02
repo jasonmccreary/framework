@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -15,7 +13,8 @@ use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithArrayInputPrompting;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithInputPrompting;
-use Mockery as m;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
@@ -136,9 +135,15 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallFullyStringCommandLine()
     {
+        $application = TestDouble::for(ApplicationContract::class);
+        $application->allows('version')->returns('6.0');
+
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
-            m::mock(ApplicationContract::class, ['version' => '6.0']),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $application,
+            $dispatcher,
             'testing'
         );
 
@@ -163,9 +168,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputPromptsWhenRequiredArgumentIsMissing()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
@@ -182,9 +190,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputDoesntPromptWhenRequiredArgumentIsPassed()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
@@ -201,9 +212,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputPromptsWhenRequiredArgumentsAreMissing()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
@@ -220,9 +234,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputDoesntPromptWhenRequiredArgumentsArePassed()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
@@ -239,9 +256,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallMethodCanCallArtisanCommandUsingCommandClassObject()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
