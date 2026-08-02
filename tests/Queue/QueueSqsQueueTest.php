@@ -1192,7 +1192,7 @@ class QueueSqsQueueTest extends TestCase
         $this->sqs->shouldReceive('sendMessageBatch')->once()->andThrow(new RuntimeException('SQS is down'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('SQS is down');
+        $this->expectExceptionMessageIsOrContains('SQS is down');
 
         $queue->bulk(range(1, 15), 'data', $this->fifoQueueName);
     }
@@ -1374,7 +1374,7 @@ class QueueSqsQueueTest extends TestCase
         $this->sqs->shouldReceive('sendMessageBatch')->once()->andThrow(new RuntimeException('SQS is down'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('SQS is down');
+        $this->expectExceptionMessageIsOrContains('SQS is down');
 
         $queue->bulk(['a'], 'data', $this->queueName);
     }

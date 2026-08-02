@@ -198,7 +198,7 @@ class HandleExceptionsTest extends TestCase
         $logger->shouldNotReceive('warning');
 
         $this->expectException(ErrorException::class);
-        $this->expectExceptionMessage('Something went wrong');
+        $this->expectExceptionMessageIsOrContains('Something went wrong');
 
         $this->handleExceptions()->handleError(
             E_ERROR,

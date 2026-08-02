@@ -130,7 +130,7 @@ class EloquentModelCustomCastingTest extends TestCase
         ]);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The given value is not an Address instance.');
+        $this->expectExceptionMessageIsOrContains('The given value is not an Address instance.');
         $model->address = 'single_string';
 
         // Ensure model values remain unchanged
@@ -149,7 +149,7 @@ class EloquentModelCustomCastingTest extends TestCase
         ]);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The given value is not an Address instance.');
+        $this->expectExceptionMessageIsOrContains('The given value is not an Address instance.');
         $model->address = null;
 
         // Ensure model values remain unchanged

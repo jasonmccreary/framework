@@ -24,7 +24,7 @@ class DatabaseEloquentAsBinaryCastTest extends TestCase
     public function testCastThrowsWhenFormatMissing()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The binary codec format is required.');
+        $this->expectExceptionMessageIsOrContains('The binary codec format is required.');
 
         $model = new AsBinaryTestModel;
         $model->setRawAttributes(['no_format' => 'value']);
@@ -34,7 +34,7 @@ class DatabaseEloquentAsBinaryCastTest extends TestCase
     public function testCastThrowsOnInvalidFormat()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unsupported binary codec format [invalid]. Allowed formats are: uuid, ulid.');
+        $this->expectExceptionMessageIsOrContains('Unsupported binary codec format [invalid]. Allowed formats are: uuid, ulid.');
 
         $model = new AsBinaryTestModel;
         $model->setRawAttributes(['invalid_format' => 'value']);

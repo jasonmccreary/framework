@@ -281,7 +281,7 @@ class ImageTest extends TestCase
         $image = new Image('not-an-image');
 
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('Unable to determine the dimensions of the image.');
+        $this->expectExceptionMessageIsOrContains('Unable to determine the dimensions of the image.');
 
         $image->dimensions();
     }
@@ -346,7 +346,7 @@ class ImageTest extends TestCase
         $image = $this->makeImage();
 
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('The [tiff] format is not supported.');
+        $this->expectExceptionMessageIsOrContains('The [tiff] format is not supported.');
 
         $image->optimize('tiff');
     }
@@ -520,7 +520,7 @@ class ImageTest extends TestCase
         $image = new Image($this->fakeImageContents());
 
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('Failed to process image:');
+        $this->expectExceptionMessageIsOrContains('Failed to process image:');
 
         // Trigger a driver error by using a non-existent driver
         $image->using('nonexistent')->cover(100, 100)->toBytes();
@@ -696,7 +696,7 @@ class ImageTest extends TestCase
         $image = $this->makeImage();
 
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('The [jpge] format is not supported.');
+        $this->expectExceptionMessageIsOrContains('The [jpge] format is not supported.');
 
         $image->optimize('jpge');
     }
@@ -713,7 +713,7 @@ class ImageTest extends TestCase
         $image = new Image($this->fakeImageContents());
 
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('Images cannot be serialized. Store the image first and serialize the path instead.');
+        $this->expectExceptionMessageIsOrContains('Images cannot be serialized. Store the image first and serialize the path instead.');
 
         serialize($image);
     }
@@ -837,7 +837,7 @@ class ImageTest extends TestCase
     public function test_resize_requires_at_least_one_dimension()
     {
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('At least one resize dimension must be specified.');
+        $this->expectExceptionMessageIsOrContains('At least one resize dimension must be specified.');
 
         $this->makeImage()->resize();
     }
@@ -878,7 +878,7 @@ class ImageTest extends TestCase
     public function test_scale_requires_at_least_one_dimension()
     {
         $this->expectException(ImageException::class);
-        $this->expectExceptionMessage('At least one scale dimension must be specified.');
+        $this->expectExceptionMessageIsOrContains('At least one scale dimension must be specified.');
 
         $this->makeImage()->scale();
     }

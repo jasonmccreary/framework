@@ -3440,7 +3440,7 @@ class SupportCollectionTest extends TestCase
     public function testNthThrowsExceptionForInvalidStep($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Step value must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Step value must be at least 1.');
 
         (new $collection([1, 2, 3]))->nth(0)->all();
     }
@@ -3449,7 +3449,7 @@ class SupportCollectionTest extends TestCase
     public function testNthThrowsExceptionForNegativeStep($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Step value must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Step value must be at least 1.');
 
         (new $collection([1, 2, 3]))->nth(-1)->all();
     }
@@ -3458,7 +3458,7 @@ class SupportCollectionTest extends TestCase
     public function testSplitThrowsExceptionForInvalidNumberOfGroups($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Number of groups must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Number of groups must be at least 1.');
 
         (new $collection([1, 2, 3]))->split(0);
     }
@@ -3467,7 +3467,7 @@ class SupportCollectionTest extends TestCase
     public function testSplitThrowsExceptionForNegativeNumberOfGroups($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Number of groups must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Number of groups must be at least 1.');
 
         (new $collection([1, 2, 3]))->split(-1);
     }
@@ -3476,7 +3476,7 @@ class SupportCollectionTest extends TestCase
     public function testSplitInThrowsExceptionForInvalidNumberOfGroups($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Number of groups must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Number of groups must be at least 1.');
 
         (new $collection([1, 2, 3]))->splitIn(0);
     }
@@ -3485,7 +3485,7 @@ class SupportCollectionTest extends TestCase
     public function testSplitInThrowsExceptionForNegativeNumberOfGroups($collection)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Number of groups must be at least 1.');
+        $this->expectExceptionMessageIsOrContains('Number of groups must be at least 1.');
 
         (new $collection([1, 2, 3]))->splitIn(-1);
     }
@@ -5809,7 +5809,7 @@ class SupportCollectionTest extends TestCase
     {
         $data = new $collection;
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Property [foo] does not exist on this collection instance.');
+        $this->expectExceptionMessageIsOrContains('Property [foo] does not exist on this collection instance.');
         $data->foo;
     }
 
@@ -6014,7 +6014,7 @@ class SupportCollectionTest extends TestCase
 
         $data = $collection::make([1, 2, 3, 'foo']);
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Collection should only include [int] items, but 'string' found at position 3.");
+        $this->expectExceptionMessageIsOrContains("Collection should only include [int] items, but 'string' found at position 3.");
         $data->ensure('int');
     }
 
@@ -6026,7 +6026,7 @@ class SupportCollectionTest extends TestCase
 
         $data = $collection::make([new stdClass, new stdClass, new stdClass, $collection]);
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf('Collection should only include [%s] items, but \'%s\' found at position %d.', class_basename(new stdClass()), gettype($collection), 3));
+        $this->expectExceptionMessageIsOrContains(sprintf('Collection should only include [%s] items, but \'%s\' found at position %d.', class_basename(new stdClass()), gettype($collection), 3));
         $data->ensure(stdClass::class);
     }
 
@@ -6039,7 +6039,7 @@ class SupportCollectionTest extends TestCase
         $wrongType = new $collection;
         $data = $collection::make([new \Error, new \Error, $wrongType]);
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf("Collection should only include [%s] items, but '%s' found at position %d.", \Throwable::class, get_class($wrongType), 2));
+        $this->expectExceptionMessageIsOrContains(sprintf("Collection should only include [%s] items, but '%s' found at position %d.", \Throwable::class, get_class($wrongType), 2));
         $data->ensure(\Throwable::class);
     }
 
@@ -6052,7 +6052,7 @@ class SupportCollectionTest extends TestCase
         $wrongType = new $collection;
         $data = $collection::make([new \Error, new \Error, $wrongType]);
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf('Collection should only include [%s] items, but \'%s\' found at position %d.', implode(', ', [\Throwable::class, 'int']), get_class($wrongType), 2));
+        $this->expectExceptionMessageIsOrContains(sprintf('Collection should only include [%s] items, but \'%s\' found at position %d.', implode(', ', [\Throwable::class, 'int']), get_class($wrongType), 2));
         $data->ensure([\Throwable::class, 'int']);
     }
 

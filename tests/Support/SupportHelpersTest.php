@@ -854,7 +854,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowExceptionWithMessage()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_if(true, 'test');
     }
@@ -862,7 +862,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowExceptionAsStringWithMessage()
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_if(true, LogicException::class, 'test');
     }
@@ -870,7 +870,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowClosureException()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_if(true, fn () => new \Exception('test'));
     }
@@ -878,7 +878,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowClosureWithParamsException()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_if(true, fn (string $message) => new \Exception($message), 'test');
     }
@@ -886,7 +886,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowClosureStringWithParamsException()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_if(true, fn () => \Exception::class, 'test');
     }
@@ -908,7 +908,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowUnlessExceptionWithMessage()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_unless(false, 'test');
     }
@@ -916,7 +916,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowUnlessExceptionAsStringWithMessage()
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('test');
+        $this->expectExceptionMessageIsOrContains('test');
 
         throw_unless(false, LogicException::class, 'test');
     }
@@ -929,7 +929,7 @@ class SupportHelpersTest extends TestCase
     public function testThrowWithString()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Test Message');
+        $this->expectExceptionMessageIsOrContains('Test Message');
 
         throw_if(true, RuntimeException::class, 'Test Message');
     }
@@ -1663,7 +1663,7 @@ class SupportHelpersTest extends TestCase
         $this->assertFalse(SupportLazyClass::$constructorCalled);
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
+        $this->expectExceptionMessageIsOrContains('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
 
         $instance->first;
     }
@@ -1754,7 +1754,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Cannot use positional argument after named argument during unpacking');
+        $this->expectExceptionMessageIsOrContains('Cannot use positional argument after named argument during unpacking');
 
         $instance->first;
     }
@@ -1795,7 +1795,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
+        $this->expectExceptionMessageIsOrContains('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
 
         $instance->first;
     }
@@ -1871,7 +1871,7 @@ class SupportHelpersTest extends TestCase
         $this->assertFalse(SupportLazyClass::$constructorCalled);
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
+        $this->expectExceptionMessageIsOrContains('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
 
         $instance->first;
     }
@@ -1883,7 +1883,7 @@ class SupportHelpersTest extends TestCase
         }
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The first parameter of the given Closure is missing a type hint.');
+        $this->expectExceptionMessageIsOrContains('The first parameter of the given Closure is missing a type hint.');
 
         lazy(function ($instance) {
             //
@@ -1976,7 +1976,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Cannot use positional argument after named argument during unpacking');
+        $this->expectExceptionMessageIsOrContains('Cannot use positional argument after named argument during unpacking');
 
         $instance->first;
     }
@@ -2017,7 +2017,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
+        $this->expectExceptionMessageIsOrContains('Typed property Illuminate\Tests\Support\SupportLazyClass::$first must not be accessed before initialization');
 
         $instance->first;
     }
@@ -2123,7 +2123,7 @@ class SupportHelpersTest extends TestCase
         $this->assertFalse(SupportLazyClass::$constructorCalled);
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Lazy proxy factory must return an instance of a class compatible with Illuminate\Tests\Support\SupportLazyClass, null returned');
+        $this->expectExceptionMessageIsOrContains('Lazy proxy factory must return an instance of a class compatible with Illuminate\Tests\Support\SupportLazyClass, null returned');
 
         $instance->first;
     }
@@ -2144,7 +2144,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Lazy proxy factory must return a non-lazy object');
+        $this->expectExceptionMessageIsOrContains('Lazy proxy factory must return a non-lazy object');
 
         $instance->first;
     }
@@ -2202,7 +2202,7 @@ class SupportHelpersTest extends TestCase
         $this->assertFalse(SupportLazyClass::$constructorCalled);
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Lazy proxy factory must return an instance of a class compatible with Illuminate\Tests\Support\SupportLazyClass, null returned');
+        $this->expectExceptionMessageIsOrContains('Lazy proxy factory must return an instance of a class compatible with Illuminate\Tests\Support\SupportLazyClass, null returned');
 
         $instance->first;
     }
@@ -2214,7 +2214,7 @@ class SupportHelpersTest extends TestCase
         }
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The first parameter of the given Closure is missing a type hint.');
+        $this->expectExceptionMessageIsOrContains('The first parameter of the given Closure is missing a type hint.');
 
         proxy(function ($proxy) {
             //
@@ -2237,7 +2237,7 @@ class SupportHelpersTest extends TestCase
 
         $this->assertFalse(SupportLazyClass::$constructorCalled);
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Lazy proxy factory must return a non-lazy object');
+        $this->expectExceptionMessageIsOrContains('Lazy proxy factory must return a non-lazy object');
 
         $instance->first;
     }

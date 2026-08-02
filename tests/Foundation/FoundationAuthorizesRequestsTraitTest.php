@@ -58,7 +58,7 @@ class FoundationAuthorizesRequestsTraitTest extends TestCase
     public function testExceptionIsThrownIfGateCheckFails()
     {
         $this->expectException(AuthorizationException::class);
-        $this->expectExceptionMessage('This action is unauthorized.');
+        $this->expectExceptionMessageIsOrContains('This action is unauthorized.');
 
         $gate = $this->getBasicGate();
 

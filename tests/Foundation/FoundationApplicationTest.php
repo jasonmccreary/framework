@@ -583,7 +583,7 @@ class FoundationApplicationTest extends TestCase
     public function testAbortThrowsNotFoundHttpException()
     {
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Page was not found');
+        $this->expectExceptionMessageIsOrContains('Page was not found');
 
         $app = new Application();
         $app->abort(404, 'Page was not found');
@@ -592,7 +592,7 @@ class FoundationApplicationTest extends TestCase
     public function testAbortThrowsHttpException()
     {
         $this->expectException(HttpException::class);
-        $this->expectExceptionMessage('Request is bad');
+        $this->expectExceptionMessageIsOrContains('Request is bad');
 
         $app = new Application();
         $app->abort(400, 'Request is bad');

@@ -46,7 +46,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
     public function testPrunableMethodMustBeImplemented()
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage(
+        $this->expectExceptionMessageIsOrContains(
             'Please implement',
         );
 

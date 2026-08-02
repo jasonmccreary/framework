@@ -711,7 +711,7 @@ class EventsDispatcherTest extends TestCase
         $d->listen('myEvent', TestListenerLean::class);
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage('Call to undefined method '.TestListenerLean::class.'::__invoke()');
+        $this->expectExceptionMessageIsOrContains('Call to undefined method '.TestListenerLean::class.'::__invoke()');
 
         $d->dispatch('myEvent', 'somePayload');
 

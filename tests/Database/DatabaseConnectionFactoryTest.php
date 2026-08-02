@@ -342,7 +342,7 @@ class DatabaseConnectionFactoryTest extends TestCase
     public function testIfDriverIsntSetExceptionIsThrown()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('A driver must be specified.');
+        $this->expectExceptionMessageIsOrContains('A driver must be specified.');
 
         $factory = new ConnectionFactory($container = m::mock(Container::class));
         $factory->createConnector(['foo']);
@@ -351,7 +351,7 @@ class DatabaseConnectionFactoryTest extends TestCase
     public function testExceptionIsThrownOnUnsupportedDriver()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unsupported driver [foo]');
+        $this->expectExceptionMessageIsOrContains('Unsupported driver [foo]');
 
         $factory = new ConnectionFactory($container = m::mock(Container::class));
         $container->shouldReceive('bound')->once()->andReturn(false);

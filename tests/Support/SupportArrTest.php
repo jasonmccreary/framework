@@ -90,7 +90,7 @@ class SupportArrTest extends TestCase
         $this->assertEquals(['Chris', 'Nuno', 'Taylor'], $array);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Array value for key [foo.bar] must be an array, boolean found.');
+        $this->expectExceptionMessageIsOrContains('Array value for key [foo.bar] must be an array, boolean found.');
 
         $array = ['foo' => ['bar' => false]];
         Arr::push($array, 'foo.bar', 'baz');
@@ -1718,7 +1718,7 @@ class SupportArrTest extends TestCase
         $this->assertSame(['bar'], Arr::from($items));
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Items cannot be represented by a scalar value.');
+        $this->expectExceptionMessageIsOrContains('Items cannot be represented by a scalar value.');
         Arr::from(123);
     }
 

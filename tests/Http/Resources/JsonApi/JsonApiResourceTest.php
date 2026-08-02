@@ -27,7 +27,7 @@ class JsonApiResourceTest extends TestCase
     public function testUnableToSetWrapper()
     {
         $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('Using Illuminate\Http\Resources\JsonApi\JsonApiResource::wrap() method is not allowed.');
+        $this->expectExceptionMessageIsOrContains('Using Illuminate\Http\Resources\JsonApi\JsonApiResource::wrap() method is not allowed.');
 
         JsonApiResource::wrap('laravel');
     }
@@ -35,7 +35,7 @@ class JsonApiResourceTest extends TestCase
     public function testUnableToUnsetWrapper()
     {
         $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('Using Illuminate\Http\Resources\JsonApi\JsonApiResource::withoutWrapping() method is not allowed.');
+        $this->expectExceptionMessageIsOrContains('Using Illuminate\Http\Resources\JsonApi\JsonApiResource::withoutWrapping() method is not allowed.');
 
         JsonApiResource::withoutWrapping();
     }

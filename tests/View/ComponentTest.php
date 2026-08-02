@@ -141,7 +141,7 @@ class ComponentTest extends TestCase
     public function testResolveWithUnresolvableDependency()
     {
         $this->expectException(BindingResolutionException::class);
-        $this->expectExceptionMessage('Unresolvable dependency resolving');
+        $this->expectExceptionMessageIsOrContains('Unresolvable dependency resolving');
 
         TestInlineViewComponentWhereRenderDependsOnProps::resolve([]);
     }

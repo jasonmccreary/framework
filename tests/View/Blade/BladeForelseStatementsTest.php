@@ -85,7 +85,7 @@ empty
     public function testForelseStatementsThrowHumanizedMessageWhenInvalidStatement($initialStatement)
     {
         $this->expectException(ViewCompilationException::class);
-        $this->expectExceptionMessage('Malformed @forelse statement.');
+        $this->expectExceptionMessageIsOrContains('Malformed @forelse statement.');
         $string = "$initialStatement
 breeze
 @empty

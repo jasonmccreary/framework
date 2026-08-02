@@ -618,7 +618,7 @@ class RoutingUrlGeneratorTest extends TestCase
     public function testUrlGenerationThrowsExceptionForMissingParametersWithMeaningfulMessage($parameters, $expectedMeaningfulExceptionMessage)
     {
         $this->expectException(UrlGenerationException::class);
-        $this->expectExceptionMessage($expectedMeaningfulExceptionMessage);
+        $this->expectExceptionMessageIsOrContains($expectedMeaningfulExceptionMessage);
 
         $url = new UrlGenerator(
             $routes = new RouteCollection,
@@ -764,7 +764,7 @@ class RoutingUrlGeneratorTest extends TestCase
     public function testRouteNotDefinedException()
     {
         $this->expectException(RouteNotFoundException::class);
-        $this->expectExceptionMessage('Route [not_exists_route] not defined.');
+        $this->expectExceptionMessageIsOrContains('Route [not_exists_route] not defined.');
 
         $url = new UrlGenerator(
             new RouteCollection,
@@ -868,7 +868,7 @@ class RoutingUrlGeneratorTest extends TestCase
         $routes->add($route);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('reserved');
+        $this->expectExceptionMessageIsOrContains('reserved');
 
         Request::create($url->signedRoute('foo', ['signature' => 'bar']));
     }
@@ -889,7 +889,7 @@ class RoutingUrlGeneratorTest extends TestCase
         $routes->add($route);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('reserved');
+        $this->expectExceptionMessageIsOrContains('reserved');
 
         Request::create($url->signedRoute('foo', ['expires' => 253402300799]));
     }
