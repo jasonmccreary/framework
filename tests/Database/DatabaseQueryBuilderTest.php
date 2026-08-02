@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Closure;
@@ -5902,11 +5903,11 @@ SQL;
     public function testSelectWithLockUsesWritePdo()
     {
         $builder = $this->getMySqlBuilderWithProcessor();
-        $builder->getConnection()->expects('select')->with(m::any(), m::any(), false, []);
+        $builder->getConnection()->expects('select')->with(Argument::any(), Argument::any(), false, []);
         $builder->select('*')->from('foo')->where('bar', '=', 'baz')->lock()->get();
 
         $builder = $this->getMySqlBuilderWithProcessor();
-        $builder->getConnection()->expects('select')->with(m::any(), m::any(), false, []);
+        $builder->getConnection()->expects('select')->with(Argument::any(), Argument::any(), false, []);
         $builder->select('*')->from('foo')->where('bar', '=', 'baz')->lock(false)->get();
     }
 

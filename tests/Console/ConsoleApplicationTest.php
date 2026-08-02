@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Console\Application;
@@ -42,7 +43,7 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = $this->getMockConsole(['addToParent']);
         $command = TestDouble::for(Command::class);
-        $command->expects('setLaravel')->with(m::type(ApplicationContract::class));
+        $command->expects('setLaravel')->with(Argument::type(ApplicationContract::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
