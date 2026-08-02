@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentCollectionQueueableTest extends TestCase
@@ -18,9 +18,7 @@ class DatabaseEloquentCollectionQueueableTest extends TestCase
 
         $c->getQueueableIds();
 
-        $spy->shouldHaveReceived()
-            ->getQueueableId()
-            ->once();
+        $spy->received('getQueueableId')->times(1);
     }
 
     public function testSerializesModelEntitiesById()
@@ -31,9 +29,7 @@ class DatabaseEloquentCollectionQueueableTest extends TestCase
 
         $c->getQueueableIds();
 
-        $spy->shouldHaveReceived()
-            ->getQueueableId()
-            ->once();
+        $spy->received('getQueueableId')->times(1);
     }
 
     /**

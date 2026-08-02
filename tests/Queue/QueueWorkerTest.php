@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -25,6 +24,7 @@ use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Queue\WorkerStopReason;
 use Illuminate\Support\Carbon;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -92,9 +92,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(m::type(JobProcessing::class))->twice();
+        $this->events->received('dispatch')->with(m::type(JobProcessing::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(m::type(JobProcessed::class))->twice();
+        $this->events->received('dispatch')->with(m::type(JobProcessed::class))->times(2);
     }
 
     public function testWorkerStopsWhenQueueIsEmptyForConfiguredSeconds()
@@ -109,7 +109,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(m::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(m::type(WorkerIdle::class))->times(2);
 
         $this->events->received('dispatch')->with(m::on(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
@@ -137,7 +137,7 @@ class QueueWorkerTest extends TestCase
         $this->assertSame(0, $status);
         $this->assertSame(16, $worker->currentTime);
 
-        $this->events->shouldHaveReceived('dispatch')->with(m::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(m::type(WorkerIdle::class))->times(2);
 
         $this->events->received('dispatch')->with(m::on(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
