@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Aws\DynamoDb\DynamoDbClient;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
@@ -9,7 +10,6 @@ use Exception;
 use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DynamoDbFailedJobProviderTest extends TestCase
@@ -26,7 +26,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
         $exception = new Exception('Something went wrong.');
 
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $dynamoDbClient->shouldReceive('putItem')->once()->with([
             'TableName' => 'table',
@@ -51,7 +51,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testCanRetrieveAllFailedJobs()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $time = time();
 
@@ -96,7 +96,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testASingleJobCanBeFound()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $time = time();
 
@@ -137,7 +137,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testNullIsReturnedIfJobNotFound()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $dynamoDbClient->shouldReceive('getItem')->once()->with([
             'TableName' => 'table',
@@ -156,7 +156,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testJobsCanBeDeleted()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $dynamoDbClient->shouldReceive('deleteItem')->once()->with([
             'TableName' => 'table',

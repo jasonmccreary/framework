@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Concerns\TestDatabases;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -20,7 +20,7 @@ class TestDatabasesTest extends TestCase
         Container::setInstance($container = new Container);
 
         $container->singleton('config', function () {
-            return m::mock(Config::class)
+            return TestDouble::for(Config::class)
                 ->shouldReceive('get')
                 ->once()
                 ->with('database.default', null)

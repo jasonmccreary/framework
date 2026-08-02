@@ -2,17 +2,17 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbBuilderTest extends TestCase
 {
     public function testCreateDatabase()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new MariaDbGrammar($connection);
 
         $connection->shouldReceive('getConfig')->once()->with('charset')->andReturn('utf8mb4');
@@ -28,7 +28,7 @@ class DatabaseMariaDbBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new MariaDbGrammar($connection);
 
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);

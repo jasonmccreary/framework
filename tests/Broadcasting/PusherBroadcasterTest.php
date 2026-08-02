@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
 use Illuminate\Http\Request;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -21,7 +21,7 @@ class PusherBroadcasterTest extends TestCase
     {
         parent::setUp();
 
-        $this->pusher = m::mock('Pusher\Pusher');
+        $this->pusher = TestDouble::for('Pusher\Pusher');
         $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->pusher])->makePartial();
     }
 
@@ -177,14 +177,14 @@ class PusherBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('all')->andReturn(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
 
         $request->shouldReceive('input')
             ->with('callback', false)
             ->andReturn(false);
 
-        $user = m::mock('User');
+        $user = TestDouble::for('User');
         $user->shouldReceive('getAuthIdentifierForBroadcasting')
             ->andReturn(42);
         $user->shouldReceive('getAuthIdentifier')
@@ -202,7 +202,7 @@ class PusherBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithoutUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
 
         $request->shouldReceive('user')

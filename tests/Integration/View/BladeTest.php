@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Integration\View;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 use Illuminate\View\Component;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Symfony\Component\Finder\Finder;
@@ -251,7 +251,7 @@ class BladeTest extends TestCase
         View::addNamespace('templates', join_paths(__DIR__, 'templates'));
         View::addNamespace('components', join_paths(__DIR__, 'templates', 'components'));
 
-        $compiler = Mockery::mock(app('blade.compiler'))->makePartial();
+        $compiler = TestDouble::for(app('blade.compiler'))->makePartial();
         $compiler->shouldReceive('compile')->with(realpath(__DIR__.'/templates/components/panel.blade.php'))->once();
 
         $this->instance('blade.compiler', $compiler);

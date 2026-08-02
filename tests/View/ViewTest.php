@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\View;
 
+use JMac\Testing\TestDouble;
 use ArrayAccess;
 use BadMethodCallException;
 use Closure;
@@ -12,7 +13,6 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ViewTest extends TestCase
@@ -73,8 +73,8 @@ class ViewTest extends TestCase
     public function testRenderSectionsReturnsEnvironmentSections()
     {
         $view = m::mock(View::class.'[render]', [
-            m::mock(Factory::class),
-            m::mock(Engine::class),
+            TestDouble::for(Factory::class),
+            TestDouble::for(Engine::class),
             'view',
             'path',
             [],
@@ -110,7 +110,7 @@ class ViewTest extends TestCase
 
     public function testViewAcceptsArrayableImplementations()
     {
-        $arrayable = m::mock(Arrayable::class);
+        $arrayable = TestDouble::for(Arrayable::class);
         $arrayable->shouldReceive('toArray')->once()->andReturn(['foo' => 'bar', 'baz' => ['qux', 'corge']]);
 
         $view = $this->getView($arrayable);
@@ -186,7 +186,7 @@ class ViewTest extends TestCase
         $view->getFactory()->shouldReceive('decrementRender')->once()->ordered();
         $view->getFactory()->shouldReceive('flushStateIfDoneRendering')->once();
 
-        $view->renderable = m::mock(Renderable::class);
+        $view->renderable = TestDouble::for(Renderable::class);
         $view->renderable->shouldReceive('render')->once()->andReturn('text');
         $this->assertSame('contents', $view->render());
     }
@@ -231,8 +231,8 @@ class ViewTest extends TestCase
     protected function getView($data = [])
     {
         return new View(
-            m::mock(Factory::class),
-            m::mock(Engine::class),
+            TestDouble::for(Factory::class),
+            TestDouble::for(Engine::class),
             'view',
             'path',
             $data

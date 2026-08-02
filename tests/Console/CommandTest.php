@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Console\Attributes\Aliases;
 use Illuminate\Console\Attributes\Help;
@@ -13,7 +14,6 @@ use Illuminate\Console\CommandInput;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,17 +33,17 @@ class CommandTest extends TestCase
             }
         };
 
-        $application = m::mock(Application::class);
+        $application = TestDouble::for(Application::class);
         $command->setLaravel($application);
 
         $input = new ArrayInput([]);
         $output = new NullOutput;
-        $outputStyle = m::mock(OutputStyle::class);
+        $outputStyle = TestDouble::for(OutputStyle::class);
         $application->shouldReceive('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(m::mock(Factory::class));
+        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(TestDouble::for(Factory::class));
 
         $application->shouldReceive('call')->with([$command, 'handle'])->andReturnUsing(function () use ($command, $application) {
-            $commandCalled = m::mock(Command::class);
+            $commandCalled = TestDouble::for(Command::class);
 
             $application->shouldReceive('make')->once()->with(Command::class)->andReturn($commandCalled);
 
@@ -142,7 +142,7 @@ class CommandTest extends TestCase
             }
         };
 
-        $application = m::mock(Application::class);
+        $application = TestDouble::for(Application::class);
         $command->setLaravel($application);
 
         $input = new ArrayInput([
@@ -153,9 +153,9 @@ class CommandTest extends TestCase
             '--role' => 'user',
         ]);
         $output = new NullOutput;
-        $outputStyle = m::mock(OutputStyle::class);
+        $outputStyle = TestDouble::for(OutputStyle::class);
         $application->shouldReceive('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(m::mock(Factory::class));
+        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(TestDouble::for(Factory::class));
         $application->shouldReceive('runningUnitTests')->andReturn(true);
         $application->shouldReceive('call')->with([$command, 'handle'])->andReturn(0);
 
@@ -178,7 +178,7 @@ class CommandTest extends TestCase
 
     public function testTheInputSetterOverwrite()
     {
-        $input = m::mock(InputInterface::class);
+        $input = TestDouble::for(InputInterface::class);
         $input->shouldReceive('hasArgument')->once()->with('foo')->andReturn(false);
 
         $command = new Command;
@@ -189,7 +189,7 @@ class CommandTest extends TestCase
 
     public function testTheOutputSetterOverwrite()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
         $output->shouldReceive('writeln')->once()->withArgs(function (...$args) {
             return $args[0] === '<info>foo</info>';
         });
@@ -254,7 +254,7 @@ class CommandTest extends TestCase
 
     public function testChoiceIsSingleSelectByDefault()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
         $output->shouldReceive('askQuestion')->once()->withArgs(function (ChoiceQuestion $question) {
             return $question->isMultiselect() === false;
         });
@@ -267,7 +267,7 @@ class CommandTest extends TestCase
 
     public function testChoiceWithMultiselect()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
         $output->shouldReceive('askQuestion')->once()->withArgs(function (ChoiceQuestion $question) {
             return $question->isMultiselect() === true;
         });

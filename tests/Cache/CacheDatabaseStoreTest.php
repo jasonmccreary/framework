@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Cache\DatabaseStore;
 use Illuminate\Database\Connection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\SQLiteConnection;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -16,7 +16,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testNullIsReturnedWhenItemNotFound()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('whereIn')->once()->with('key', ['prefixfoo'])->andReturn($table);
         $table->shouldReceive('get')->once()->andReturn(collect([]));
@@ -28,11 +28,11 @@ class CacheDatabaseStoreTest extends TestCase
     {
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['forgetIfExpired'])->setConstructorArgs($this->getMocks())->getMock();
 
-        $getQuery = m::mock(stdClass::class);
+        $getQuery = TestDouble::for(stdClass::class);
         $getQuery->shouldReceive('whereIn')->once()->with('key', ['prefixfoo'])->andReturn($getQuery);
         $getQuery->shouldReceive('get')->once()->andReturn(collect([(object) ['key' => 'prefixfoo', 'expiration' => 1]]));
 
-        $deleteQuery = m::mock(stdClass::class);
+        $deleteQuery = TestDouble::for(stdClass::class);
         $deleteQuery->shouldReceive('whereIn')->once()->with('key', ['prefixfoo', 'prefixilluminate:cache:flexible:created:foo'])->andReturn($deleteQuery);
         $deleteQuery->shouldReceive('where')->once()->with('expiration', '<=', m::any())->andReturn($deleteQuery);
         $deleteQuery->shouldReceive('delete')->once()->andReturnNull();
@@ -45,7 +45,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testDecryptedValueIsReturnedWhenItemIsValid()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('whereIn')->once()->with('key', ['prefixfoo'])->andReturn($table);
         $table->shouldReceive('get')->once()->andReturn(collect([(object) ['key' => 'prefixfoo', 'value' => serialize('bar'), 'expiration' => 999999999999999]]));
@@ -56,7 +56,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testValueIsReturnedOnPostgres()
     {
         $store = $this->getPostgresStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('whereIn')->once()->with('key', ['prefixfoo'])->andReturn($table);
         $table->shouldReceive('get')->once()->andReturn(collect([(object) ['key' => 'prefixfoo', 'value' => base64_encode(serialize('bar')), 'expiration' => 999999999999999]]));
@@ -67,7 +67,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testValueIsReturnedOnSqlite()
     {
         $store = $this->getSqliteStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('whereIn')->once()->with('key', ['prefixfoo'])->andReturn($table);
         $table->shouldReceive('get')->once()->andReturn(collect([(object) ['key' => 'prefixfoo', 'value' => base64_encode(serialize("\0bar\0")), 'expiration' => 999999999999999]]));
@@ -78,7 +78,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testValueIsUpserted()
     {
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(1);
         $table->shouldReceive('upsert')->once()->with([['key' => 'prefixfoo', 'value' => serialize('bar'), 'expiration' => 61]], 'key')->andReturnTrue();
@@ -90,7 +90,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testValueIsUpsertedOnPostgres()
     {
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getPostgresMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(1);
         $table->shouldReceive('upsert')->once()->with([['key' => 'prefixfoo', 'value' => base64_encode(serialize("\0")), 'expiration' => 61]], 'key')->andReturn(1);
@@ -102,7 +102,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testValueIsUpsertedOnSqlite()
     {
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getSqliteMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(1);
         $table->shouldReceive('upsert')->once()->with([['key' => 'prefixfoo', 'value' => base64_encode(serialize("\0")), 'expiration' => 61]], 'key')->andReturn(1);
@@ -122,7 +122,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testItemsMayBeRemovedFromCache()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('whereIn')->once()->with('key', ['prefixfoo', 'prefixilluminate:cache:flexible:created:foo'])->andReturn($table);
         $table->shouldReceive('delete')->once();
@@ -133,7 +133,7 @@ class CacheDatabaseStoreTest extends TestCase
     public function testItemsMayBeFlushedFromCache()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getConnection()->shouldReceive('table')->once()->with('table')->andReturn($table);
         $table->shouldReceive('delete')->once()->andReturn(2);
 
@@ -144,9 +144,9 @@ class CacheDatabaseStoreTest extends TestCase
     public function testLocksMayBeFlushedFromCache()
     {
         $store = $this->getStore();
-        $connection = m::mock(\Illuminate\Database\ConnectionInterface::class);
+        $connection = TestDouble::for(\Illuminate\Database\ConnectionInterface::class);
         $store->setLockConnection($connection);
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
         $store->getLockConnection()->shouldReceive('table')->once()->with('cache_locks')->andReturn($table);
         $table->shouldReceive('delete')->once()->andReturn(2);
 
@@ -157,8 +157,8 @@ class CacheDatabaseStoreTest extends TestCase
     public function testIncrementReturnsCorrectValues()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
-        $cache = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
+        $cache = TestDouble::for(stdClass::class);
 
         $store->getConnection()->shouldReceive('transaction')->once()->with(m::type(Closure::class))->andReturnUsing(function ($closure) {
             return $closure();
@@ -196,8 +196,8 @@ class CacheDatabaseStoreTest extends TestCase
     public function testDecrementReturnsCorrectValues()
     {
         $store = $this->getStore();
-        $table = m::mock(stdClass::class);
-        $cache = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
+        $cache = TestDouble::for(stdClass::class);
 
         $store->getConnection()->shouldReceive('transaction')->once()->with(m::type(Closure::class))->andReturnUsing(function ($closure) {
             return $closure();
@@ -237,7 +237,7 @@ class CacheDatabaseStoreTest extends TestCase
         $ttl = 60;
 
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
 
         $store->getConnection()->shouldReceive('table')->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(0);
@@ -252,7 +252,7 @@ class CacheDatabaseStoreTest extends TestCase
         $ttl = 60;
 
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getPostgresMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
 
         $store->getConnection()->shouldReceive('table')->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(0);
@@ -267,7 +267,7 @@ class CacheDatabaseStoreTest extends TestCase
         $ttl = 60;
 
         $store = $this->getMockBuilder(DatabaseStore::class)->onlyMethods(['getTime'])->setConstructorArgs($this->getSqliteMocks())->getMock();
-        $table = m::mock(stdClass::class);
+        $table = TestDouble::for(stdClass::class);
 
         $store->getConnection()->shouldReceive('table')->with('table')->andReturn($table);
         $store->expects($this->once())->method('getTime')->willReturn(0);
@@ -279,31 +279,31 @@ class CacheDatabaseStoreTest extends TestCase
 
     protected function getStore()
     {
-        return new DatabaseStore(m::mock(Connection::class), 'table', 'prefix');
+        return new DatabaseStore(TestDouble::for(Connection::class), 'table', 'prefix');
     }
 
     protected function getPostgresStore()
     {
-        return new DatabaseStore(m::mock(PostgresConnection::class), 'table', 'prefix');
+        return new DatabaseStore(TestDouble::for(PostgresConnection::class), 'table', 'prefix');
     }
 
     protected function getSqliteStore()
     {
-        return new DatabaseStore(m::mock(SQLiteConnection::class), 'table', 'prefix');
+        return new DatabaseStore(TestDouble::for(SQLiteConnection::class), 'table', 'prefix');
     }
 
     protected function getMocks()
     {
-        return [m::mock(Connection::class), 'table', 'prefix'];
+        return [TestDouble::for(Connection::class), 'table', 'prefix'];
     }
 
     protected function getPostgresMocks()
     {
-        return [m::mock(PostgresConnection::class), 'table', 'prefix'];
+        return [TestDouble::for(PostgresConnection::class), 'table', 'prefix'];
     }
 
     protected function getSqliteMocks()
     {
-        return [m::mock(SQLiteConnection::class), 'table', 'prefix'];
+        return [TestDouble::for(SQLiteConnection::class), 'table', 'prefix'];
     }
 }

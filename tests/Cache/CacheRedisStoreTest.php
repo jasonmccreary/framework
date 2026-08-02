@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Redis\Factory;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class CacheRedisStoreTest extends TestCase
@@ -168,6 +168,6 @@ class CacheRedisStoreTest extends TestCase
 
     protected function getRedis()
     {
-        return new RedisStore(m::mock(Factory::class), 'prefix:');
+        return new RedisStore(TestDouble::for(Factory::class), 'prefix:');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
@@ -58,7 +59,7 @@ class RedisQueueTest extends TestCase
     private function setQueue($driver, $default = 'default', $connection = null, $retryAfter = 60, $blockFor = null)
     {
         $this->queue = new RedisQueue($this->redis[$driver], $default, $connection, $retryAfter, $blockFor);
-        $this->container = m::spy(Container::class);
+        $this->container = TestDouble::for(Container::class);
         $this->queue->setContainer($this->container);
     }
 
@@ -503,7 +504,7 @@ class RedisQueueTest extends TestCase
     #[DataProvider('redisDriverProvider')]
     public function testPushJobQueueingAndJobQueuedEvents($driver)
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->withArgs(function (JobQueueing $jobQueuing) {
             $this->assertInstanceOf(RedisQueueIntegrationTestJob::class, $jobQueuing->job);
 
@@ -516,7 +517,7 @@ class RedisQueueTest extends TestCase
             return true;
         })->andReturnNull()->once();
 
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('bound')->with('events')->andReturn(true)->twice();
         $container->shouldReceive('offsetGet')->with('events')->andReturn($events)->twice();
 
@@ -533,11 +534,11 @@ class RedisQueueTest extends TestCase
     #[DataProvider('redisDriverProvider')]
     public function testBulkJobQueuedEvent($driver)
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->with(m::type(JobQueueing::class))->andReturnNull()->times(3);
         $events->shouldReceive('dispatch')->with(m::type(JobQueued::class))->andReturnNull()->times(3);
 
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('bound')->with('events')->andReturn(true)->times(6);
         $container->shouldReceive('offsetGet')->with('events')->andReturn($events)->times(6);
 

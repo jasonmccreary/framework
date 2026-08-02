@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Grammars\Grammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -14,8 +14,8 @@ class DatabaseSchemaBuilderTest extends TestCase
 {
     public function testCreateDatabase()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(stdClass::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(stdClass::class);
         $grammar->shouldReceive('compileCreateDatabase')->andReturn('sql');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $connection->shouldReceive('statement')->with('sql')->andReturnTrue();
@@ -26,8 +26,8 @@ class DatabaseSchemaBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(stdClass::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(stdClass::class);
         $grammar->shouldReceive('compileDropDatabaseIfExists')->andReturn('sql');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $connection->shouldReceive('statement')->with('sql')->andReturnTrue();
@@ -38,9 +38,9 @@ class DatabaseSchemaBuilderTest extends TestCase
 
     public function testHasTableCorrectlyCallsGrammar()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(Grammar::class);
-        $processor = m::mock(Processor::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(Grammar::class);
+        $processor = TestDouble::for(Processor::class);
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $builder = new Builder($connection);
@@ -55,8 +55,8 @@ class DatabaseSchemaBuilderTest extends TestCase
 
     public function testTableHasColumns()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(stdClass::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(stdClass::class);
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $builder = m::mock(Builder::class.'[getColumnListing]', [$connection]);
         $builder->shouldReceive('getColumnListing')->with('users')->twice()->andReturn(['id', 'firstname']);
@@ -67,9 +67,9 @@ class DatabaseSchemaBuilderTest extends TestCase
 
     public function testGetColumnTypeAddsPrefix()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(Grammar::class);
-        $processor = m::mock(Processor::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(Grammar::class);
+        $processor = TestDouble::for(Processor::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processColumns')->once()->andReturn([['name' => 'id', 'type_name' => 'integer']]);

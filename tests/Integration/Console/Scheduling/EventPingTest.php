@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Console\Scheduling;
 
+use JMac\Testing\TestDouble;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Handler\MockHandler;
@@ -11,7 +12,6 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class EventPingTest extends TestCase
@@ -31,7 +31,7 @@ class EventPingTest extends TestCase
 
         $this->swap(HttpClient::class, $httpMock);
 
-        $event = new Event(m::mock(EventMutex::class), 'php -i');
+        $event = new Event(TestDouble::for(EventMutex::class), 'php -i');
 
         $thenCalled = false;
 

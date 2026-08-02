@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\TestDouble;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
@@ -29,7 +30,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -53,23 +53,23 @@ class BusBatchTest extends TestCase
             $container = new Container;
             Facade::setFacadeApplication($container);
 
-            $queue = m::mock(Factory::class);
+            $queue = TestDouble::for(Factory::class);
             $container->instance(Factory::class, $queue);
             $container->alias(Factory::class, 'queue');
 
             $dispatcher = m::mock(Dispatcher::class, [$container]);
 
             $dispatcher->shouldReceive('batch')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
-                $pendingBatch = m::mock(PendingBatch::class);
+                $pendingBatch = TestDouble::for(PendingBatch::class);
                 $pendingBatch->shouldReceive('name')->andReturnSelf();
-                $pendingBatch->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(m::mock(Batch::class));
+                $pendingBatch->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(TestDouble::for(Batch::class));
 
                 return $pendingBatch;
             })->byDefault();
 
             $dispatcher->shouldReceive('chain')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
                 $pendingChain = m::mock(PendingChain::class, [$jobs, \stdClass::class]);
-                $pendingChain->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(m::mock(Batch::class));
+                $pendingChain->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(TestDouble::for(Batch::class));
 
                 return $pendingChain;
             })->byDefault();
@@ -127,7 +127,7 @@ class BusBatchTest extends TestCase
 
     public function test_jobs_can_be_added_to_the_batch()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -146,7 +146,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) use ($job, $secondJob) {
             return
@@ -207,7 +207,7 @@ class BusBatchTest extends TestCase
 
     public function test_processed_jobs_can_be_calculated()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -220,7 +220,7 @@ class BusBatchTest extends TestCase
 
     public function test_successful_jobs_can_be_recorded()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -236,7 +236,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -260,9 +260,9 @@ class BusBatchTest extends TestCase
 
     public function test_batch_finished_event_is_dispatched()
     {
-        Container::getInstance()->instance(EventDispatcher::class, $events = m::mock(EventDispatcher::class));
+        Container::getInstance()->instance(EventDispatcher::class, $events = TestDouble::for(EventDispatcher::class));
 
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
         $batch = $this->createTestBatch($queue);
 
         $job = new class
@@ -272,7 +272,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -291,9 +291,9 @@ class BusBatchTest extends TestCase
 
     public function test_batch_started_event_is_dispatched()
     {
-        Container::getInstance()->instance(EventDispatcher::class, $events = m::mock(EventDispatcher::class));
+        Container::getInstance()->instance(EventDispatcher::class, $events = TestDouble::for(EventDispatcher::class));
 
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
         $batch = $this->createTestBatch($queue);
 
         $job = new class
@@ -308,7 +308,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -328,9 +328,9 @@ class BusBatchTest extends TestCase
 
     public function test_batch_started_event_is_dispatched_when_first_job_fails()
     {
-        Container::getInstance()->instance(EventDispatcher::class, $events = m::mock(EventDispatcher::class));
+        Container::getInstance()->instance(EventDispatcher::class, $events = TestDouble::for(EventDispatcher::class));
 
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
         $batch = $this->createTestBatch($queue, $allowFailures = true);
 
         $job = new class
@@ -345,7 +345,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -361,7 +361,7 @@ class BusBatchTest extends TestCase
 
     public function test_failed_jobs_can_be_recorded_while_not_allowing_failures()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue, $allowFailures = false);
 
@@ -377,7 +377,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -403,7 +403,7 @@ class BusBatchTest extends TestCase
 
     public function test_failed_jobs_can_be_recorded_while_allowing_failures()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue, $allowFailures = true);
 
@@ -419,7 +419,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -465,7 +465,7 @@ class BusBatchTest extends TestCase
 
     public function test_failure_callbacks_execute_correctly(): void
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $repository = new DatabaseBatchRepository(new BatchFactory($queue), DB::connection(), 'job_batches');
 
@@ -497,7 +497,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once();
 
@@ -522,7 +522,7 @@ class BusBatchTest extends TestCase
 
     public function test_batch_can_be_cancelled()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -535,9 +535,9 @@ class BusBatchTest extends TestCase
 
     public function test_batch_cancelled_event_is_dispatched()
     {
-        Container::getInstance()->instance(EventDispatcher::class, $events = m::mock(EventDispatcher::class));
+        Container::getInstance()->instance(EventDispatcher::class, $events = TestDouble::for(EventDispatcher::class));
 
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
         $batch = $this->createTestBatch($queue);
 
         $exception = new RuntimeException('Something went wrong.');
@@ -553,7 +553,7 @@ class BusBatchTest extends TestCase
 
     public function test_batch_can_be_deleted()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -566,7 +566,7 @@ class BusBatchTest extends TestCase
 
     public function test_batch_state_can_be_inspected()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -606,7 +606,7 @@ class BusBatchTest extends TestCase
 
     public function test_chain_can_be_added_to_batch()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $batch = $this->createTestBatch($queue);
 
@@ -618,7 +618,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
             return
@@ -642,7 +642,7 @@ class BusBatchTest extends TestCase
 
     public function test_chained_jobs_in_batch_preserve_their_queue_when_batch_has_no_queue()
     {
-        $queue = m::mock(Factory::class);
+        $queue = TestDouble::for(Factory::class);
 
         $repository = new DatabaseBatchRepository(new BatchFactory($queue), DB::connection(), 'job_batches');
 
@@ -657,7 +657,7 @@ class BusBatchTest extends TestCase
 
         $queue->shouldReceive('connection')->once()
             ->with('test-connection')
-            ->andReturn($connection = m::mock(stdClass::class));
+            ->andReturn($connection = TestDouble::for(stdClass::class));
 
         $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) {
             return true;
@@ -702,15 +702,15 @@ class BusBatchTest extends TestCase
         $pendingBatch = (new PendingBatch(new Container, collect()))
             ->onQueue('test-queue');
 
-        $connection = m::spy(PostgresConnection::class);
-        $builder = m::spy(Builder::class);
+        $connection = TestDouble::for(PostgresConnection::class);
+        $builder = TestDouble::for(Builder::class);
 
         $connection->shouldReceive('table')->andReturn($builder);
         $builder->shouldReceive('useWritePdo')->andReturnSelf();
         $builder->shouldReceive('where')->andReturnSelf();
 
         $repository = new DatabaseBatchRepository(
-            new BatchFactory(m::mock(Factory::class)), $connection, 'job_batches'
+            new BatchFactory(TestDouble::for(Factory::class)), $connection, 'job_batches'
         );
 
         $repository->store($pendingBatch);
@@ -726,9 +726,9 @@ class BusBatchTest extends TestCase
     #[DataProvider('serializedOptions')]
     public function test_options_unserialize_on_postgres($serialize, $options)
     {
-        $factory = m::mock(BatchFactory::class);
+        $factory = TestDouble::for(BatchFactory::class);
 
-        $connection = m::spy(PostgresConnection::class);
+        $connection = TestDouble::for(PostgresConnection::class);
 
         $connection->shouldReceive('table->useWritePdo->where->first')
             ->andReturn($m = (object) [

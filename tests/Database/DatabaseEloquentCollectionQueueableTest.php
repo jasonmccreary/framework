@@ -2,17 +2,17 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentCollectionQueueableTest extends TestCase
 {
     public function testSerializesPivotsEntitiesId()
     {
-        $spy = m::spy(Pivot::class);
+        $spy = TestDouble::for(Pivot::class);
 
         $c = new Collection([$spy]);
 
@@ -25,7 +25,7 @@ class DatabaseEloquentCollectionQueueableTest extends TestCase
 
     public function testSerializesModelEntitiesById()
     {
-        $spy = m::spy(Model::class);
+        $spy = TestDouble::for(Model::class);
 
         $c = new Collection([$spy]);
 

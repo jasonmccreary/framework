@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasOneTest extends TestCase
@@ -129,7 +129,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $relation = $this->getRelation();
         $attributes = ['name' => 'taylor', $relation->getForeignKeyName() => $relation->getParentKey()];
 
-        $created = m::mock(Model::class);
+        $created = TestDouble::for(Model::class);
         $created->shouldReceive('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
 
         $relation->getRelated()->shouldReceive('forceCreate')->once()->with($attributes)->andReturn($created);
@@ -141,7 +141,7 @@ class DatabaseEloquentHasOneTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('setRelation')->once()->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
@@ -198,11 +198,11 @@ class DatabaseEloquentHasOneTest extends TestCase
     public function testRelationCountQueryCanBeBuilt()
     {
         $relation = $this->getRelation();
-        $builder = m::mock(Builder::class);
+        $builder = TestDouble::for(Builder::class);
 
-        $baseQuery = m::mock(BaseBuilder::class);
+        $baseQuery = TestDouble::for(BaseBuilder::class);
         $baseQuery->from = 'one';
-        $parentQuery = m::mock(BaseBuilder::class);
+        $parentQuery = TestDouble::for(BaseBuilder::class);
         $parentQuery->from = 'two';
 
         $builder->shouldReceive('getQuery')->once()->andReturn($baseQuery);
@@ -233,7 +233,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->once()->andReturn('table');
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('table');
         $model->shouldReceive('getConnectionName')->once()->andReturn('connection');
@@ -248,7 +248,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->once()->andReturn('table');
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('1');
         $model->shouldReceive('getTable')->once()->andReturn('table');
         $model->shouldReceive('getConnectionName')->once()->andReturn('connection');
@@ -263,7 +263,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->never();
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -278,7 +278,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->never();
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(2);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -293,7 +293,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->once()->andReturn('table');
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -308,7 +308,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->once()->andReturn('table');
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('table');
         $model->shouldReceive('getConnectionName')->once()->andReturn('connection.two');
@@ -318,12 +318,12 @@ class DatabaseEloquentHasOneTest extends TestCase
 
     protected function getRelation()
     {
-        $this->builder = m::mock(Builder::class);
+        $this->builder = TestDouble::for(Builder::class);
         $this->builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $this->builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $this->related = m::mock(Model::class);
+        $this->related = TestDouble::for(Model::class);
         $this->builder->shouldReceive('getModel')->andReturn($this->related);
-        $this->parent = m::mock(Model::class);
+        $this->parent = TestDouble::for(Model::class);
         $this->parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $this->parent->shouldReceive('getAttribute')->with('username')->andReturn('taylor');
         $this->parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
