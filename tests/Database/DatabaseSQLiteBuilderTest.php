@@ -34,7 +34,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
     public function testCreateDatabase()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getSchemaGrammar')->once();
+        $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);
 
@@ -56,7 +56,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
     public function testDropDatabaseIfExists()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getSchemaGrammar')->once();
+        $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);
 

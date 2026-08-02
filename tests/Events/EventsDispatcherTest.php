@@ -250,7 +250,7 @@ class EventsDispatcherTest extends TestCase
     public function testContainerResolutionOfEventHandlers()
     {
         $d = new Dispatcher($container = TestDouble::for(Container::class));
-        $container->shouldReceive('make')->once()->with(TestEventListener::class)->andReturn(new TestEventListener);
+        $container->expects('make')->with(TestEventListener::class)->returns(new TestEventListener);
         $d->listen('foo', TestEventListener::class.'@onFooEvent');
         $response = $d->dispatch('foo', ['foo', 'bar']);
 
@@ -728,16 +728,13 @@ class EventsDispatcherTest extends TestCase
         Container::setInstance($container);
 
         try {
-            $events->shouldReceive('dispatch')
-                ->once()
-                ->with(m::on(function ($event) {
+            $events->expects('dispatch')->with(m::on(function ($event) {
                     $this->assertInstanceOf(DispatchableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);
 
                     return true;
-                }))
-                ->andReturn(['dispatched']);
+                }))->returns(['dispatched']);
 
             $this->assertSame(
                 ['dispatched'],

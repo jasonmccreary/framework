@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
@@ -65,7 +66,7 @@ class BroadcasterTest extends TestCase
         $container = new Container;
         Container::setInstance($container);
         $binder = TestDouble::for(BindingRegistrar::class);
-        $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn(function () {
+        $binder->expects('getBindingCallback')->times(2)->with('model')->returns(function () {
             return 'bound';
         });
         $container->instance(BindingRegistrar::class, $binder);
@@ -90,7 +91,7 @@ class BroadcasterTest extends TestCase
         $binder = TestDouble::for(BindingRegistrar::class);
         $callback = RouteBinding::forModel($container, BroadcasterTestEloquentModelStub::class);
 
-        $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn($callback);
+        $binder->expects('getBindingCallback')->times(2)->with('model')->returns($callback);
         $container->instance(BindingRegistrar::class, $binder);
         $callback = function ($user, $model) {
             //
@@ -203,10 +204,7 @@ class BroadcasterTest extends TestCase
         });
 
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('user')
-            ->once()
-            ->withNoArgs()
-            ->andReturn(new DummyUser);
+        $request->expects('user')->with(Argument::none())->returns(new DummyUser);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -221,10 +219,7 @@ class BroadcasterTest extends TestCase
         }, ['guards' => 'myguard']);
 
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('user')
-            ->once()
-            ->with('myguard')
-            ->andReturn(new DummyUser);
+        $request->expects('user')->with('myguard')->returns(new DummyUser);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -242,10 +237,7 @@ class BroadcasterTest extends TestCase
         }, ['guards' => ['myguard2', 'myguard1']]);
 
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('user')
-            ->once()
-            ->with('myguard1')
-            ->andReturn(null);
+        $request->expects('user')->with('myguard1')->returns(null);
         $request->shouldReceive('user')
             ->twice()
             ->with('myguard2')
@@ -270,10 +262,7 @@ class BroadcasterTest extends TestCase
         }, ['guards' => 'myguard']);
 
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('user')
-            ->once()
-            ->with('myguard')
-            ->andReturn(null);
+        $request->expects('user')->with('myguard')->returns(null);
         $request->shouldNotReceive('user')
             ->withNoArgs();
 
@@ -287,14 +276,8 @@ class BroadcasterTest extends TestCase
         }, ['guards' => ['myguard1', 'myguard2']]);
 
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('user')
-            ->once()
-            ->with('myguard1')
-            ->andReturn(null);
-        $request->shouldReceive('user')
-            ->once()
-            ->with('myguard2')
-            ->andReturn(null);
+        $request->expects('user')->with('myguard1')->returns(null);
+        $request->expects('user')->with('myguard2')->returns(null);
         $request->shouldNotReceive('user')
             ->withNoArgs();
 

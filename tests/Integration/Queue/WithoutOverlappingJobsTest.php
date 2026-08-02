@@ -21,10 +21,10 @@ class WithoutOverlappingJobsTest extends QueueTestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $instance->call($job, [
             'command' => serialize($command = new OverlappingTestJob),
@@ -43,9 +43,9 @@ class WithoutOverlappingJobsTest extends QueueTestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
 
         $this->expectException(Exception::class);
 
@@ -71,10 +71,10 @@ class WithoutOverlappingJobsTest extends QueueTestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('release')->once();
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(true);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(true);
+        $job->expects('release');
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(true);
+        $job->allows('isDeletedOrReleased')->returns(true);
 
         $instance->call($job, [
             'command' => serialize($command),
@@ -93,10 +93,10 @@ class WithoutOverlappingJobsTest extends QueueTestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $instance->call($job, [
             'command' => serialize($command),
@@ -115,10 +115,10 @@ class WithoutOverlappingJobsTest extends QueueTestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('release')->once();
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(true);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(true);
+        $job->expects('release');
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(true);
+        $job->allows('isDeletedOrReleased')->returns(true);
 
         $instance->call($job, [
             'command' => serialize(new OverlappingTestJobWithSharedKeyOne),

@@ -279,7 +279,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection(['getName'], $pdo);
         $connection->method('getName')->willReturn('name');
         $connection->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(TransactionBeginning::class));
+        $events->expects('dispatch')->with(m::type(TransactionBeginning::class));
         $connection->beginTransaction();
     }
 
@@ -289,7 +289,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection(['getName'], $pdo);
         $connection->method('getName')->willReturn('name');
         $connection->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(TransactionCommitted::class));
+        $events->expects('dispatch')->with(m::type(TransactionCommitted::class));
         $connection->commit();
     }
 
@@ -300,8 +300,8 @@ class DatabaseConnectionTest extends TestCase
         $connection->method('getName')->willReturn('name');
         $connection->method('transactionLevel')->willReturn(1);
         $connection->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(TransactionCommitting::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(TransactionCommitted::class));
+        $events->expects('dispatch')->with(m::type(TransactionCommitting::class));
+        $events->expects('dispatch')->with(m::type(TransactionCommitted::class));
         $connection->commit();
     }
 
@@ -312,7 +312,7 @@ class DatabaseConnectionTest extends TestCase
         $connection->method('getName')->willReturn('name');
         $connection->beginTransaction();
         $connection->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(TransactionRolledBack::class));
+        $events->expects('dispatch')->with(m::type(TransactionRolledBack::class));
         $connection->rollBack();
     }
 
@@ -413,10 +413,10 @@ class DatabaseConnectionTest extends TestCase
         $this->expectExceptionMessage('server has gone away (Connection: , Host: , Port: , Database: , SQL: foo)');
 
         $pdo = TestDouble::for(PDO::class);
-        $pdo->shouldReceive('beginTransaction')->once();
+        $pdo->expects('beginTransaction');
         $statement = TestDouble::for(PDOStatement::class);
-        $pdo->shouldReceive('prepare')->once()->andReturn($statement);
-        $statement->shouldReceive('execute')->once()->andThrow(new PDOException('server has gone away'));
+        $pdo->expects('prepare')->returns($statement);
+        $statement->expects('execute')->throws(new PDOException('server has gone away'));
 
         $connection = new Connection($pdo);
         $connection->beginTransaction();
@@ -428,8 +428,8 @@ class DatabaseConnectionTest extends TestCase
         $pdo = TestDouble::for(PDO::class);
 
         $statement = TestDouble::for(PDOStatement::class);
-        $statement->shouldReceive('execute')->once()->andThrow(new PDOException('server has gone away'));
-        $statement->shouldReceive('execute')->once()->andReturn(true);
+        $statement->expects('execute')->throws(new PDOException('server has gone away'));
+        $statement->expects('execute')->returns(true);
 
         $pdo->shouldReceive('prepare')->twice()->andReturn($statement);
 
@@ -490,11 +490,11 @@ class DatabaseConnectionTest extends TestCase
     public function testPrepareBindings()
     {
         $date = TestDouble::for(DateTime::class);
-        $date->shouldReceive('format')->once()->with('foo')->andReturn('bar');
+        $date->expects('format')->with('foo')->returns('bar');
         $bindings = ['test' => $date];
         $conn = $this->getMockConnection();
         $grammar = TestDouble::for(Grammar::class);
-        $grammar->shouldReceive('getDateFormat')->once()->andReturn('foo');
+        $grammar->expects('getDateFormat')->returns('foo');
         $conn->setQueryGrammar($grammar);
         $result = $conn->prepareBindings($bindings);
         $this->assertEquals(['test' => 'bar'], $result);
@@ -505,7 +505,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection();
         $connection->logQuery('foo', [], time());
         $connection->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(QueryExecuted::class));
+        $events->expects('dispatch')->with(m::type(QueryExecuted::class));
         $connection->logQuery('foo', [], null);
     }
 

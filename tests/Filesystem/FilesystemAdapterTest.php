@@ -71,7 +71,7 @@ class FilesystemAdapterTest extends TestCase
         $this->filesystem->write('file.txt', 'Hello World');
 
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
-        $files->shouldReceive('mimeType')->never();
+        $files->expects('mimeType')->never();
 
         $files->response('file.txt', null, [
             'Content-Type' => 'text/x-custom',
@@ -83,7 +83,7 @@ class FilesystemAdapterTest extends TestCase
         $this->filesystem->write('file.txt', 'Hello World');
 
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
-        $files->shouldReceive('size')->never();
+        $files->expects('size')->never();
 
         $files->response('file.txt', null, [
             'Content-Length' => 11,
@@ -97,7 +97,7 @@ class FilesystemAdapterTest extends TestCase
         $files = m::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
-        $files->shouldReceive('fallbackName')->never();
+        $files->expects('fallbackName')->never();
 
         $files->response('file.txt', null, [
             'Content-Disposition' => 'attachment',
@@ -568,9 +568,7 @@ class FilesystemAdapterTest extends TestCase
 
         $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
-        $exceptionHandler->shouldReceive('report')
-            ->once()
-            ->andReturnUsing(function (UnableToReadFile $e) {
+        $exceptionHandler->expects('report')->resolves(function (UnableToReadFile $e) {
                 $this->assertStringContainsString(
                     'Unable to read file from location: foo.txt.',
                     $e->getMessage(),
@@ -596,9 +594,7 @@ class FilesystemAdapterTest extends TestCase
 
         $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
-        $exceptionHandler->shouldReceive('report')
-            ->once()
-            ->andReturnUsing(function (UnableToReadFile $e) {
+        $exceptionHandler->expects('report')->resolves(function (UnableToReadFile $e) {
                 $this->assertStringContainsString(
                     'Unable to read file from location: foo.txt.',
                     $e->getMessage(),
@@ -624,9 +620,7 @@ class FilesystemAdapterTest extends TestCase
 
         $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
-        $exceptionHandler->shouldReceive('report')
-            ->once()
-            ->andReturnUsing(function (UnableToWriteFile $e) {
+        $exceptionHandler->expects('report')->resolves(function (UnableToWriteFile $e) {
                 $this->assertStringContainsString(
                     'Unable to write file at location: foo.txt.',
                     $e->getMessage(),
@@ -658,9 +652,7 @@ class FilesystemAdapterTest extends TestCase
 
         $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
-        $exceptionHandler->shouldReceive('report')
-            ->once()
-            ->andReturnUsing(function (UnableToRetrieveMetadata $e) {
+        $exceptionHandler->expects('report')->resolves(function (UnableToRetrieveMetadata $e) {
                 $this->assertStringContainsString(
                     'Unable to retrieve the mime_type for file at location: unknown.mime-type.',
                     $e->getMessage(),

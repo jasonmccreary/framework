@@ -610,12 +610,12 @@ class SupportTestingBusFakeTest extends TestCase
         $dispatcher = TestDouble::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
-        $dispatcher->shouldReceive('dispatch')->once()->with($job);
-        $dispatcher->shouldReceive('dispatchNow')->once()->with($job, null);
+        $dispatcher->expects('dispatch')->with($job);
+        $dispatcher->expects('dispatchNow')->with($job, null);
 
         $otherJob = new OtherBusJobStub;
-        $dispatcher->shouldReceive('dispatch')->never()->with($otherJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($otherJob, null);
+        $dispatcher->expects('dispatch')->never()->with($otherJob);
+        $dispatcher->expects('dispatchNow')->never()->with($otherJob, null);
 
         $fake = new BusFake($dispatcher, OtherBusJobStub::class);
 
@@ -634,16 +634,16 @@ class SupportTestingBusFakeTest extends TestCase
         $dispatcher = TestDouble::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
-        $dispatcher->shouldReceive('dispatch')->never()->with($job);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($job, null);
+        $dispatcher->expects('dispatch')->never()->with($job);
+        $dispatcher->expects('dispatchNow')->never()->with($job, null);
 
         $otherJob = new OtherBusJobStub;
-        $dispatcher->shouldReceive('dispatch')->once()->with($otherJob);
-        $dispatcher->shouldReceive('dispatchNow')->once()->with($otherJob, null);
+        $dispatcher->expects('dispatch')->with($otherJob);
+        $dispatcher->expects('dispatchNow')->with($otherJob, null);
 
         $thirdJob = new ThirdJob;
-        $dispatcher->shouldReceive('dispatch')->never()->with($thirdJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($thirdJob, null);
+        $dispatcher->expects('dispatch')->never()->with($thirdJob);
+        $dispatcher->expects('dispatchNow')->never()->with($thirdJob, null);
 
         $fake = (new BusFake($dispatcher))->except(OtherBusJobStub::class);
 
@@ -666,16 +666,16 @@ class SupportTestingBusFakeTest extends TestCase
         $dispatcher = TestDouble::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
-        $dispatcher->shouldReceive('dispatch')->once()->with($job);
-        $dispatcher->shouldReceive('dispatchNow')->once()->with($job, null);
+        $dispatcher->expects('dispatch')->with($job);
+        $dispatcher->expects('dispatchNow')->with($job, null);
 
         $otherJob = new OtherBusJobStub;
-        $dispatcher->shouldReceive('dispatch')->once()->with($otherJob);
-        $dispatcher->shouldReceive('dispatchNow')->once()->with($otherJob, null);
+        $dispatcher->expects('dispatch')->with($otherJob);
+        $dispatcher->expects('dispatchNow')->with($otherJob, null);
 
         $anotherJob = new OtherBusJobStub(1);
-        $dispatcher->shouldReceive('dispatch')->never()->with($anotherJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($anotherJob, null);
+        $dispatcher->expects('dispatch')->never()->with($anotherJob);
+        $dispatcher->expects('dispatchNow')->never()->with($anotherJob, null);
 
         $fake = new BusFake($dispatcher, [
             function ($command) {

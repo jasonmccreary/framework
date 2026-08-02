@@ -14,8 +14,8 @@ class QueueRedisJobTest extends TestCase
     public function testFireProperlyCallsTheJobHandler()
     {
         $job = $this->getJob();
-        $job->getContainer()->shouldReceive('make')->once()->with('foo')->andReturn($handler = TestDouble::for(stdClass::class));
-        $handler->shouldReceive('fire')->once()->with($job, ['data']);
+        $job->getContainer()->expects('make')->with('foo')->returns($handler = TestDouble::for(stdClass::class));
+        $handler->expects('fire')->with($job, ['data']);
 
         $job->fire();
     }
@@ -23,8 +23,7 @@ class QueueRedisJobTest extends TestCase
     public function testDeleteRemovesTheJobFromRedis()
     {
         $job = $this->getJob();
-        $job->getRedisQueue()->shouldReceive('deleteReserved')->once()
-            ->with('default', $job);
+        $job->getRedisQueue()->expects('deleteReserved')->with('default', $job);
 
         $job->delete();
     }
@@ -32,8 +31,7 @@ class QueueRedisJobTest extends TestCase
     public function testReleaseProperlyReleasesJobOntoRedis()
     {
         $job = $this->getJob();
-        $job->getRedisQueue()->shouldReceive('deleteAndRelease')->once()
-            ->with('default', $job, 1);
+        $job->getRedisQueue()->expects('deleteAndRelease')->with('default', $job, 1);
 
         $job->release(1);
     }

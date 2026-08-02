@@ -33,8 +33,7 @@ class AblyBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -74,8 +73,7 @@ class AblyBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -115,20 +113,15 @@ class AblyBroadcasterTest extends TestCase
     protected function getMockRequestWithUserForChannel($channel)
     {
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
+        $request->allows('all')->returns(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
 
-        $request->shouldReceive('input')
-            ->with('callback', false)
-            ->andReturn(false);
+        $request->allows('input')->with('callback', false)->returns(false);
 
         $user = TestDouble::for('User');
-        $user->shouldReceive('getAuthIdentifierForBroadcasting')
-            ->andReturn(42);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn(42);
+        $user->allows('getAuthIdentifierForBroadcasting')->returns(42);
+        $user->allows('getAuthIdentifier')->returns(42);
 
-        $request->shouldReceive('user')
-            ->andReturn($user);
+        $request->allows('user')->returns($user);
 
         return $request;
     }
@@ -140,10 +133,9 @@ class AblyBroadcasterTest extends TestCase
     protected function getMockRequestWithoutUserForChannel($channel)
     {
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $request->shouldReceive('user')
-            ->andReturn(null);
+        $request->allows('user')->returns(null);
 
         return $request;
     }

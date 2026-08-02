@@ -15,8 +15,8 @@ class EventsSubscriberTest extends TestCase
 
         $d = new Dispatcher($container = TestDouble::for(Container::class));
         $subs = TestDouble::for(ExampleSubscriber::class);
-        $subs->shouldReceive('subscribe')->once()->with($d);
-        $container->shouldReceive('make')->once()->with(ExampleSubscriber::class)->andReturn($subs);
+        $subs->expects('subscribe')->with($d);
+        $container->expects('make')->with(ExampleSubscriber::class)->returns($subs);
 
         $d->subscribe(ExampleSubscriber::class);
     }
@@ -27,7 +27,7 @@ class EventsSubscriberTest extends TestCase
 
         $d = new Dispatcher;
         $subs = TestDouble::for(ExampleSubscriber::class);
-        $subs->shouldReceive('subscribe')->once()->with($d);
+        $subs->expects('subscribe')->with($d);
 
         $d->subscribe($subs);
     }

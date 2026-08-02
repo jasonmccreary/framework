@@ -39,21 +39,21 @@ class CommandTest extends TestCase
         $input = new ArrayInput([]);
         $output = new NullOutput;
         $outputStyle = TestDouble::for(OutputStyle::class);
-        $application->shouldReceive('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(TestDouble::for(Factory::class));
+        $application->allows('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->returns($outputStyle);
+        $application->allows('make')->with(Factory::class, ['output' => $outputStyle])->returns(TestDouble::for(Factory::class));
 
         $application->shouldReceive('call')->with([$command, 'handle'])->andReturnUsing(function () use ($command, $application) {
             $commandCalled = TestDouble::for(Command::class);
 
-            $application->shouldReceive('make')->once()->with(Command::class)->andReturn($commandCalled);
+            $application->expects('make')->with(Command::class)->returns($commandCalled);
 
-            $commandCalled->shouldReceive('setApplication')->once()->with(null);
-            $commandCalled->shouldReceive('setLaravel')->once()->with($application);
-            $commandCalled->shouldReceive('run')->once();
+            $commandCalled->expects('setApplication')->with(null);
+            $commandCalled->expects('setLaravel')->with($application);
+            $commandCalled->expects('run');
 
             $command->call(Command::class);
         });
-        $application->shouldReceive('runningUnitTests')->andReturn(true);
+        $application->allows('runningUnitTests')->returns(true);
 
         $command->run($input, $output);
     }
@@ -154,10 +154,10 @@ class CommandTest extends TestCase
         ]);
         $output = new NullOutput;
         $outputStyle = TestDouble::for(OutputStyle::class);
-        $application->shouldReceive('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->shouldReceive('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(TestDouble::for(Factory::class));
-        $application->shouldReceive('runningUnitTests')->andReturn(true);
-        $application->shouldReceive('call')->with([$command, 'handle'])->andReturn(0);
+        $application->allows('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->returns($outputStyle);
+        $application->allows('make')->with(Factory::class, ['output' => $outputStyle])->returns(TestDouble::for(Factory::class));
+        $application->allows('runningUnitTests')->returns(true);
+        $application->allows('call')->with([$command, 'handle'])->returns(0);
 
         $command->run($input, $output);
 
@@ -179,7 +179,7 @@ class CommandTest extends TestCase
     public function testTheInputSetterOverwrite()
     {
         $input = TestDouble::for(InputInterface::class);
-        $input->shouldReceive('hasArgument')->once()->with('foo')->andReturn(false);
+        $input->expects('hasArgument')->with('foo')->returns(false);
 
         $command = new Command;
         $command->setInput($input);

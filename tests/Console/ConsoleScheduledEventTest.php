@@ -34,8 +34,8 @@ class ConsoleScheduledEventTest extends TestCase
     public function testBasicCronCompilation()
     {
         $app = TestDouble::for(Application::class.'[isDownForMaintenance,environment]');
-        $app->shouldReceive('isDownForMaintenance')->andReturn(false);
-        $app->shouldReceive('environment')->andReturn('production');
+        $app->allows('isDownForMaintenance')->returns(false);
+        $app->allows('environment')->returns('production');
 
         $event = new Event(TestDouble::for(EventMutex::class), 'php foo');
         $this->assertSame('* * * * *', $event->getExpression());
@@ -78,8 +78,8 @@ class ConsoleScheduledEventTest extends TestCase
     public function testEventIsDueCheck()
     {
         $app = TestDouble::for(Application::class.'[isDownForMaintenance,environment]');
-        $app->shouldReceive('isDownForMaintenance')->andReturn(false);
-        $app->shouldReceive('environment')->andReturn('production');
+        $app->allows('isDownForMaintenance')->returns(false);
+        $app->allows('environment')->returns('production');
         Carbon::setTestNow(Carbon::create(2015, 1, 1, 0, 0, 0));
 
         $event = new Event(TestDouble::for(EventMutex::class), 'php foo');
@@ -94,8 +94,8 @@ class ConsoleScheduledEventTest extends TestCase
     public function testTimeBetweenChecks()
     {
         $app = TestDouble::for(Application::class.'[isDownForMaintenance,environment]');
-        $app->shouldReceive('isDownForMaintenance')->andReturn(false);
-        $app->shouldReceive('environment')->andReturn('production');
+        $app->allows('isDownForMaintenance')->returns(false);
+        $app->allows('environment')->returns('production');
 
         Carbon::setTestNow(Carbon::today()->addHours(9));
 
@@ -121,8 +121,8 @@ class ConsoleScheduledEventTest extends TestCase
     public function testTimeBetweenChecksTimezoneCallOrder()
     {
         $app = TestDouble::for(Application::class.'[isDownForMaintenance,environment]');
-        $app->shouldReceive('isDownForMaintenance')->andReturn(false);
-        $app->shouldReceive('environment')->andReturn('production');
+        $app->allows('isDownForMaintenance')->returns(false);
+        $app->allows('environment')->returns('production');
 
         Carbon::setTestNow(Carbon::parse('2024-07-01 09:00:00', 'UTC'));
 
@@ -142,8 +142,8 @@ class ConsoleScheduledEventTest extends TestCase
     public function testTimeUnlessBetweenChecks()
     {
         $app = TestDouble::for(Application::class.'[isDownForMaintenance,environment]');
-        $app->shouldReceive('isDownForMaintenance')->andReturn(false);
-        $app->shouldReceive('environment')->andReturn('production');
+        $app->allows('isDownForMaintenance')->returns(false);
+        $app->allows('environment')->returns('production');
 
         Carbon::setTestNow(Carbon::today()->addHours(9));
 

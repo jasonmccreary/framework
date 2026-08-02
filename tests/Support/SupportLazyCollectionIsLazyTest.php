@@ -1322,12 +1322,7 @@ class SupportLazyCollectionIsLazyTest extends TestCase
                     ->tap(function ($collection) use ($mock, $timeout) {
                         tap($collection)
                             ->mockery_init($mock->mockery_getContainer())
-                            ->shouldAllowMockingProtectedMethods()
-                            ->shouldReceive('now')
-                            ->times(1)
-                            ->andReturn(
-                                $timeout->getTimestamp()
-                            );
+                            ->shouldAllowMockingProtectedMethods()->expects('now')->times(1)->returns($timeout->getTimestamp());
                     })
                     ->takeUntilTimeout($timeout)
                     ->all();
@@ -1342,13 +1337,8 @@ class SupportLazyCollectionIsLazyTest extends TestCase
                     ->tap(function ($collection) use ($mock, $timeout) {
                         tap($collection)
                             ->mockery_init($mock->mockery_getContainer())
-                            ->shouldAllowMockingProtectedMethods()
-                            ->shouldReceive('now')
-                            ->times(2)
-                            ->andReturn(
-                                (clone $timeout)->sub(1, 'minute')->getTimestamp(),
-                                $timeout->getTimestamp()
-                            );
+                            ->shouldAllowMockingProtectedMethods()->expects('now')->times(2)->returns((clone $timeout)->sub(1, 'minute')->getTimestamp(),
+                                $timeout->getTimestamp());
                     })
                     ->takeUntilTimeout($timeout)
                     ->all();
@@ -1363,12 +1353,7 @@ class SupportLazyCollectionIsLazyTest extends TestCase
                     ->tap(function ($collection) use ($mock, $timeout) {
                         tap($collection)
                             ->mockery_init($mock->mockery_getContainer())
-                            ->shouldAllowMockingProtectedMethods()
-                            ->shouldReceive('now')
-                            ->times(100)
-                            ->andReturn(
-                                (clone $timeout)->sub(1, 'minute')->getTimestamp()
-                            );
+                            ->shouldAllowMockingProtectedMethods()->expects('now')->times(100)->returns((clone $timeout)->sub(1, 'minute')->getTimestamp());
                     })
                     ->takeUntilTimeout($timeout)
                     ->all();

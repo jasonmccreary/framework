@@ -38,7 +38,7 @@ class SessionPersistenceTest extends TestCase
             $handler = TestDouble::for(ExceptionHandler::class)->shouldIgnoreMissing()
         );
 
-        $handler->shouldReceive('render')->andReturn(new Response);
+        $handler->allows('render')->returns(new Response);
 
         $app['config']->set('app.key', Str::random(32));
         $app['config']->set('session.driver', 'fake-null');
