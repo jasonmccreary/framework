@@ -745,7 +745,7 @@ class DatabaseEloquentCollectionTest extends TestCase
         $commentsExists = $user->articles->pluck('comments_exists')->toArray();
 
         if (phpunit_version_compare('11.5.0', '<')) {
-            $this->assertContainsOnly('bool', $commentsExists);
+            $this->assertContainsOnlyBool($commentsExists);
         } else {
             $this->assertContainsOnlyBool($commentsExists);
         }
