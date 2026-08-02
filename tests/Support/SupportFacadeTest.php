@@ -46,7 +46,7 @@ class SupportFacadeTest extends TestCase
         $this->assertInstanceOf(MockInterface::class, $spy = FacadeStub::spy());
 
         FacadeStub::foo();
-        $spy->shouldHaveReceived('foo');
+        $spy->received('foo');
     }
 
     public function testShouldReceiveCanBeCalledTwice()
