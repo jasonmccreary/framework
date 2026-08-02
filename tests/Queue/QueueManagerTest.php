@@ -24,12 +24,12 @@ class QueueManagerTest extends TestCase
         $connector = TestDouble::for(stdClass::class);
         $queue = TestDouble::for(stdClass::class);
         $queue->shouldReceive('setConnectionName')->once()->with('sync')->andReturnSelf();
-        $connector->shouldReceive('connect')->once()->with(['driver' => 'sync'])->andReturn($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
 
-        $queue->shouldReceive('setContainer')->once()->with($app);
+        $queue->expects('setContainer')->with($app);
         $this->assertSame($queue, $manager->connection('sync'));
     }
 
@@ -47,11 +47,11 @@ class QueueManagerTest extends TestCase
         $connector = TestDouble::for(stdClass::class);
         $queue = TestDouble::for(stdClass::class);
         $queue->shouldReceive('setConnectionName')->once()->with('foo')->andReturnSelf();
-        $connector->shouldReceive('connect')->once()->with(['driver' => 'bar'])->andReturn($queue);
+        $connector->expects('connect')->with(['driver' => 'bar'])->returns($queue);
         $manager->addConnector('bar', function () use ($connector) {
             return $connector;
         });
-        $queue->shouldReceive('setContainer')->once()->with($app);
+        $queue->expects('setContainer')->with($app);
 
         $this->assertSame($queue, $manager->connection('foo'));
     }
@@ -69,11 +69,11 @@ class QueueManagerTest extends TestCase
         $connector = TestDouble::for(stdClass::class);
         $queue = TestDouble::for(stdClass::class);
         $queue->shouldReceive('setConnectionName')->once()->with('null')->andReturnSelf();
-        $connector->shouldReceive('connect')->once()->with(['driver' => 'null'])->andReturn($queue);
+        $connector->expects('connect')->with(['driver' => 'null'])->returns($queue);
         $manager->addConnector('null', function () use ($connector) {
             return $connector;
         });
-        $queue->shouldReceive('setContainer')->once()->with($app);
+        $queue->expects('setContainer')->with($app);
 
         $this->assertSame($queue, $manager->connection('null'));
     }
@@ -92,11 +92,11 @@ class QueueManagerTest extends TestCase
         $connector = TestDouble::for(stdClass::class);
         $queue = TestDouble::for(stdClass::class);
         $queue->shouldReceive('setConnectionName')->once()->with('sync')->andReturnSelf();
-        $connector->shouldReceive('connect')->once()->with(['driver' => 'sync'])->andReturn($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
-        $queue->shouldReceive('setContainer')->once()->with($app);
+        $queue->expects('setContainer')->with($app);
 
         $this->assertSame($queue, $manager->connection(QueueConnectionName::Sync));
     }
@@ -115,11 +115,11 @@ class QueueManagerTest extends TestCase
         $connector = TestDouble::for(stdClass::class);
         $queue = TestDouble::for(stdClass::class);
         $queue->shouldReceive('setConnectionName')->once()->with('sync')->andReturnSelf();
-        $connector->shouldReceive('connect')->once()->with(['driver' => 'sync'])->andReturn($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
-        $queue->shouldReceive('setContainer')->once()->with($app);
+        $queue->expects('setContainer')->with($app);
 
         $this->assertFalse($manager->connected(QueueConnectionName::Sync));
         $manager->connection(QueueConnectionName::Sync);

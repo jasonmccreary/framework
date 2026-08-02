@@ -29,7 +29,7 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
             $transactionManager->shouldNotReceive('addCallbackForRollback');
 
             return $transactionManager;
@@ -61,7 +61,7 @@ class QueueConnectionTest extends TestCase
 
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
             $transactionManager->shouldNotReceive('addCallbackForRollback');
 
             return $transactionManager;
@@ -78,8 +78,8 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldReceive('addCallbackForRollback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->returns(null);
 
             return $transactionManager;
         });
@@ -110,8 +110,8 @@ class QueueConnectionTest extends TestCase
 
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldReceive('addCallbackForRollback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->returns(null);
 
             return $transactionManager;
         });

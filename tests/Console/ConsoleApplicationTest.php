@@ -42,7 +42,7 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = $this->getMockConsole(['addToParent']);
         $command = TestDouble::for(Command::class);
-        $command->shouldReceive('setLaravel')->once()->with(m::type(ApplicationContract::class));
+        $command->expects('setLaravel')->with(m::type(ApplicationContract::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -53,7 +53,7 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = $this->getMockConsole(['addToParent']);
         $command = TestDouble::for(SymfonyCommand::class);
-        $command->shouldReceive('setLaravel')->never();
+        $command->expects('setLaravel')->never();
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -64,7 +64,7 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = $this->getMockConsole(['addToParent']);
         $command = TestDouble::for(SymfonyCommand::class);
-        $artisan->getLaravel()->shouldReceive('make')->once()->with('foo')->andReturn(TestDouble::for(SymfonyCommand::class));
+        $artisan->getLaravel()->expects('make')->with('foo')->returns(TestDouble::for(SymfonyCommand::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->resolve('foo');
 

@@ -35,8 +35,7 @@ class RedisBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -76,8 +75,7 @@ class RedisBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -162,17 +160,14 @@ class RedisBroadcasterTest extends TestCase
     protected function getMockRequestWithUserForChannel($channel)
     {
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request->allows('all')->returns(['channel_name' => $channel]);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
         $user = TestDouble::for('User');
-        $user->shouldReceive('getAuthIdentifierForBroadcasting')
-            ->andReturn(42);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn(42);
+        $user->allows('getAuthIdentifierForBroadcasting')->returns(42);
+        $user->allows('getAuthIdentifier')->returns(42);
 
-        $request->shouldReceive('user')
-            ->andReturn($user);
+        $request->allows('user')->returns($user);
 
         return $request;
     }
@@ -184,10 +179,9 @@ class RedisBroadcasterTest extends TestCase
     protected function getMockRequestWithoutUserForChannel($channel)
     {
         $request = TestDouble::for(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $request->shouldReceive('user')
-            ->andReturn(null);
+        $request->allows('user')->returns(null);
 
         return $request;
     }

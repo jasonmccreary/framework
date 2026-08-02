@@ -56,22 +56,22 @@ class ClearCommandTest extends TestCase
 
     public function testClearWithNoStoreArgument()
     {
-        $this->files->shouldReceive('exists')->andReturn(true);
-        $this->files->shouldReceive('files')->andReturn([]);
+        $this->files->allows('exists')->returns(true);
+        $this->files->allows('files')->returns([]);
 
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
         $this->runCommand($this->command);
     }
 
     public function testClearWithStoreArgument()
     {
-        $this->files->shouldReceive('exists')->andReturn(true);
-        $this->files->shouldReceive('files')->andReturn([]);
+        $this->files->allows('exists')->returns(true);
+        $this->files->allows('files')->returns([]);
 
-        $this->cacheManager->shouldReceive('store')->once()->with('foo')->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with('foo')->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
         $this->runCommand($this->command, ['store' => 'foo']);
     }
@@ -80,57 +80,57 @@ class ClearCommandTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->files->shouldReceive('files')->andReturn([]);
+        $this->files->allows('files')->returns([]);
 
-        $this->cacheManager->shouldReceive('store')->once()->with('bar')->andThrow(InvalidArgumentException::class);
-        $this->cacheRepository->shouldReceive('flush')->never();
+        $this->cacheManager->expects('store')->with('bar')->throws(InvalidArgumentException::class);
+        $this->cacheRepository->expects('flush')->never();
 
         $this->runCommand($this->command, ['store' => 'bar']);
     }
 
     public function testClearWithTagsOption()
     {
-        $this->files->shouldReceive('exists')->andReturn(true);
-        $this->files->shouldReceive('files')->andReturn([]);
+        $this->files->allows('exists')->returns(true);
+        $this->files->allows('files')->returns([]);
 
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('tags')->once()->with(['foo', 'bar'])->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('tags')->with(['foo', 'bar'])->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
         $this->runCommand($this->command, ['--tags' => 'foo,bar']);
     }
 
     public function testClearWithStoreArgumentAndTagsOption()
     {
-        $this->files->shouldReceive('exists')->andReturn(true);
-        $this->files->shouldReceive('files')->andReturn([]);
+        $this->files->allows('exists')->returns(true);
+        $this->files->allows('files')->returns([]);
 
-        $this->cacheManager->shouldReceive('store')->once()->with('redis')->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('tags')->once()->with(['foo'])->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with('redis')->returns($this->cacheRepository);
+        $this->cacheRepository->expects('tags')->with(['foo'])->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
         $this->runCommand($this->command, ['store' => 'redis', '--tags' => 'foo']);
     }
 
     public function testClearWillClearRealTimeFacades()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
-        $this->files->shouldReceive('exists')->andReturn(true);
-        $this->files->shouldReceive('files')->andReturn(['/facade-XXXX.php']);
-        $this->files->shouldReceive('delete')->with('/facade-XXXX.php')->once();
+        $this->files->allows('exists')->returns(true);
+        $this->files->allows('files')->returns(['/facade-XXXX.php']);
+        $this->files->expects('delete')->with('/facade-XXXX.php');
 
         $this->runCommand($this->command);
     }
 
     public function testClearWillNotClearRealTimeFacadesIfCacheDirectoryDoesntExist()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flush')->once();
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flush');
 
         // No files should be looped over and nothing should be deleted if the cache directory doesn't exist
-        $this->files->shouldReceive('exists')->andReturn(false);
+        $this->files->allows('exists')->returns(false);
         $this->files->shouldNotReceive('files');
         $this->files->shouldNotReceive('delete');
 
@@ -139,8 +139,8 @@ class ClearCommandTest extends TestCase
 
     public function testClearLocksWithNoStoreArgument()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flushLocks')->once()->andReturn(true);
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flushLocks')->returns(true);
         $this->cacheRepository->shouldNotReceive('flush');
 
         $this->files->shouldNotReceive('exists');
@@ -152,8 +152,8 @@ class ClearCommandTest extends TestCase
 
     public function testClearLocksWithStoreArgument()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with('redis')->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flushLocks')->once()->andReturn(true);
+        $this->cacheManager->expects('store')->with('redis')->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flushLocks')->returns(true);
         $this->cacheRepository->shouldNotReceive('flush');
 
         $this->assertSame(0, $this->runCommand($this->command, ['store' => 'redis', '--locks' => true]));
@@ -170,8 +170,8 @@ class ClearCommandTest extends TestCase
 
     public function testClearLocksWillFailWhenNotSupportedByStore()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flushLocks')->once()->andThrow(new BadMethodCallException);
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flushLocks')->throws(new BadMethodCallException);
         $this->cacheRepository->shouldNotReceive('flush');
 
         $this->assertSame(1, $this->runCommand($this->command, ['--locks' => true]));
@@ -179,8 +179,8 @@ class ClearCommandTest extends TestCase
 
     public function testClearLocksWillFailWhenFlushLocksFails()
     {
-        $this->cacheManager->shouldReceive('store')->once()->with(null)->andReturn($this->cacheRepository);
-        $this->cacheRepository->shouldReceive('flushLocks')->once()->andReturn(false);
+        $this->cacheManager->expects('store')->with(null)->returns($this->cacheRepository);
+        $this->cacheRepository->expects('flushLocks')->returns(false);
         $this->cacheRepository->shouldNotReceive('flush');
 
         $this->assertSame(1, $this->runCommand($this->command, ['--locks' => true]));

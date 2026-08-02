@@ -44,8 +44,8 @@ class QueueBeanstalkdQueueTest extends TestCase
 
         $this->setQueue('default', 60);
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class));
-        $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class));
+        $pheanstalk->expects('useTube')->with(m::type(TubeName::class));
+        $pheanstalk->expects('useTube')->with(m::type(TubeName::class));
         $pheanstalk->shouldReceive('put')->twice()->with(json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'delay' => null]), 1024, 0, 60);
 
         $this->queue->push('foo', ['data'], 'stack');
@@ -69,8 +69,8 @@ class QueueBeanstalkdQueueTest extends TestCase
 
         $this->setQueue('default', 60);
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class));
-        $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class));
+        $pheanstalk->expects('useTube')->with(m::type(TubeName::class));
+        $pheanstalk->expects('useTube')->with(m::type(TubeName::class));
         $pheanstalk->shouldReceive('put')->twice()->with(json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'delay' => 5]), Pheanstalk::DEFAULT_PRIORITY, 5, Pheanstalk::DEFAULT_TTR);
 
         $this->queue->later(5, 'foo', ['data'], 'stack');
@@ -87,13 +87,13 @@ class QueueBeanstalkdQueueTest extends TestCase
         $tube = new TubeName('default');
 
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class))
-            ->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
+        $pheanstalk->expects('watch')->with(m::type(TubeName::class))
+            -->expects(hed')->once()->and)->returns(tube));
 
-        $jobId = TestDouble::for(JobIdInterface::class);
-        $jobId->shouldReceive('getId')->once();
+        $j)bId = TestDouble::for(JobIdInterface::class);
+        $jobId->expects('getId');
         $job = new Job($jobId, '');
-        $pheanstalk->shouldReceive('reserveWithTimeout')->once()->with(0)->andReturn($job);
+        $pheanstalk->expects('reserveWithTimeout')->with(0)->returns($job);
 
         $result = $this->queue->pop();
 
@@ -106,13 +106,13 @@ class QueueBeanstalkdQueueTest extends TestCase
         $tube = new TubeName('default');
 
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class))
-            ->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
+        $pheanstalk->expects('watch')->with(m::type(TubeName::class))
+            -->expects(hed')->once()->and)->returns(tube));
 
-        $jobId = TestDouble::for(JobIdInterface::class);
-        $jobId->shouldReceive('getId')->once();
+        $j)bId = TestDouble::for(JobIdInterface::class);
+        $jobId->expects('getId');
         $job = new Job($jobId, '');
-        $pheanstalk->shouldReceive('reserveWithTimeout')->once()->with(60)->andReturn($job);
+        $pheanstalk->expects('reserveWithTimeout')->with(60)->returns($job);
 
         $result = $this->queue->pop();
 
@@ -124,8 +124,8 @@ class QueueBeanstalkdQueueTest extends TestCase
         $this->setQueue('default', 60);
 
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class))->andReturn($pheanstalk);
-        $pheanstalk->shouldReceive('delete')->once()->with(m::type(JobIdInterface::class));
+        $pheanstalk->expects('useTube')->with(m::type(TubeName::class))->returns($pheanstalk);
+        $pheanstalk->expects('delete')->with(m::type(JobIdInterface::class));
 
         $this->queue->deleteMessage('default', 1);
     }

@@ -50,7 +50,7 @@ class DatabaseSqlServerSchemaGrammarTest extends TestCase
     public function testCreateTemporaryTable()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection->allows('getTablePrefix')->returns('');
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->create();
         $blueprint->temporary();
@@ -1005,16 +1005,14 @@ class DatabaseSqlServerSchemaGrammarTest extends TestCase
         ?SqlServerBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = TestDouble::for(Connection::class)
-            ->shouldReceive('getTablePrefix')->andReturn($prefix)
+        $connection = TestDouble::for(Connection::class)->allows('getTablePrefix')->returns($prefix)
             ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(null)
             ->getMock();
 
         $grammar ??= $this->getGrammar($connection);
         $builder ??= $this->getBuilder();
 
-        return $connection
-            ->shouldReceive('getSchemaGrammar')->andReturn($grammar)
+        return $connection->allows('getSchemaGrammar')->returns($grammar)
             ->shouldReceive('getSchemaBuilder')->andReturn($builder)
             ->getMock();
     }

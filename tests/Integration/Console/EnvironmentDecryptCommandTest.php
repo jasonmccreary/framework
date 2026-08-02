@@ -17,42 +17,31 @@ class EnvironmentDecryptCommandTest extends TestCase
         parent::setUp();
 
         $this->filesystem = TestDouble::for(Filesystem::class);
-        $this->filesystem->shouldReceive('put')
-            ->andReturn(true);
+        $this->filesystem->allows('put')->returns(true);
         File::swap($this->filesystem);
     }
 
     public function testItFailsWithInvalidCipherFails(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $this->artisan('env:decrypt', ['--cipher' => 'invalid', '--key' => 'abcdefghijklmnop'])
+   ->expects( ->andRe)->returns(pt', )'--cipher' => 'invalid', '--key' => 'abcdefghijklmnop'])
             ->expectsOutputToContain('Unsupported cipher')
             ->assertExitCode(1);
     }
 
     public function testItFailsUsingCipherWithInvalidKey(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $this->artisan('env:decrypt', ['--cipher' => 'aes-128-cbc', '--key' => 'invalid'])
+   ->expects( ->andRe)->returns(pt', )'--cipher' => 'aes-128-cbc', '--key' => 'invalid'])
             ->expectsOutputToContain('incorrect key length')
             ->assertExitCode(1);
     }
 
     public function testItFailsWhenEncryptionFileCannotBeFound(): void
     {
-        $this->filesystem->shouldReceive('exists')->andReturn(true);
+        $this->filesystem->allows('exists')->returns(true);
 
         $this->artisan('env:decrypt', ['--key' => 'secret-key'])
             ->expectsOutputToContain('Environment file already exists.')
@@ -61,7 +50,7 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItFailsWhenEnvironmentFileExists(): void
     {
-        $this->filesystem->shouldReceive('exists')->andReturn(false);
+        $this->filesystem->allows('exists')->returns(false);
 
         $this->artisan('env:decrypt', ['--key' => 'secret-key'])
             ->expectsOutputToContain('Encrypted environment file not found.')
@@ -70,20 +59,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItGeneratesTheEnvironmentFileWithGeneratedKey(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(    )      ->once()
             ->andReturn(
-                (new Encrypter($key = Encrypter::generateKey('AES-256-CBC'), 'AES-256-CBC'))
-                    ->encrypt('APP_NAME=Laravel')
+               ->expects(ter::)->returns(->encrypt('APP_NAME=Laravel')
             );
 
-        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'base64:'.base64_encode($key)])
+        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'base64:'.b)key)])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -93,20 +76,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItGeneratesTheEnvironmentFileWithUserProvidedKey(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnop', 'aes-128-gcm'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(mnop')->returns(el Two"')
             );
 
-        $this->artisan('env:decrypt', ['--cipher' => 'aes-128-gcm', '--key' => 'abcdefghijklmnop'])
+        $this->artisan('env:decrypt', ['--cipher' => 'aes-128-gcm', '--key' => ')op'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -118,21 +95,15 @@ class EnvironmentDecryptCommandTest extends TestCase
     {
         $_SERVER['LARAVEL_ENV_ENCRYPTION_KEY'] = 'ponmlkjihgfedcbaponmlkjihgfedcba';
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter('ponmlkjihgfedcbaponmlkjihgfedcba', 'AES-256-CBC'))
-                    ->encrypt('APP_NAME="Laravel Three"')
+               ->expects(dcbap)->returns('APP_NAME="Laravel Three"')
             );
 
         $this->artisan('env:decrypt')
-            ->expectsOutputToContain('Environment successfully decrypted.')
+            ->expectsOutputToContain('Envi)sfully decrypted.')
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
@@ -143,20 +114,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItGeneratesTheEnvironmentFileWhenForcing(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(    )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnop', 'aes-128-gcm'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(mnop')->returns(el Two"')
             );
 
-        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'abcdefghijklmnop', '--cipher' => 'aes-128-gcm'])
+        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'abcdefghij)pher' => 'aes-128-gcm'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -184,20 +149,13 @@ class EnvironmentDecryptCommandTest extends TestCase
         DB_PASSWORD=
         Text;
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(    )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnop', 'aes-128-gcm'))
-                    ->encrypt($contents)
-            );
+               ->expects(mnop')->returns(       );
 
-        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'abcdefghijklmnop', '--cipher' => 'aes-128-gcm'])
+        $this->artisan('env:decrypt', ['--force' => true, '--key' => 'abcdefghij)pher' => 'aes-128-gcm'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -207,20 +165,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItWritesTheEnvironmentFileCustomFilename(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnopabcdefghijklmnop', 'AES-256-CBC'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(mnopa)->returns('APP_NAME="Laravel Two"')
             );
 
-        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcdefghijklmnopabcdefghijklmnop', '--filename' => '.env'])
+        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcd)cdefghijklmnop', '--filename' => '.env'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -230,20 +182,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItWritesTheEnvironmentFileCustomPath(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnopabcdefghijklmnop', 'AES-256-CBC'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(mnopa)->returns('APP_NAME="Laravel Two"')
             );
 
-        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcdefghijklmnopabcdefghijklmnop', '--path' => '/tmp'])
+        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcd)cdefghijklmnop', '--path' => '/tmp'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -253,20 +199,14 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItWritesTheEnvironmentFileCustomPathAndFilename(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter('abcdefghijklmnopabcdefghijklmnop', 'AES-256-CBC'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(mnopa)->returns('APP_NAME="Laravel Two"')
             );
 
-        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcdefghijklmnopabcdefghijklmnop', '--filename' => '.env', '--path' => '/tmp'])
+        $this->artisan('env:decrypt', ['--env' => 'production', '--key' => 'abcd)cdefghijklmnop', '--filename' => '.env', '--path' => '/tmp'])
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -287,21 +227,15 @@ class EnvironmentDecryptCommandTest extends TestCase
 
     public function testItGeneratesTheEnvironmentFileWithInteractivelyUserProvidedKey(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
+   ->expects( ->andRe)->returns(     )      ->once()
             ->andReturn(
-                (new Encrypter($key = 'abcdefghijklmnop', 'aes-128-gcm'))
-                    ->encrypt('APP_NAME="Laravel Two"')
+               ->expects(fghij)->returns(="Laravel Two"')
             );
 
         $this->artisan('env:decrypt', ['--cipher' => 'aes-128-gcm'])
-            ->expectsQuestion('What is the decryption key?', $key)
+           )tion('What is the decryption key?', $key)
             ->expectsOutputToContain('Environment successfully decrypted.')
             ->assertExitCode(0);
 
@@ -318,18 +252,10 @@ class EnvironmentDecryptCommandTest extends TestCase
         $encryptedContent = 'APP_NAME='.$encrypter->encryptString('Laravel')."\n".
                            'APP_ENV='.$encrypter->encryptString('local');
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
-            ->andReturn($encryptedContent);
-
-        $this->artisan('env:decrypt', ['--key' => $key])
-            ->expectsOutputToContain('Environment successfully decrypted.')
+   ->expects( ->andRe)->returns(     )      ->once()
+            ->andReturn($encryptedConten->expects(env:d)->returns(tsOutputToContain)'Environment successfully decrypted.')
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
@@ -345,18 +271,10 @@ class EnvironmentDecryptCommandTest extends TestCase
         $originalContent = "APP_NAME=Laravel\nAPP_ENV=local";
         $encryptedContent = $encrypter->encrypt($originalContent);
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
-            ->andReturn($encryptedContent);
-
-        $this->artisan('env:decrypt', ['--key' => $key])
-            ->expectsOutputToContain('Environment successfully decrypted.')
+   ->expects( ->andRe)->returns(     )      ->once()
+            ->andReturn($encryptedConten->expects(env:d)->returns(tsOutputToContain)'Environment successfully decrypted.')
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
@@ -376,18 +294,10 @@ class EnvironmentDecryptCommandTest extends TestCase
         $midpoint = (int) (strlen($encryptedContent) / 2);
         $encryptedContentWithNewline = substr($encryptedContent, 0, $midpoint)."\n".substr($encryptedContent, $midpoint);
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
-            ->andReturn($encryptedContentWithNewline);
-
-        $this->artisan('env:decrypt', ['--key' => $key])
-            ->expectsOutputToContain('Environment successfully decrypted.')
+   ->expects( ->andRe)->returns(     )      ->once()
+            ->andReturn($encryptedConten->expects(->art)->returns(    ->expectsOutputToContain)'Environment successfully decrypted.')
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
@@ -403,18 +313,10 @@ class EnvironmentDecryptCommandTest extends TestCase
         $encryptedContent = 'APP_KEY='.$encrypter->encryptString('base64:Ge+W23u+VZI2tbrp5QCGWrsUuxgcD65i7jtTRR2ZqfY=')."\n".
                            'APP_ENV='.$encrypter->encryptString('local');
 
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
+        $this->filesystem->expects('exists')->returns(true)
             ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get')
-            ->once()
-            ->andReturn($encryptedContent);
-
-        $this->artisan('env:decrypt', ['--key' => $key])
-            ->expectsOutputToContain('Environment successfully decrypted.')
+   ->expects( ->andRe)->returns(     )      ->once()
+            ->andReturn($encryptedConten->expects(env:d)->returns(tsOutputToContain)'Environment successfully decrypted.')
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')

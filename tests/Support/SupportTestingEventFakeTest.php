@@ -46,7 +46,7 @@ class SupportTestingEventFakeTest extends TestCase
         $listener = ListenerStub::class;
 
         $dispatcher = TestDouble::for(Dispatcher::class);
-        $dispatcher->shouldReceive('getListeners')->andReturn([function ($event, $payload) use ($listener) {
+        $dispatcher->allows('getListeners')->returns([function ($event, $payload) use ($listener) {
             return $listener(...array_values($payload));
         }]);
 
@@ -131,7 +131,7 @@ class SupportTestingEventFakeTest extends TestCase
     public function testAssertDispatchedWithIgnore()
     {
         $dispatcher = TestDouble::for(Dispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->once();
+        $dispatcher->expects('dispatch');
 
         $fake = new EventFake($dispatcher, [
             'Foo',
