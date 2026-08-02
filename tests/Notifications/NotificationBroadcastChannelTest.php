@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Notifications;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Channels\BroadcastChannel;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class NotificationBroadcastChannelTest extends TestCase
@@ -17,9 +17,9 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new NotificationBroadcastChannelTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::type(BroadcastNotificationCreated::class));
         $channel = new BroadcastChannel($events);
         $channel->send($notifiable, $notification);
@@ -29,7 +29,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomChannelsTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -44,7 +44,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomEventNameTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -59,7 +59,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomEventNameTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -74,9 +74,9 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new TestNotificationBroadCastedNow;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
             return $event->connection === 'sync';
         }));
@@ -88,7 +88,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomBroadcastWithTestNotification;
         $notification->id = 1;
-        $notifiable = m::mock();
+        $notifiable = TestDouble::for(\stdClass::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)

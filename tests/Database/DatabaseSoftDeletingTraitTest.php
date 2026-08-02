@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -12,9 +12,9 @@ class DatabaseSoftDeletingTraitTest extends TestCase
 {
     public function testDeleteSetsSoftDeletedColumn()
     {
-        $model = m::mock(DatabaseSoftDeletingTraitStub::class);
+        $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->makePartial();
-        $model->shouldReceive('newModelQuery')->andReturn($query = m::mock(stdClass::class));
+        $model->shouldReceive('newModelQuery')->andReturn($query = TestDouble::for(stdClass::class));
         $query->shouldReceive('where')->once()->with('id', '=', 1)->andReturn($query);
         $query->shouldReceive('update')->once()->with([
             'deleted_at' => 'date-time',
@@ -32,7 +32,7 @@ class DatabaseSoftDeletingTraitTest extends TestCase
 
     public function testRestore()
     {
-        $model = m::mock(DatabaseSoftDeletingTraitStub::class);
+        $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->makePartial();
         $model->shouldReceive('fireModelEvent')->with('restoring')->andReturn(true);
         $model->shouldReceive('save')->once();
@@ -45,7 +45,7 @@ class DatabaseSoftDeletingTraitTest extends TestCase
 
     public function testRestoreCancel()
     {
-        $model = m::mock(DatabaseSoftDeletingTraitStub::class);
+        $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->makePartial();
         $model->shouldReceive('fireModelEvent')->with('restoring')->andReturn(false);
         $model->shouldReceive('save')->never();

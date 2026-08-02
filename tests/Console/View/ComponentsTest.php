@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Console\View;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components;
 use Illuminate\Database\Migrations\MigrationResult;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -68,7 +68,7 @@ class ComponentsTest extends TestCase
 
     public function testConfirm()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
         $output->shouldReceive('confirm')
             ->with('Question?', false)
@@ -89,7 +89,7 @@ class ComponentsTest extends TestCase
 
     public function testChoice()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
         $output->shouldReceive('askQuestion')
             ->with(m::type(ChoiceQuestion::class))

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
@@ -14,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Events\NullDispatcher;
 use Illuminate\Testing\Assert;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -27,16 +27,16 @@ class SeedCommandTest extends TestCase
         $output = new NullOutput;
         $outputStyle = new OutputStyle($input, $output);
 
-        $seeder = m::mock(Seeder::class);
+        $seeder = TestDouble::for(Seeder::class);
         $seeder->shouldReceive('setContainer')->once()->andReturnSelf();
         $seeder->shouldReceive('setCommand')->once()->andReturnSelf();
         $seeder->shouldReceive('__invoke')->once();
 
-        $resolver = m::mock(ConnectionResolverInterface::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
         $resolver->shouldReceive('getDefaultConnection')->once();
         $resolver->shouldReceive('setDefaultConnection')->once()->with('sqlite');
 
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('call');
         $container->shouldReceive('environment')->once()->andReturn('testing');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
@@ -70,15 +70,15 @@ class SeedCommandTest extends TestCase
 
         $instance = new UserWithoutModelEventsSeeder();
 
-        $seeder = m::mock($instance);
+        $seeder = TestDouble::for($instance);
         $seeder->shouldReceive('setContainer')->once()->andReturnSelf();
         $seeder->shouldReceive('setCommand')->once()->andReturnSelf();
 
-        $resolver = m::mock(ConnectionResolverInterface::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
         $resolver->shouldReceive('getDefaultConnection')->once();
         $resolver->shouldReceive('setDefaultConnection')->once()->with('sqlite');
 
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('call');
         $container->shouldReceive('environment')->once()->andReturn('testing');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
@@ -93,7 +93,7 @@ class SeedCommandTest extends TestCase
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
 
-        Model::setEventDispatcher($dispatcher = m::mock(Dispatcher::class));
+        Model::setEventDispatcher($dispatcher = TestDouble::for(Dispatcher::class));
 
         // call run to set up IO, then fire manually.
         $command->run($input, $output);
@@ -110,9 +110,9 @@ class SeedCommandTest extends TestCase
         $output = new NullOutput;
         $outputStyle = new OutputStyle($input, $output);
 
-        $resolver = m::mock(ConnectionResolverInterface::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
 
-        $container = m::mock(Container::class);
+        $container = TestDouble::for(Container::class);
         $container->shouldReceive('call');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
         $container->shouldReceive('make')->with(OutputStyle::class, m::any())->andReturn(

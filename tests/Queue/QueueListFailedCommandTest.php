@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Foundation\Application;
 use Illuminate\Queue\Console\ListFailedCommand;
 use Illuminate\Queue\Failed\FailedJobProviderInterface;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -161,7 +161,7 @@ class QueueListFailedCommandTest extends TestCase
         $container = new Application;
 
         // The command resolves the failer via the queue.failer container binding.
-        $failer = m::mock(FailedJobProviderInterface::class);
+        $failer = TestDouble::for(FailedJobProviderInterface::class);
         $failer->shouldReceive('all')->andReturn($rows);
         $container->instance('queue.failer', $failer);
 

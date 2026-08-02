@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Foundation\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Console\RouteListCommand;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class RouteListCommandTest extends TestCase
@@ -24,7 +24,7 @@ class RouteListCommandTest extends TestCase
             'testing',
         );
 
-        $router = new Router(m::mock('Illuminate\Events\Dispatcher'));
+        $router = new Router(TestDouble::for('Illuminate\Events\Dispatcher'));
 
         $kernel = new class($laravel, $router) extends Kernel
         {
@@ -252,7 +252,7 @@ class RouteListCommandTest extends TestCase
     public function testControllerRoutePathIsNull()
     {
         $laravel = new \Illuminate\Foundation\Application(__DIR__);
-        $router = new Router(m::mock('Illuminate\Events\Dispatcher'));
+        $router = new Router(TestDouble::for('Illuminate\Events\Dispatcher'));
 
         $kernel = new class($laravel, $router) extends Kernel
         {

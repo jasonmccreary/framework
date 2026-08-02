@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
@@ -15,7 +16,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class SendingMailNotificationsTest extends TestCase
@@ -26,10 +26,10 @@ class SendingMailNotificationsTest extends TestCase
 
     protected function defineEnvironment($app)
     {
-        $this->mailFactory = m::mock(MailFactory::class);
-        $this->mailer = m::mock(Mailer::class);
+        $this->mailFactory = TestDouble::for(MailFactory::class);
+        $this->mailer = TestDouble::for(Mailer::class);
         $this->mailFactory->shouldReceive('mailer')->andReturn($this->mailer);
-        $this->markdown = m::mock(Markdown::class);
+        $this->markdown = TestDouble::for(Markdown::class);
 
         $app->extend(Markdown::class, function () {
             return $this->markdown;
@@ -71,7 +71,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->shouldReceive('renderText')->once()->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = m::mock(Message::class);
+            $message = TestDouble::for(Message::class);
 
             $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -109,7 +109,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->shouldReceive('renderText')->once()->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = m::mock(Message::class);
+            $message = TestDouble::for(Message::class);
 
             $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -183,7 +183,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->shouldReceive('renderText')->once()->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = m::mock(Message::class);
+            $message = TestDouble::for(Message::class);
 
             $message->shouldReceive('to')->once()->with(['taylor@laravel.com' => 'Taylor Otwell', 'foo_taylor@laravel.com']);
 
@@ -221,7 +221,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->shouldReceive('renderText')->once()->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = m::mock(Message::class);
+            $message = TestDouble::for(Message::class);
 
             $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -249,7 +249,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->shouldReceive('renderText')->once()->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = m::mock(Message::class);
+            $message = TestDouble::for(Message::class);
 
             $message->shouldReceive('to')->once()->with(['foo_taylor@laravel.com', 'bar_taylor@laravel.com']);
 
@@ -291,7 +291,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             m::on(function ($closure) {
-                $message = m::mock(Message::class);
+                $message = TestDouble::for(Message::class);
 
                 $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -323,7 +323,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             m::on(function ($closure) {
-                $message = m::mock(Message::class);
+                $message = TestDouble::for(Message::class);
 
                 $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -355,7 +355,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             m::on(function ($closure) {
-                $message = m::mock(Message::class);
+                $message = TestDouble::for(Message::class);
 
                 $message->shouldReceive('to')->once()->with(['taylor@laravel.com']);
 
@@ -445,7 +445,7 @@ class TestMailNotificationWithMailable extends Notification
 
     public function toMail($notifiable)
     {
-        $mailable = m::mock(Mailable::class);
+        $mailable = TestDouble::for(Mailable::class);
 
         $mailable->shouldReceive('send')->once();
 

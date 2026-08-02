@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\View;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ViewClearCommand;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class ClearCommandTest extends TestCase
@@ -16,7 +16,7 @@ class ClearCommandTest extends TestCase
     {
         parent::setUp();
 
-        $this->files = m::mock(Filesystem::class);
+        $this->files = TestDouble::for(Filesystem::class);
         Container::setInstance($this->app);
         $this->app->instance('files', $this->files);
     }

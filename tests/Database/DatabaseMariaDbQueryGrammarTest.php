@@ -2,16 +2,16 @@
 
 namespace Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\MariaDbGrammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('escape')->with('foo', false)->andReturn("'foo'");
         $grammar = new MariaDbGrammar($connection);
 

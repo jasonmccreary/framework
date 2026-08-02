@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Integration\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class EnvironmentEncryptCommandTest extends TestCase
@@ -16,7 +16,7 @@ class EnvironmentEncryptCommandTest extends TestCase
     {
         parent::setUp();
 
-        $this->filesystem = m::spy(Filesystem::class);
+        $this->filesystem = TestDouble::for(Filesystem::class);
         $this->filesystem->shouldReceive('get')
             ->andReturn(true)
             ->shouldReceive('put')
@@ -164,7 +164,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsInReadableFormat(): void
     {
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()
@@ -196,7 +196,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItSkipsCommentsAndBlankLinesInReadableFormat(): void
     {
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()
@@ -243,7 +243,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()
@@ -297,7 +297,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()
@@ -352,7 +352,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()
@@ -406,7 +406,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        $filesystem = m::mock(Filesystem::class);
+        $filesystem = TestDouble::for(Filesystem::class);
         $filesystem->shouldReceive('exists')
             ->with(base_path('.env'))
             ->once()

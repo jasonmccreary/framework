@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Filesystem;
 
+use JMac\Testing\TestDouble;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -19,7 +20,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Flysystem\UnableToWriteFile;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -566,7 +566,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
         $exceptionHandler->shouldReceive('report')
             ->once()
@@ -594,7 +594,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
         $exceptionHandler->shouldReceive('report')
             ->once()
@@ -622,7 +622,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
         $exceptionHandler->shouldReceive('report')
             ->once()
@@ -656,7 +656,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
         $exceptionHandler->shouldReceive('report')
             ->once()

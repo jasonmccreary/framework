@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\Job;
@@ -9,7 +10,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\Release;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class ReleaseMiddlewareTest extends TestCase
@@ -82,7 +82,7 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -102,7 +102,7 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(true);

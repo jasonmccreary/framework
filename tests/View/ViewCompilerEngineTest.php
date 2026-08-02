@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\View;
 
+use JMac\Testing\TestDouble;
 use ErrorException;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -9,7 +10,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\ViewException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -84,7 +84,7 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/fixtures/basic.php';
         $path = __DIR__.'/fixtures/foo.php';
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
         $files->shouldReceive('getRequire')
@@ -129,7 +129,7 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/fixtures/basic.php';
         $path = __DIR__.'/fixtures/foo.php';
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
         $files->shouldReceive('getRequire')
@@ -174,7 +174,7 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/fixtures/basic.php';
         $path = __DIR__.'/fixtures/foo.php';
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
         $files->shouldReceive('getRequire')
@@ -224,7 +224,7 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/fixtures/basic.php';
         $path = __DIR__.'/fixtures/foo.php';
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
         $files->shouldReceive('getRequire')
@@ -259,7 +259,7 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/fixtures/basic.php';
         $path = __DIR__.'/fixtures/foo.php';
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
         $files->shouldReceive('getRequire')
@@ -292,6 +292,6 @@ class ViewCompilerEngineTest extends TestCase
 
     protected function getEngine($filesystem = null)
     {
-        return new CompilerEngine(m::mock(CompilerInterface::class), $filesystem ?: new Filesystem);
+        return new CompilerEngine(TestDouble::for(CompilerInterface::class), $filesystem ?: new Filesystem);
     }
 }

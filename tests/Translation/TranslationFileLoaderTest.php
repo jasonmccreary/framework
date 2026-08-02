@@ -2,16 +2,16 @@
 
 namespace Illuminate\Tests\Translation;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Translation\FileLoader;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class TranslationFileLoaderTest extends TestCase
 {
     public function testLoadMethodLoadsTranslationsFromAddedPath()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $loader = new FileLoader($files, __DIR__);
         $loader->addPath(__DIR__.'/another');
 
@@ -26,7 +26,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodHandlesMissingAddedPath()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $loader = new FileLoader($files, __DIR__);
         $loader->addPath(__DIR__.'/missing');
 
@@ -40,7 +40,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodOverwritesExistingKeysFromAddedPath()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $loader = new FileLoader($files, __DIR__);
         $loader->addPath(__DIR__.'/another');
 
@@ -55,7 +55,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodLoadsTranslationsFromMultipleAddedPaths()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $loader = new FileLoader($files, __DIR__);
         $loader->addPath(__DIR__.'/another');
         $loader->addPath(__DIR__.'/yet-another');
@@ -74,7 +74,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithoutNamespacesProperlyCallsLoader()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en/foo.php')->andReturn(true);
         $files->shouldReceive('getRequire')->once()->with(__DIR__.'/en/foo.php')->andReturn(['messages']);
 
@@ -83,7 +83,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithoutNamespacesProperlyCallsLoaderWithMultiplePaths()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), [__DIR__, __DIR__.'/second']);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), [__DIR__, __DIR__.'/second']);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/second/en/foo.php')->andReturn(true);
         $files->shouldReceive('getRequire')->once()->with(__DIR__.'/en/foo.php')->andReturn(['messages' => 'first']);
@@ -94,7 +94,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithNamespacesProperlyCallsLoader()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with('bar/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(false);
         $files->shouldReceive('getRequire')->once()->with('bar/en/foo.php')->andReturn(['foo' => 'bar']);
@@ -105,7 +105,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithNamespacesProperlyCallsLoaderWithMultiplePaths()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), [__DIR__, __DIR__.'/second']);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), [__DIR__, __DIR__.'/second']);
         $files->shouldReceive('exists')->once()->with('test-namespace-dir/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(false);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/second/vendor/namespace/en/foo.php')->andReturn(false);
@@ -117,7 +117,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithNamespacesProperlyCallsLoaderAndLoadsLocalOverrides()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with('bar/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(true);
         $files->shouldReceive('getRequire')->once()->with('bar/en/foo.php')->andReturn(['foo' => 'bar']);
@@ -129,7 +129,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithNamespacesProperlyCallsLoaderAndLoadsLocalOverridesWithMultiplePaths()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), [__DIR__, __DIR__.'/second']);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), [__DIR__, __DIR__.'/second']);
         $files->shouldReceive('exists')->once()->with('test-namespace-dir/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/second/vendor/namespace/en/foo.php')->andReturn(true);
@@ -143,7 +143,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodWithNamespacesProperlyCallsLoaderAndLoadsLocalOverridesWithMultiplePathsWithMissingKey()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), [__DIR__, __DIR__.'/second']);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), [__DIR__, __DIR__.'/second']);
         $files->shouldReceive('exists')->once()->with('test-namespace-dir/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/vendor/namespace/en/foo.php')->andReturn(true);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/second/vendor/namespace/en/foo.php')->andReturn(true);
@@ -157,7 +157,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testEmptyArraysReturnedWhenFilesDontExist()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en/foo.php')->andReturn(false);
         $files->shouldReceive('getRequire')->never();
 
@@ -166,7 +166,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testEmptyArraysReturnedWhenFilesDontExistForNamespacedItems()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('getRequire')->never();
 
         $this->assertSame([], $loader->load('en', 'foo', 'bar'));
@@ -174,7 +174,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodForJSONProperlyCallsLoader()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en.json')->andReturn(true);
         $files->shouldReceive('get')->once()->with(__DIR__.'/en.json')->andReturn('{"foo":"bar"}');
 
@@ -183,7 +183,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodForJSONProperlyCallsLoaderForMultiplePaths()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $loader->addJsonPath(__DIR__.'/another');
 
         $files->shouldReceive('exists')->once()->with(__DIR__.'/en.json')->andReturn(true);
@@ -196,7 +196,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testLoadMethodThrowExceptionWhenProvideInvalidJSON()
     {
-        $loader = new FileLoader($files = m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader($files = TestDouble::for(Filesystem::class), __DIR__);
         $loader->addJsonPath(__DIR__.'/invalid');
 
         $invalidJsonString = '.{"foo":"cricket", "baz": "football"}';
@@ -209,7 +209,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testAllRegisteredNamespaceReturnProperly()
     {
-        $loader = new FileLoader(m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader(TestDouble::for(Filesystem::class), __DIR__);
         $loader->addNamespace('namespace', 'foo');
         $loader->addNamespace('namespace2', 'bar');
         $this->assertEquals(['namespace' => 'foo', 'namespace2' => 'bar'], $loader->namespaces());
@@ -217,7 +217,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testAllAddedJsonPathsReturnProperly()
     {
-        $loader = new FileLoader(m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader(TestDouble::for(Filesystem::class), __DIR__);
         $path1 = __DIR__.'/another';
         $path2 = __DIR__.'/another2';
         $loader->addJsonPath($path1);
@@ -227,7 +227,7 @@ class TranslationFileLoaderTest extends TestCase
 
     public function testAllAddedPathsReturnProperly()
     {
-        $loader = new FileLoader(m::mock(Filesystem::class), __DIR__);
+        $loader = new FileLoader(TestDouble::for(Filesystem::class), __DIR__);
         $path1 = __DIR__.'/another';
         $path2 = __DIR__.'/another2';
         $loader->addPath($path1);

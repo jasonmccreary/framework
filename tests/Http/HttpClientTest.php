@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
@@ -43,7 +44,6 @@ use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
 use InvalidArgumentException;
 use JsonSerializable;
-use Mockery as m;
 use OutOfBoundsException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -2382,7 +2382,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSent()
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->times(5)->with(m::type(RequestSending::class));
         $events->shouldReceive('dispatch')->times(5)->with(m::type(ResponseReceived::class));
 
@@ -2398,7 +2398,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSentAsync()
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->times(5)->with(m::type(RequestSending::class));
         $events->shouldReceive('dispatch')->times(5)->with(m::type(ResponseReceived::class));
 
@@ -2417,7 +2417,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredForEveryRetry()
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->times(2)->with(m::type(RequestSending::class));
         $events->shouldReceive('dispatch')->times(2)->with(m::type(ResponseReceived::class));
 
@@ -2455,7 +2455,7 @@ class HttpClientTest extends TestCase
 
     public function testClonedClientsWorkSuccessfullyWithTheRequestObject()
     {
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::type(RequestSending::class));
         $events->shouldReceive('dispatch')->once()->with(m::type(ResponseReceived::class));
 

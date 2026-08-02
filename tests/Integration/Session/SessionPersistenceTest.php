@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Session;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Response;
 use Illuminate\Session\NullSessionHandler;
@@ -9,7 +10,6 @@ use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class SessionPersistenceTest extends TestCase
@@ -35,7 +35,7 @@ class SessionPersistenceTest extends TestCase
     {
         $app->instance(
             ExceptionHandler::class,
-            $handler = m::mock(ExceptionHandler::class)->shouldIgnoreMissing()
+            $handler = TestDouble::for(ExceptionHandler::class)->shouldIgnoreMissing()
         );
 
         $handler->shouldReceive('render')->andReturn(new Response);

@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\View;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\FileViewFinder;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -160,6 +160,6 @@ class ViewFileViewFinderTest extends TestCase
 
     protected function getFinder()
     {
-        return new FileViewFinder(m::mock(Filesystem::class), [__DIR__]);
+        return new FileViewFinder(TestDouble::for(Filesystem::class), [__DIR__]);
     }
 }

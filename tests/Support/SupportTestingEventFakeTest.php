@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Testing\Fakes\EventFake;
-use Mockery as m;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ class SupportTestingEventFakeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->fake = new EventFake(m::mock(Dispatcher::class));
+        $this->fake = new EventFake(TestDouble::for(Dispatcher::class));
     }
 
     public function testAssertDispatched()
@@ -45,7 +45,7 @@ class SupportTestingEventFakeTest extends TestCase
     {
         $listener = ListenerStub::class;
 
-        $dispatcher = m::mock(Dispatcher::class);
+        $dispatcher = TestDouble::for(Dispatcher::class);
         $dispatcher->shouldReceive('getListeners')->andReturn([function ($event, $payload) use ($listener) {
             return $listener(...array_values($payload));
         }]);
@@ -130,7 +130,7 @@ class SupportTestingEventFakeTest extends TestCase
 
     public function testAssertDispatchedWithIgnore()
     {
-        $dispatcher = m::mock(Dispatcher::class);
+        $dispatcher = TestDouble::for(Dispatcher::class);
         $dispatcher->shouldReceive('dispatch')->once();
 
         $fake = new EventFake($dispatcher, [
