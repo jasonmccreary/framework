@@ -15,7 +15,7 @@ class DatabaseMySqlQueryGrammarTest extends TestCase
     public function testToRawSql()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('escape')->with('foo', false)->andReturn("'foo'");
+        $connection->allows('escape')->with('foo', false)->returns("'foo'");
         $grammar = new MySqlGrammar($connection);
 
         $query = $grammar->substituteBindingsIntoRawSql(
@@ -75,8 +75,8 @@ class DatabaseMySqlQueryGrammarTest extends TestCase
     protected function getBuilder()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection->allows('getDatabaseName')->returns('database');
+        $connection->allows('getTablePrefix')->returns('');
         $grammar = new MySqlGrammar($connection);
         $processor = TestDouble::for(Processor::class);
 

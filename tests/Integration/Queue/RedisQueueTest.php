@@ -535,12 +535,12 @@ class RedisQueueTest extends TestCase
     public function testBulkJobQueuedEvent($driver)
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->with(m::type(JobQueueing::class))->andReturnNull()->times(3);
-        $events->shouldReceive('dispatch')->with(m::type(JobQueued::class))->andReturnNull()->times(3);
+        $events->expects('dispatch')->with(m::type(JobQueueing::class))->returns(null)->times(3);
+        $events->expects('dispatch')->with(m::type(JobQueued::class))->returns(null)->times(3);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('bound')->with('events')->andReturn(true)->times(6);
-        $container->shouldReceive('offsetGet')->with('events')->andReturn($events)->times(6);
+        $container->expects('bound')->with('events')->returns(true)->times(6);
+        $container->expects('offsetGet')->with('events')->returns($events)->times(6);
 
         $default = config('queue.connections.redis.queue', 'default');
         $queue = new RedisQueue($this->redis[$driver], $default);

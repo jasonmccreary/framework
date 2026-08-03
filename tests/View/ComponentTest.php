@@ -54,9 +54,9 @@ class ComponentTest extends TestCase
 
     public function testInlineViewsGetCreated()
     {
-        $this->config->shouldReceive('get')->once()->with('view.compiled')->andReturn('/tmp');
-        $this->viewFactory->shouldReceive('exists')->once()->andReturn(false);
-        $this->viewFactory->shouldReceive('addNamespace')->once()->with('__components', '/tmp');
+        $this->config->expects('get')->with('view.compiled')->returns('/tmp');
+        $this->viewFactory->expects('exists')->returns(false);
+        $this->viewFactory->expects('addNamespace')->with('__components', '/tmp');
 
         $component = new TestInlineViewComponent;
         $this->assertSame('__components::57b7a54afa0eb51fd9b88eec031c9e9e', $component->resolveView());
@@ -65,7 +65,7 @@ class ComponentTest extends TestCase
     public function testRegularViewsGetReturnedUsingViewHelper()
     {
         $view = TestDouble::for(View::class);
-        $this->viewFactory->shouldReceive('make')->once()->with('alert', [], [])->andReturn($view);
+        $this->viewFactory->expects('make')->with('alert', [], [])->returns($view);
 
         $component = new TestRegularViewComponentUsingViewHelper;
 
@@ -74,9 +74,9 @@ class ComponentTest extends TestCase
 
     public function testRenderingStringClosureFromComponent()
     {
-        $this->config->shouldReceive('get')->once()->with('view.compiled')->andReturn('/tmp');
-        $this->viewFactory->shouldReceive('exists')->once()->andReturn(false);
-        $this->viewFactory->shouldReceive('addNamespace')->once()->with('__components', '/tmp');
+        $this->config->expects('get')->with('view.compiled')->returns('/tmp');
+        $this->viewFactory->expects('exists')->returns(false);
+        $this->viewFactory->expects('addNamespace')->with('__components', '/tmp');
 
         $component = new class() extends Component
         {
@@ -99,7 +99,7 @@ class ComponentTest extends TestCase
 
         $viewPath = $closure([]);
 
-        $this->viewFactory->shouldReceive('make')->with($viewPath, [], [])->andReturn('<p>Hello World</p>');
+        $this->viewFactory->allows('make')->with($viewPath, [], [])->returns('<p>Hello World</p>');
 
         $this->assertInstanceOf(Closure::class, $closure);
         $this->assertSame('__components::9cc08f5001b343c093ee1a396da820dc', $viewPath);
@@ -111,7 +111,7 @@ class ComponentTest extends TestCase
     public function testRegularViewsGetReturnedUsingViewMethod()
     {
         $view = TestDouble::for(View::class);
-        $this->viewFactory->shouldReceive('make')->once()->with('alert', [], [])->andReturn($view);
+        $this->viewFactory->expects('make')->with('alert', [], [])->returns($view);
 
         $component = new TestRegularViewComponentUsingViewMethod;
 
@@ -120,8 +120,8 @@ class ComponentTest extends TestCase
 
     public function testRegularViewNamesGetReturned()
     {
-        $this->viewFactory->shouldReceive('exists')->once()->andReturn(true);
-        $this->viewFactory->shouldReceive('addNamespace')->never();
+        $this->viewFactory->expects('exists')->returns(true);
+        $this->viewFactory->expects('addNamespace')->never();
 
         $component = new TestRegularViewNameViewComponent;
 

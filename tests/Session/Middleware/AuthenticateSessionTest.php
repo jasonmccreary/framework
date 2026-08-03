@@ -20,7 +20,7 @@ class AuthenticateSessionTest extends TestCase
         $next = fn () => 'next-1';
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->never();
+        $authFactory->expects('viaRemember')->never();
 
         $middleware = new AuthenticateSession($authFactory);
         $response = $middleware->handle($request, $next);
@@ -35,7 +35,7 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession(new Store('name', new ArraySessionHandler(1)));
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->never();
+        $authFactory->expects('viaRemember')->never();
 
         $next = fn () => 'next-2';
         $middleware = new AuthenticateSession($authFactory);
@@ -61,7 +61,7 @@ class AuthenticateSessionTest extends TestCase
         $request->setUserResolver(fn () => $user);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->never();
+        $authFactory->expects('viaRemember')->never();
 
         $next = fn () => 'next-3';
         $middleware = new AuthenticateSession($authFactory);
@@ -87,11 +87,11 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(false);
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn(null);
+        $authFactory->allows('viaRemember')->returns(false);
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns(null);
         // expected MAC for current password when storing in session:
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         $middleware = new AuthenticateSession($authFactory);
         $response = $middleware->handle($request, fn () => 'next-4');
@@ -120,13 +120,13 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(true);
-        $authFactory->shouldReceive('getRecallerName')->once()->andReturn('recaller-name');
-        $authFactory->shouldReceive('logoutCurrentDevice')->once()->andReturn(null);
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn(null);
+        $authFactory->allows('viaRemember')->returns(true);
+        $authFactory->expects('getRecallerName')->returns('recaller-name');
+        $authFactory->expects('logoutCurrentDevice')->returns(null);
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns(null);
         // expected MAC for current password (won't match cookie):
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         $this->assertNotNull($session->get('a'));
         $this->assertNotNull($session->get('b'));
@@ -169,13 +169,13 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(true);
-        $authFactory->shouldReceive('getRecallerName')->once()->andReturn('recaller-name');
-        $authFactory->shouldReceive('logoutCurrentDevice')->once();
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn(null);
+        $authFactory->allows('viaRemember')->returns(true);
+        $authFactory->expects('getRecallerName')->returns('recaller-name');
+        $authFactory->expects('logoutCurrentDevice');
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns(null);
         // expected MAC for current password (won't match cookie):
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         $middleware = new AuthenticateSession($authFactory);
         // act:
@@ -214,13 +214,13 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(true);
-        $authFactory->shouldReceive('getRecallerName')->once()->andReturn('recaller-name');
-        $authFactory->shouldReceive('logoutCurrentDevice')->once()->andReturn(null);
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn(null);
+        $authFactory->allows('viaRemember')->returns(true);
+        $authFactory->expects('getRecallerName')->returns('recaller-name');
+        $authFactory->expects('logoutCurrentDevice')->returns(null);
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns(null);
         // expected MAC for current password (matches cookie but not session):
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         // act:
         $middleware = new AuthenticateSession($authFactory);
@@ -259,13 +259,13 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(false);
-        $authFactory->shouldReceive('getRecallerName')->never();
-        $authFactory->shouldReceive('logoutCurrentDevice')->never();
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn($user);
+        $authFactory->allows('viaRemember')->returns(false);
+        $authFactory->expects('getRecallerName')->never();
+        $authFactory->expects('logoutCurrentDevice')->never();
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns($user);
         // expected MAC for current password:
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         // act:
         $middleware = new AuthenticateSession($authFactory);
@@ -300,12 +300,12 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(true);
-        $authFactory->shouldReceive('getRecallerName')->once()->andReturn('recaller-name');
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn($user);
+        $authFactory->allows('viaRemember')->returns(true);
+        $authFactory->expects('getRecallerName')->returns('recaller-name');
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns($user);
         // The HMAC won't match the old format, but fallback to raw hash should work
-        $authFactory->shouldReceive('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->andReturn('mac:my-pass-(*&^%$#!@');
+        $authFactory->allows('hashPasswordForCookie')->with('my-pass-(*&^%$#!@')->returns('mac:my-pass-(*&^%$#!@');
 
         $middleware = new AuthenticateSession($authFactory);
         $response = $middleware->handle($request, fn () => 'next-9');
@@ -340,10 +340,10 @@ class AuthenticateSessionTest extends TestCase
         $request->setLaravelSession($session);
 
         $authFactory = TestDouble::for(AuthFactory::class);
-        $authFactory->shouldReceive('viaRemember')->andReturn(true);
-        $authFactory->shouldReceive('getRecallerName')->once()->andReturn('recaller-name');
-        $authFactory->shouldReceive('getDefaultDriver')->andReturn('web');
-        $authFactory->shouldReceive('user')->andReturn($user);
+        $authFactory->allows('viaRemember')->returns(true);
+        $authFactory->expects('getRecallerName')->returns('recaller-name');
+        $authFactory->allows('getDefaultDriver')->returns('web');
+        $authFactory->allows('user')->returns($user);
         // For legacy guards without hashPasswordForCookie method, we use fallback to raw hash
         $authFactory->shouldReceive('hashPasswordForCookie')->andThrowExceptions([new BadMethodCallException]);
 

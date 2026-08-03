@@ -239,7 +239,7 @@ class ValidationValidatorTest extends TestCase
     public function testHasNotFailedValidationRules()
     {
         $trans = $this->getTranslator();
-        $trans->shouldReceive('get')->never();
+        $trans->expects('get')->never();
         $v = new Validator($trans, ['foo' => 'taylor'], ['name' => 'Confirmed']);
         $this->assertTrue($v->passes());
         $this->assertEmpty($v->failed());
@@ -248,7 +248,7 @@ class ValidationValidatorTest extends TestCase
     public function testSometimesCanSkipRequiredRules()
     {
         $trans = $this->getTranslator();
-        $trans->shouldReceive('get')->never();
+        $trans->expects('get')->never();
         $v = new Validator($trans, [], ['name' => 'sometimes|required']);
         $this->assertTrue($v->passes());
         $this->assertEmpty($v->failed());
@@ -257,7 +257,7 @@ class ValidationValidatorTest extends TestCase
     public function testInValidatableRulesReturnsValid()
     {
         $trans = $this->getTranslator();
-        $trans->shouldReceive('get')->never();
+        $trans->expects('get')->never();
         $v = new Validator($trans, ['foo' => 'taylor'], ['name' => 'Confirmed']);
         $this->assertTrue($v->passes());
     }
@@ -441,8 +441,8 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, [], ['name' => 'required']);
         $v->setContainer($container = TestDouble::for(Container::class));
         $v->addReplacer('required', 'Foo@bar');
-        $container->shouldReceive('make')->once()->with('Foo')->andReturn($foo = TestDouble::for(stdClass::class));
-        $foo->shouldReceive('bar')->once()->andReturn('replaced!');
+        $container->expects('make')->with('Foo')->returns($foo = TestDouble::for(stdClass::class));
+        $foo->expects('bar')->returns('replaced!');
         $v->passes();
         $v->messages()->setFormat(':message');
         $this->assertSame('replaced!', $v->messages()->first('name'));
@@ -1310,14 +1310,14 @@ class ValidationValidatorTest extends TestCase
     {
         // Fails when user is not logged in.
         $auth = TestDouble::for(Guard::class);
-        $auth->shouldReceive('guard')->andReturn($auth);
-        $auth->shouldReceive('guest')->andReturn(true);
+        $auth->allows('guard')->returns($auth);
+        $auth->allows('guest')->returns(true);
 
         $hasher = TestDouble::for(Hasher::class);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('make')->with('auth')->andReturn($auth);
-        $container->shouldReceive('make')->with('hash')->andReturn($hasher);
+        $container->allows('make')->with('auth')->returns($auth);
+        $container->allows('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
         $trans->shouldReceive('get')->andReturnArg(0);
@@ -1329,19 +1329,19 @@ class ValidationValidatorTest extends TestCase
 
         // Fails when password is incorrect.
         $user = TestDouble::for(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword');
+        $user->allows('getAuthPassword');
 
         $auth = TestDouble::for(Guard::class);
-        $auth->shouldReceive('guard')->andReturn($auth);
-        $auth->shouldReceive('guest')->andReturn(false);
-        $auth->shouldReceive('user')->andReturn($user);
+        $auth->allows('guard')->returns($auth);
+        $auth->allows('guest')->returns(false);
+        $auth->allows('user')->returns($user);
 
         $hasher = TestDouble::for(Hasher::class);
-        $hasher->shouldReceive('check')->andReturn(false);
+        $hasher->allows('check')->returns(false);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('make')->with('auth')->andReturn($auth);
-        $container->shouldReceive('make')->with('hash')->andReturn($hasher);
+        $container->allows('make')->with('auth')->returns($auth);
+        $container->allows('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
         $trans->shouldReceive('get')->andReturnArg(0);
@@ -1353,19 +1353,19 @@ class ValidationValidatorTest extends TestCase
 
         // Succeeds when password is correct.
         $user = TestDouble::for(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword');
+        $user->allows('getAuthPassword');
 
         $auth = TestDouble::for(Guard::class);
-        $auth->shouldReceive('guard')->andReturn($auth);
-        $auth->shouldReceive('guest')->andReturn(false);
-        $auth->shouldReceive('user')->andReturn($user);
+        $auth->allows('guard')->returns($auth);
+        $auth->allows('guest')->returns(false);
+        $auth->allows('user')->returns($user);
 
         $hasher = TestDouble::for(Hasher::class);
-        $hasher->shouldReceive('check')->andReturn(true);
+        $hasher->allows('check')->returns(true);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('make')->with('auth')->andReturn($auth);
-        $container->shouldReceive('make')->with('hash')->andReturn($hasher);
+        $container->allows('make')->with('auth')->returns($auth);
+        $container->allows('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
         $trans->shouldReceive('get')->andReturnArg(0);
@@ -1377,19 +1377,19 @@ class ValidationValidatorTest extends TestCase
 
         // We can use a specific guard.
         $user = TestDouble::for(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword');
+        $user->allows('getAuthPassword');
 
         $auth = TestDouble::for(Guard::class);
-        $auth->shouldReceive('guard')->with('custom')->andReturn($auth);
-        $auth->shouldReceive('guest')->andReturn(false);
-        $auth->shouldReceive('user')->andReturn($user);
+        $auth->allows('guard')->with('custom')->returns($auth);
+        $auth->allows('guest')->returns(false);
+        $auth->allows('user')->returns($user);
 
         $hasher = TestDouble::for(Hasher::class);
-        $hasher->shouldReceive('check')->andReturn(true);
+        $hasher->allows('check')->returns(true);
 
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('make')->with('auth')->andReturn($auth);
-        $container->shouldReceive('make')->with('hash')->andReturn($hasher);
+        $container->allows('make')->with('auth')->returns($auth);
+        $container->allows('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
         $trans->shouldReceive('get')->andReturnArg(0);
@@ -2297,7 +2297,7 @@ class ValidationValidatorTest extends TestCase
         // If file is not successfully uploaded validation should fail with a
         // 'uploaded' error message instead of the original rule.
         $file = TestDouble::for(UploadedFile::class);
-        $file->shouldReceive('isValid')->andReturn(false);
+        $file->allows('isValid')->returns(false);
         $file->shouldNotReceive('getSize');
         $v = new Validator($trans, ['photo' => $file], ['photo' => 'Max:10']);
         $this->assertTrue($v->fails());
@@ -2305,7 +2305,7 @@ class ValidationValidatorTest extends TestCase
 
         // Even "required" will not run if the file failed to upload.
         $file = TestDouble::for(UploadedFile::class);
-        $file->shouldReceive('isValid')->once()->andReturn(false);
+        $file->expects('isValid')->returns(false);
         $v = new Validator($trans, ['photo' => $file], ['photo' => 'required']);
         $this->assertTrue($v->fails());
         $this->assertEquals(['validation.uploaded'], $v->errors()->get('photo'));
@@ -2313,14 +2313,14 @@ class ValidationValidatorTest extends TestCase
         // It should only fail with that rule if a validation rule implies it's
         // a file. Otherwise it should fail with the regular rule.
         $file = TestDouble::for(UploadedFile::class);
-        $file->shouldReceive('isValid')->andReturn(false);
+        $file->allows('isValid')->returns(false);
         $v = new Validator($trans, ['photo' => $file], ['photo' => 'string']);
         $this->assertTrue($v->fails());
         $this->assertEquals(['validation.string'], $v->errors()->get('photo'));
 
         // Validation shouldn't continue if a file failed to upload.
         $file = TestDouble::for(UploadedFile::class);
-        $file->shouldReceive('isValid')->once()->andReturn(false);
+        $file->expects('isValid')->returns(false);
         $v = new Validator($trans, ['photo' => $file], ['photo' => 'file|mimes:pdf|min:10']);
         $this->assertTrue($v->fails());
         $this->assertEquals(['validation.uploaded'], $v->errors()->get('photo'));
@@ -4574,42 +4574,42 @@ class ValidationValidatorTest extends TestCase
         $trans = $this->getIlluminateArrayTranslator();
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', null, null, [])->andReturn(0);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, [])->returns(0);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:connection.users']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with('connection');
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', null, null, [])->andReturn(0);
+        $mock->expects('setConnection')->with('connection');
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, [])->returns(0);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users,email_addr,1']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email_addr', 'foo', '1', 'id', [])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email_addr', 'foo', '1', 'id', [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users,email_addr,1,id_col']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email_addr', 'foo', '1', 'id_col', [])->andReturn(2);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email_addr', 'foo', '1', 'id_col', [])->returns(2);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $v = new Validator($trans, ['users' => [['id' => 1, 'email' => 'foo']]], ['users.*.email' => 'Unique:users,email,[users.*.id]']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', '1', 'id', [])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email', 'foo', '1', 'id', [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users,email_addr,NULL,id_col,foo,bar']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
+        $mock->expects('setConnection')->with(null);
         $mock->shouldReceive('getCount')->once()->withArgs(function () {
             return func_get_args() === ['users', 'email_addr', 'foo', null, 'id_col', ['foo' => 'bar']];
         })->andReturn(2);
@@ -4625,8 +4625,8 @@ class ValidationValidatorTest extends TestCase
         ]);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
         $mock->shouldReceive('setConnection')->twice()->with(null);
-        $mock->shouldReceive('getCount')->with('users', 'email', 'foo', null, null, [])->andReturn(0);
-        $mock->shouldReceive('getCount')->with('user_types', 'type', 'bar', null, null, [])->andReturn(1);
+        $mock->allows('getCount')->with('users', 'email', 'foo', null, null, [])->returns(0);
+        $mock->allows('getCount')->with('user_types', 'type', 'bar', null, null, [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
@@ -4640,8 +4640,8 @@ class ValidationValidatorTest extends TestCase
         ]);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
         $mock->shouldReceive('setConnection')->twice()->with(null);
-        $mock->shouldReceive('getCount')->with('users', 'email', 'foo', null, 'id', [$closure])->andReturn(0);
-        $mock->shouldReceive('getCount')->with('user_types', 'type', 'bar', null, null, [$closure])->andReturn(1);
+        $mock->allows('getCount')->with('users', 'email', 'foo', null, 'id', [$closure])->returns(0);
+        $mock->allows('getCount')->with('user_types', 'type', 'bar', null, null, [$closure])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
     }
@@ -4651,44 +4651,44 @@ class ValidationValidatorTest extends TestCase
         $trans = $this->getIlluminateArrayTranslator();
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Exists:users']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', null, null, [])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
         $trans = $this->getIlluminateArrayTranslator();
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Exists:users,email,account_id,1,name,taylor']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', null, null, ['account_id' => 1, 'name' => 'taylor'])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, ['account_id' => 1, 'name' => 'taylor'])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Exists:users,email_addr']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'email_addr', 'foo', null, null, [])->andReturn(0);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'email_addr', 'foo', null, null, [])->returns(0);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $v = new Validator($trans, ['email' => ['foo']], ['email' => 'Exists:users,email_addr']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getMultiCount')->once()->with('users', 'email_addr', ['foo'], [])->andReturn(0);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getMultiCount')->with('users', 'email_addr', ['foo'], [])->returns(0);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Exists:connection.users']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with('connection');
-        $mock->shouldReceive('getCount')->once()->with('users', 'email', 'foo', null, null, [])->andReturn(1);
+        $mock->expects('setConnection')->with('connection');
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
         $v = new Validator($trans, ['email' => ['foo', 'foo']], ['email' => 'exists:users,email_addr']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getMultiCount')->once()->with('users', 'email_addr', ['foo', 'foo'], [])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getMultiCount')->with('users', 'email_addr', ['foo', 'foo'], [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
     }
@@ -4698,15 +4698,15 @@ class ValidationValidatorTest extends TestCase
         $trans = $this->getIlluminateArrayTranslator();
         $v = new Validator($trans, ['id' => 'foo'], ['id' => 'Integer|Exists:users,id']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('getCount')->never();
+        $mock->expects('getCount')->never();
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
 
         $trans = $this->getIlluminateArrayTranslator();
         $v = new Validator($trans, ['id' => '1'], ['id' => 'Integer|Exists:users,id']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
-        $mock->shouldReceive('setConnection')->once()->with(null);
-        $mock->shouldReceive('getCount')->once()->with('users', 'id', '1', null, null, [])->andReturn(1);
+        $mock->expects('setConnection')->with(null);
+        $mock->expects('getCount')->with('users', 'id', '1', null, null, [])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
     }
@@ -5021,7 +5021,7 @@ class ValidationValidatorTest extends TestCase
     public function testValidateEmailWithCustomClassCheck()
     {
         $container = TestDouble::for(Container::class);
-        $container->shouldReceive('make')->with(NoRFCWarningsValidation::class)->andReturn(new NoRFCWarningsValidation);
+        $container->allows('make')->with(NoRFCWarningsValidation::class)->returns(new NoRFCWarningsValidation);
 
         $v = new Validator($this->getIlluminateArrayTranslator(), ['x' => 'foo@bar '], ['x' => 'email:'.NoRFCWarningsValidation::class]);
         $v->setContainer($container);
@@ -7322,8 +7322,8 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, ['name' => 'taylor'], ['name' => 'foo']);
         $v->setContainer($container = TestDouble::for(Container::class));
         $v->addExtension('foo', 'Foo@bar');
-        $container->shouldReceive('make')->once()->with('Foo')->andReturn($foo = TestDouble::for(stdClass::class));
-        $foo->shouldReceive('bar')->once()->andReturn(false);
+        $container->expects('make')->with('Foo')->returns($foo = TestDouble::for(stdClass::class));
+        $foo->expects('bar')->returns(false);
         $this->assertFalse($v->passes());
         $v->messages()->setFormat(':message');
         $this->assertSame('foo!', $v->messages()->first('name'));
@@ -7336,8 +7336,8 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, ['name' => 'taylor'], ['name' => 'foo']);
         $v->setContainer($container = TestDouble::for(Container::class));
         $v->addExtension('foo', 'Foo');
-        $container->shouldReceive('make')->once()->with('Foo')->andReturn($foo = TestDouble::for(stdClass::class));
-        $foo->shouldReceive('validate')->once()->andReturn(false);
+        $container->expects('make')->with('Foo')->returns($foo = TestDouble::for(stdClass::class));
+        $foo->expects('validate')->returns(false);
         $this->assertFalse($v->passes());
         $v->messages()->setFormat(':message');
         $this->assertSame('foo!', $v->messages()->first('name'));

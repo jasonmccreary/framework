@@ -28,8 +28,8 @@ class MailMailerTest extends TestCase
     public function testMailerSendSendsMessageWithProperViewContent(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -43,8 +43,8 @@ class MailMailerTest extends TestCase
     public function testMailerSendSendsMessageWithCcAndBccRecipients(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -68,7 +68,7 @@ class MailMailerTest extends TestCase
     public function testMailerSendSendsMessageWithProperViewContentUsingHtmlStrings(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('render')->never();
+        $view->expects('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -87,7 +87,7 @@ class MailMailerTest extends TestCase
     public function testMailerSendSendsMessageWithProperViewContentUsingStringCallbacks(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('render')->never();
+        $view->expects('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -117,7 +117,7 @@ class MailMailerTest extends TestCase
     public function testMailerSendSendsMessageWithProperViewContentUsingHtmlMethod(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('render')->never();
+        $view->expects('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -132,8 +132,8 @@ class MailMailerTest extends TestCase
     {
         $view = TestDouble::for(Factory::class);
         $view->shouldReceive('make')->twice()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
-        $view->shouldReceive('render')->once()->andReturn('rendered.plain');
+        $view->expects('render')->returns('rendered.view');
+        $view->expects('render')->returns('rendered.plain');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -164,8 +164,8 @@ class MailMailerTest extends TestCase
     {
         $view = TestDouble::for(Factory::class);
         $view->shouldReceive('make')->twice()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
-        $view->shouldReceive('render')->once()->andReturn('rendered.plain');
+        $view->expects('render')->returns('rendered.view');
+        $view->expects('render')->returns('rendered.plain');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -195,8 +195,8 @@ class MailMailerTest extends TestCase
     public function testToAllowsEmailAndName(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
         $sentMessage = $mailer->to('taylor@laravel.com', 'Taylor Otwell')->send(new TestMail());
@@ -210,8 +210,8 @@ class MailMailerTest extends TestCase
     public function testMailerRejectsAddressesContainingLineBreaks(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
         $this->expectException(InvalidArgumentException::class);
@@ -225,8 +225,8 @@ class MailMailerTest extends TestCase
     public function testMailerRejectsSymfonyAddressesContainingLineBreaks(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
         try {
@@ -246,8 +246,8 @@ class MailMailerTest extends TestCase
     public function testGlobalFromIsRespectedOnAllMessages(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
         $mailer->alwaysFrom('hello@laravel.com');
 
@@ -262,8 +262,8 @@ class MailMailerTest extends TestCase
     public function testGlobalReplyToIsRespectedOnAllMessages(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
         $mailer->alwaysReplyTo('taylor@laravel.com', 'Taylor Otwell');
 
@@ -278,8 +278,8 @@ class MailMailerTest extends TestCase
     public function testGlobalToIsRespectedOnAllMessages(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
         $mailer->alwaysTo('taylor@laravel.com', 'Taylor Otwell');
 
@@ -308,8 +308,8 @@ class MailMailerTest extends TestCase
     public function testGlobalReturnPathIsRespectedOnAllMessages(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
         $mailer->alwaysReturnPath('taylorotwell@gmail.com');
@@ -324,12 +324,12 @@ class MailMailerTest extends TestCase
     public function testEventsAreDispatched(): void
     {
         $view = TestDouble::for(Factory::class);
-        $view->shouldReceive('make')->once()->andReturn($view);
-        $view->shouldReceive('render')->once()->andReturn('rendered.view');
+        $view->expects('make')->returns($view);
+        $view->expects('render')->returns('rendered.view');
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('until')->once()->with(m::type(MessageSending::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(MessageSent::class));
+        $events->expects('until')->with(m::type(MessageSending::class));
+        $events->expects('dispatch')->with(m::type(MessageSent::class));
 
         $mailer = new Mailer('array', $view, new ArrayTransport, $events);
 

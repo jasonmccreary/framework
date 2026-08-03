@@ -21,7 +21,7 @@ class NotificationBroadcastChannelTest extends TestCase
         $notifiable = TestDouble::for(\stdClass::class);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->once()->with(m::type(BroadcastNotificationCreated::class));
+        $events->expects('dispatch')->with(m::type(BroadcastNotificationCreated::class));
         $channel = new BroadcastChannel($events);
         $channel->send($notifiable, $notification);
     }
@@ -78,7 +78,7 @@ class NotificationBroadcastChannelTest extends TestCase
         $notifiable = TestDouble::for(\stdClass::class);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
+        $events->expects('dispatch')->with(m::on(function ($event) {
             return $event->connection === 'sync';
         }));
         $channel = new BroadcastChannel($events);

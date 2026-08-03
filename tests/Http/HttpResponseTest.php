@@ -58,7 +58,7 @@ class HttpResponseTest extends TestCase
     public function testRenderablesAreRendered()
     {
         $mock = TestDouble::for(Renderable::class);
-        $mock->shouldReceive('render')->once()->andReturn('foo');
+        $mock->expects('render')->returns('foo');
         $response = new Response($mock);
         $this->assertSame('foo', $response->getContent());
     }
@@ -155,7 +155,7 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
+        $session->expects('flashInput')->with(['name' => 'Taylor']);
         $response->onlyInput('name');
     }
 
@@ -164,7 +164,7 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
+        $session->expects('flashInput')->with(['name' => 'Taylor']);
         $response->exceptInput('age');
     }
 
@@ -173,10 +173,10 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->shouldReceive('get')->with('errors', m::type(ViewErrorBag::class))->andReturn(new ViewErrorBag);
-        $session->shouldReceive('flash')->once()->with('errors', m::type(ViewErrorBag::class));
+        $session->allows('get')->with('errors', m::type(ViewErrorBag::class))->returns(new ViewErrorBag);
+        $session->expects('flash')->with('errors', m::type(ViewErrorBag::class));
         $provider = TestDouble::for(MessageProvider::class);
-        $provider->shouldReceive('getMessageBag')->once()->andReturn(new MessageBag);
+        $provider->expects('getMessageBag')->returns(new MessageBag);
         $response->withErrors($provider);
     }
 
@@ -199,8 +199,8 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->shouldReceive('get')->with('errors', m::type(ViewErrorBag::class))->andReturn(new ViewErrorBag);
-        $session->shouldReceive('flash')->once()->with('errors', m::type(ViewErrorBag::class));
+        $session->allows('get')->with('errors', m::type(ViewErrorBag::class))->returns(new ViewErrorBag);
+        $session->expects('flash')->with('errors', m::type(ViewErrorBag::class));
         $provider = ['foo' => 'bar'];
         $response->withErrors($provider);
     }
@@ -250,7 +250,7 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->shouldReceive('flash')->once()->with('foo', 'bar');
+        $session->expects('flash')->with('foo', 'bar');
         $response->withFoo('bar');
     }
 

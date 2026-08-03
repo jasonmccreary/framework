@@ -17,7 +17,7 @@ class PaginatorLoadMorphCountTest extends TestCase
         ];
 
         $items = TestDouble::for(Collection::class);
-        $items->shouldReceive('loadMorphCount')->once()->with('parentable', $relations);
+        $items->expects('loadMorphCount')->with('parentable', $relations);
 
         $p = (new class extends AbstractPaginator {
         })->setCollection($items);

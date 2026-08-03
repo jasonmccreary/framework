@@ -63,8 +63,8 @@ class BladeComponentsTest extends AbstractBladeTestCase
         $attributes = new ComponentAttributeBag(['foo' => 'baz', 'other' => 'ok']);
 
         $component = TestDouble::for(Component::class);
-        $component->shouldReceive('withName', 'test');
-        $component->shouldReceive('shouldRender')->andReturn(false);
+        $component->allows('withName', 'test');
+        $component->allows('shouldRender')->returns(false);
 
         Component::resolveComponentsUsing(fn () => $component);
 

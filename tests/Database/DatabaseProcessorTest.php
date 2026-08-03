@@ -16,10 +16,10 @@ class DatabaseProcessorTest extends TestCase
         $pdo = $this->createMock(ProcessorTestPDOStub::class);
         $pdo->expects($this->once())->method('lastInsertId')->with('id')->willReturn('1');
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('insert')->once()->with('sql', ['foo']);
-        $connection->shouldReceive('getPdo')->once()->andReturn($pdo);
+        $connection->expects('insert')->with('sql', ['foo']);
+        $connection->expects('getPdo')->returns($pdo);
         $builder = TestDouble::for(Builder::class);
-        $builder->shouldReceive('getConnection')->andReturn($connection);
+        $builder->allows('getConnection')->returns($connection);
         $processor = new Processor;
         $result = $processor->processInsertGetId($builder, 'sql', ['foo'], 'id');
         $this->assertSame(1, $result);

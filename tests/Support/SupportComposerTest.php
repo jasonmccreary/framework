@@ -62,10 +62,10 @@ class SupportComposerTest extends TestCase
         $directory = __DIR__;
 
         $files = TestDouble::for(Filesystem::class);
-        $files->shouldReceive('exists')->once()->with($directory.'/composer.phar')->andReturn($customComposerPhar);
+        $files->expects('exists')->with($directory.'/composer.phar')->returns($customComposerPhar);
 
         $process = TestDouble::for(Process::class);
-        $process->shouldReceive('run')->once();
+        $process->expects('run');
 
         $composer = $this->getMockBuilder(Composer::class)
             ->onlyMethods(['getProcess'])

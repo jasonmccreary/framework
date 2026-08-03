@@ -181,20 +181,18 @@ class DatabaseTruncationTest extends TestCase
         $actual = [];
 
         $schema = TestDouble::for($builder ?? Builder::class);
-        $schema->shouldReceive('getTables')->with($schemas)->once()->andReturn(
-            empty($schemas)
+        $schema->expects('getTables')->with($schemas)->returns(empty($schemas)
                 ? $allTables
-                : array_filter($allTables, fn ($table) => in_array($table['schema'], $schemas))
-        );
-        $schema->shouldReceive('getCurrentSchemaListing')->once()->andReturn($schemas);
+                : array_filter($allTables, fn ($table) => in_array($table['schema'], $schemas)));
+        $schema->expects('getCurrentSchemaListing')->returns($schemas);
 
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getTablePrefix')->andReturn($prefix);
-        $connection->shouldReceive('getEventDispatcher')->once()->andReturn($dispatcher = TestDouble::for(Dispatcher::class));
-        $connection->shouldReceive('unsetEventDispatcher')->once();
-        $connection->shouldReceive('setEventDispatcher')->once()->with($dispatcher);
-        $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schema);
-        $connection->shouldReceive('withoutTablePrefix')->andReturnUsing(function ($callback) use ($connection) {
+        $connection->allows('getTablePrefix')->returns($prefix);
+        $connection->expects('getEventDispatcher')->returns($dispatcher = TestDouble::for(Dispatcher::class));
+        $connection->expects('unsetEventDispatcher');
+        $connection->expects('setEventDispatcher')->with($dispatcher);
+        $connection->expects('getSchemaBuilder')->returns($schema);
+        $connection->allows('withoutTablePrefix')->resolves(function ($callback) use ($connection) {
             $callback($connection);
         });
         $connection->shouldReceive('table')
@@ -202,8 +200,8 @@ class DatabaseTruncationTest extends TestCase
                 $actual[] = $tableName;
 
                 $table = TestDouble::for(\stdClass::class);
-                $table->shouldReceive('exists')->andReturnTrue();
-                $table->shouldReceive('truncate');
+                $table->allows('exists')->returns(true);
+                $table->allows('truncate');
 
                 return $table;
             });

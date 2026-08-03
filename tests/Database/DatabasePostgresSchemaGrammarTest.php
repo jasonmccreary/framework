@@ -84,7 +84,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testCreateTableWithAutoIncrementStartingValue()
     {
         $connection = $this->getConnection();
-        $connection->getSchemaBuilder()->shouldReceive('parseSchemaAndTable')->andReturn([null, 'users']);
+        $connection->getSchemaBuilder()->allows('parseSchemaAndTable')->returns([null, 'users']);
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->create();
@@ -101,7 +101,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testAddColumnsWithMultipleAutoIncrementStartingValue()
     {
         $builder = $this->getBuilder();
-        $builder->shouldReceive('parseSchemaAndTable')->andReturn([null, 'users']);
+        $builder->allows('parseSchemaAndTable')->returns([null, 'users']);
 
         $blueprint = new Blueprint($this->getConnection(builder: $builder), 'users');
         $blueprint->id()->from(100);
@@ -191,7 +191,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testDropPrimary()
     {
         $connection = $this->getConnection();
-        $connection->getSchemaBuilder()->shouldReceive('parseSchemaAndTable')->andReturn([null, 'users']);
+        $connection->getSchemaBuilder()->allows('parseSchemaAndTable')->returns([null, 'users']);
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->dropPrimary();
@@ -1252,7 +1252,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testCreateDatabase()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->once()->once()->with('charset')->andReturn('utf8_foo');
+        $connection->expects('getConfig')->with('charset')->returns('utf8_foo');
         $statement = $this->getGrammar($connection)->compileCreateDatabase('my_database_a');
 
         $this->assertSame(
@@ -1261,7 +1261,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
         );
 
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->once()->once()->with('charset')->andReturn('utf8_bar');
+        $connection->expects('getConfig')->with('charset')->returns('utf8_bar');
         $statement = $this->getGrammar($connection)->compileCreateDatabase('my_database_b');
 
         $this->assertSame(
@@ -1343,7 +1343,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testCompileColumns()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getServerVersion')->once()->andReturn('12.0.0');
+        $connection->expects('getServerVersion')->returns('12.0.0');
 
         $statement = $connection->getSchemaGrammar()->compileColumns('public', 'table');
 
@@ -1355,7 +1355,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
     public function testCompileColumnsOnLegacyServer()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getServerVersion')->once()->andReturn('8.0.2');
+        $connection->expects('getServerVersion')->returns('8.0.2');
 
         $statement = $connection->getSchemaGrammar()->compileColumns('public', 'table');
 
@@ -1371,16 +1371,14 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
         ?PostgresBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = TestDouble::for(Connection::class)
-            ->shouldReceive('getTablePrefix')->andReturn($prefix)
+        $connection = TestDouble::for(Connection::class)->allows('getTablePrefix')->returns($prefix)
             ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(null)
             ->getMock();
 
         $grammar ??= $this->getGrammar($connection);
         $builder ??= $this->getBuilder();
 
-        return $connection
-            ->shouldReceive('getSchemaGrammar')->andReturn($grammar)
+        return $connection->allows('getSchemaGrammar')->returns($grammar)
             ->shouldReceive('getSchemaBuilder')->andReturn($builder)
             ->getMock();
     }
