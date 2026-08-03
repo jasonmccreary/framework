@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\RedisManager;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;
