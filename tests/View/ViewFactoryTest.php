@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Closure;
 use ErrorException;
 use Illuminate\Container\Container;
@@ -22,7 +20,8 @@ use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
-use Mockery as m;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 use stdClass;
@@ -108,24 +107,59 @@ class ViewFactoryTest extends TestCase
 
     public function testRenderEachCreatesViewForEachItemInArray()
     {
-        $factory = m::mock(Factory::class.'[make]', $this->getFactoryArgs());
-        $factory->expects('make')->with('foo', ['key' => 'bar', 'value' => 'baz'])->returns($mockView1 = TestDouble::for(stdClass::class));
-        $factory->expects('make')->with('foo', ['key' => 'breeze', 'value' => 'boom'])->returns($mockView2 = TestDouble::for(stdClass::class));
+        $mockView1 = TestDouble::for(ViewContract::class);
+        $mockView2 = TestDouble::for(ViewContract::class);
         $mockView1->expects('render')->returns('dayle');
         $mockView2->expects('render')->returns('rees');
+
+        $factory = new class(...$this->getFactoryArgs()) extends Factory
+        {
+            public array $calls = [];
+
+            public array $views = [];
+
+            #[\Override]
+            public function make($view, $data = [], $mergeData = [])
+            {
+                $this->calls[] = [$view, $data];
+
+                return array_shift($this->views);
+            }
+        };
+        $factory->views = [$mockView1, $mockView2];
 
         $result = $factory->renderEach('foo', ['bar' => 'baz', 'breeze' => 'boom'], 'value');
 
         $this->assertSame('daylerees', $result);
+        $this->assertSame([
+            ['foo', ['key' => 'bar', 'value' => 'baz']],
+            ['foo', ['key' => 'breeze', 'value' => 'boom']],
+        ], $factory->calls);
     }
 
     public function testEmptyViewsCanBeReturnedFromRenderEach()
     {
-        $factory = m::mock(Factory::class.'[make]', $this->getFactoryArgs());
-        $factory->expects('make')->with('foo')->returns($mockView = TestDouble::for(stdClass::class));
+        $mockView = TestDouble::for(ViewContract::class);
         $mockView->expects('render')->returns('empty');
 
+        $factory = new class(...$this->getFactoryArgs()) extends Factory
+        {
+            public array $calls = [];
+
+            public $view;
+
+            #[\Override]
+            public function make($view, $data = [], $mergeData = [])
+            {
+                $this->calls[] = [$view, $data];
+
+                return $this->view;
+            }
+        };
+        $factory->view = $mockView;
+
         $this->assertSame('empty', $factory->renderEach('view', [], 'iterator', 'foo'));
+        $this->assertSame([['foo', []]], $factory->calls);
     }
 
     public function testRawStringsMayBeReturnedFromRenderEach()
