@@ -696,10 +696,9 @@ class BusBatchTest extends TestCase
 
         $repository->store($pendingBatch);
 
-        $builder->shouldHaveReceived('insert')
-            ->withArgs(function ($argument) use ($pendingBatch) {
-                return unserialize(base64_decode($argument['options'])) === $pendingBatch->options;
-            });
+        $builder->received('insert')->with(Argument::satisfies(function ($argument) use ($pendingBatch) {
+            return unserialize(base64_decode($argument['options'])) === $pendingBatch->options;
+        }));
 
         $builder->received('first');
     }

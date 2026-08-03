@@ -93,9 +93,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessing::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessed::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(2);
     }
 
     public function testWorkerStopsWhenQueueIsEmptyForConfiguredSeconds()
@@ -110,7 +110,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
         $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
@@ -138,7 +138,7 @@ class QueueWorkerTest extends TestCase
         $this->assertSame(0, $status);
         $this->assertSame(16, $worker->currentTime);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
         $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping

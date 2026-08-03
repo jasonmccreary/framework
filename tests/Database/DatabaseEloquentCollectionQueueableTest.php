@@ -18,9 +18,7 @@ class DatabaseEloquentCollectionQueueableTest extends TestCase
 
         $c->getQueueableIds();
 
-        $spy->shouldHaveReceived()
-            ->getQueueableId()
-            ->once();
+        $spy->received('getQueueableId')->times(1);
     }
 
     public function testSerializesModelEntitiesById()
@@ -31,9 +29,7 @@ class DatabaseEloquentCollectionQueueableTest extends TestCase
 
         $c->getQueueableIds();
 
-        $spy->shouldHaveReceived()
-            ->getQueueableId()
-            ->once();
+        $spy->received('getQueueableId')->times(1);
     }
 
     /**
