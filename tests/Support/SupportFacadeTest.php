@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Support;
 use JMac\Testing\TestDouble;
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
-use Mockery as m;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
