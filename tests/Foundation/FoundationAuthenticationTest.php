@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
@@ -33,14 +34,14 @@ class FoundationAuthenticationTest extends TestCase
      */
     protected function mockGuard()
     {
-        $guard = m::mock(Guard::class);
+        $guard = TestDouble::for(Guard::class);
 
-        $auth = m::mock(AuthManager::class);
+        $auth = TestDouble::for(AuthManager::class);
         $auth->shouldReceive('guard')
             ->once()
             ->andReturn($guard);
 
-        $this->app = m::mock(Application::class);
+        $this->app = TestDouble::for(Application::class);
         $this->app->shouldReceive('make')
             ->once()
             ->withArgs(['auth'])
@@ -71,7 +72,7 @@ class FoundationAuthenticationTest extends TestCase
 
     public function testAssertAuthenticatedAs()
     {
-        $expected = m::mock(Authenticatable::class);
+        $expected = TestDouble::for(Authenticatable::class);
         $expected->shouldReceive('getAuthIdentifier')
             ->andReturn('1');
 
@@ -80,7 +81,7 @@ class FoundationAuthenticationTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $user = m::mock(Authenticatable::class);
+        $user = TestDouble::for(Authenticatable::class);
         $user->shouldReceive('getAuthIdentifier')
             ->andReturn('1');
 
@@ -89,9 +90,9 @@ class FoundationAuthenticationTest extends TestCase
 
     protected function setupProvider(array $credentials)
     {
-        $user = m::mock(Authenticatable::class);
+        $user = TestDouble::for(Authenticatable::class);
 
-        $provider = m::mock(UserProvider::class);
+        $provider = TestDouble::for(UserProvider::class);
 
         $provider->shouldReceive('retrieveByCredentials')
             ->with($credentials)

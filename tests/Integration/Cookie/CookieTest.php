@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Cookie;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Response;
 use Illuminate\Session\NullSessionHandler;
@@ -9,7 +10,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class CookieTest extends TestCase
@@ -46,7 +46,7 @@ class CookieTest extends TestCase
     {
         $app->instance(
             ExceptionHandler::class,
-            $handler = m::mock(ExceptionHandler::class)->shouldIgnoreMissing()
+            $handler = TestDouble::for(ExceptionHandler::class)
         );
 
         $handler->shouldReceive('render')->andReturn(new Response);

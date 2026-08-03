@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Session;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Session\EncryptedStore;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SessionHandlerInterface;
@@ -50,8 +50,8 @@ class EncryptedSessionStoreTest extends TestCase
     {
         return [
             $this->getSessionName(),
-            m::mock(SessionHandlerInterface::class),
-            m::mock(Encrypter::class),
+            TestDouble::for(SessionHandlerInterface::class),
+            TestDouble::for(Encrypter::class),
             $this->getSessionId(),
         ];
     }

@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Integration\Cache;
 
+use JMac\Testing\TestDouble;
 use DateTime;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Connections\PhpRedisClusterConnection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Sleep;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -259,8 +259,8 @@ class RedisStoreTest extends TestCase
 
     public function testPutManyCallsPutWhenClustered()
     {
-        $store = m::mock(RedisStore::class)->makePartial();
-        $store->expects('connection')->andReturn(m::mock(PhpRedisClusterConnection::class));
+        $store = TestDouble::for(RedisStore::class)->passthru();
+        $store->expects('connection')->andReturn(TestDouble::for(PhpRedisClusterConnection::class));
         $store->expects('put')
             ->twice()
             ->andReturn(true);

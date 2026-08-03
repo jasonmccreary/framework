@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -94,7 +95,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('setRelation')->once()->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
@@ -162,10 +163,10 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyOnModel()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
-        $associate = m::mock(Model::class);
+        $associate = TestDouble::for(Model::class);
         $associate->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
         $parent->shouldReceive('setAttribute')->once()->with('foreign_key', 1);
         $parent->shouldReceive('setRelation')->once()->with('relation', $associate);
@@ -175,7 +176,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testDissociateMethodUnsetsForeignKeyOnModel()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
         $parent->shouldReceive('setAttribute')->once()->with('foreign_key', null);
@@ -188,7 +189,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyOnModelById()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
         $parent->shouldReceive('setAttribute')->once()->with('foreign_key', 1);
@@ -243,7 +244,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -253,7 +254,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerParentKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -264,7 +265,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('1');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -274,7 +275,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerRelatedKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -285,7 +286,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -295,7 +296,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerKeys()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -306,7 +307,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation');
@@ -316,7 +317,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsNotModelWithNullParentKey()
     {
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('foreign.value');
@@ -327,7 +328,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -341,7 +342,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -355,7 +356,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value.two');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -369,7 +370,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -383,7 +384,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->once()->andReturn('relation');
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->once()->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->once()->andReturn('relation');
         $model->shouldReceive('getConnectionName')->once()->andReturn('relation.two');
@@ -393,9 +394,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     protected function getRelation($parent = null, $keyType = 'int')
     {
-        $this->builder = m::mock(Builder::class);
+        $this->builder = TestDouble::for(Builder::class);
         $this->builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
-        $this->related = m::mock(Model::class);
+        $this->related = TestDouble::for(Model::class);
         $this->related->shouldReceive('getKeyType')->andReturn($keyType);
         $this->related->shouldReceive('getKeyName')->andReturn('id');
         $this->related->shouldReceive('getTable')->andReturn('relation');

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Faker\Generator;
 use Illuminate\Container\Container;
@@ -20,7 +21,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Models\Money\Price;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -32,7 +32,7 @@ class DatabaseEloquentFactoryTest extends TestCase
         $container->singleton(Generator::class, function ($app, $parameters) {
             return \Faker\Factory::create('en_US');
         });
-        $container->instance(Application::class, $app = m::mock(Application::class));
+        $container->instance(Application::class, $app = TestDouble::for(Application::class));
         $app->shouldReceive('getNamespace')->andReturn('App\\');
 
         $db = new DB;
@@ -721,7 +721,7 @@ class DatabaseEloquentFactoryTest extends TestCase
 
     public function test_resolve_nested_model_name_from_factory()
     {
-        Container::getInstance()->instance(Application::class, $app = m::mock(Application::class));
+        Container::getInstance()->instance(Application::class, $app = TestDouble::for(Application::class));
         $app->shouldReceive('getNamespace')->andReturn('Illuminate\\Tests\\Database\\Fixtures\\');
 
         Factory::useNamespace('Illuminate\\Tests\\Database\\Fixtures\\Factories\\');
@@ -733,7 +733,7 @@ class DatabaseEloquentFactoryTest extends TestCase
 
     public function test_resolve_non_app_nested_model_factories()
     {
-        Container::getInstance()->instance(Application::class, $app = m::mock(Application::class));
+        Container::getInstance()->instance(Application::class, $app = TestDouble::for(Application::class));
         $app->shouldReceive('getNamespace')->andReturn('Foo\\');
 
         Factory::useNamespace('Factories\\');

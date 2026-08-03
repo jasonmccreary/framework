@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
@@ -16,8 +17,8 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testGetRanMigrationsListMigrationsByPackage()
     {
         $repo = $this->getRepository();
-        $query = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $query = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('table')->once()->with('migrations')->andReturn($query);
         $query->shouldReceive('orderBy')->once()->with('batch', 'asc')->andReturn($query);
@@ -31,11 +32,11 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testGetLastMigrationsGetsAllMigrationsWithTheLatestBatchNumber()
     {
         $repo = $this->getMockBuilder(DatabaseMigrationRepository::class)->onlyMethods(['getLastBatchNumber'])->setConstructorArgs([
-            $resolver = m::mock(ConnectionResolverInterface::class), 'migrations',
+            $resolver = TestDouble::for(ConnectionResolverInterface::class), 'migrations',
         ])->getMock();
         $repo->expects($this->once())->method('getLastBatchNumber')->willReturn(1);
-        $query = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $query = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('table')->once()->with('migrations')->andReturn($query);
         $query->shouldReceive('where')->once()->with('batch', 1)->andReturn($query);
@@ -49,8 +50,8 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testLogMethodInsertsRecordIntoMigrationTable()
     {
         $repo = $this->getRepository();
-        $query = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $query = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('table')->once()->with('migrations')->andReturn($query);
         $query->shouldReceive('insert')->once()->with(['migration' => 'bar', 'batch' => 1]);
@@ -62,8 +63,8 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testDeleteMethodRemovesAMigrationFromTheTable()
     {
         $repo = $this->getRepository();
-        $query = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $query = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('table')->once()->with('migrations')->andReturn($query);
         $query->shouldReceive('where')->once()->with('migration', 'foo')->andReturn($query);
@@ -77,7 +78,7 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testGetNextBatchNumberReturnsLastBatchNumberPlusOne()
     {
         $repo = $this->getMockBuilder(DatabaseMigrationRepository::class)->onlyMethods(['getLastBatchNumber'])->setConstructorArgs([
-            m::mock(ConnectionResolverInterface::class), 'migrations',
+            TestDouble::for(ConnectionResolverInterface::class), 'migrations',
         ])->getMock();
         $repo->expects($this->once())->method('getLastBatchNumber')->willReturn(1);
 
@@ -87,8 +88,8 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testGetLastBatchNumberReturnsMaxBatch()
     {
         $repo = $this->getRepository();
-        $query = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $query = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('table')->once()->with('migrations')->andReturn($query);
         $query->shouldReceive('max')->once()->andReturn(1);
@@ -100,8 +101,8 @@ class DatabaseMigrationRepositoryTest extends TestCase
     public function testCreateRepositoryCreatesProperDatabaseTable()
     {
         $repo = $this->getRepository();
-        $schema = m::mock(stdClass::class);
-        $connectionMock = m::mock(Connection::class);
+        $schema = TestDouble::for(stdClass::class);
+        $connectionMock = TestDouble::for(Connection::class);
         $repo->getConnectionResolver()->shouldReceive('connection')->with(null)->andReturn($connectionMock);
         $repo->getConnection()->shouldReceive('getSchemaBuilder')->once()->andReturn($schema);
         $schema->shouldReceive('create')->once()->with('migrations', m::type(Closure::class));
@@ -111,6 +112,6 @@ class DatabaseMigrationRepositoryTest extends TestCase
 
     protected function getRepository()
     {
-        return new DatabaseMigrationRepository(m::mock(ConnectionResolverInterface::class), 'migrations');
+        return new DatabaseMigrationRepository(TestDouble::for(ConnectionResolverInterface::class), 'migrations');
     }
 }

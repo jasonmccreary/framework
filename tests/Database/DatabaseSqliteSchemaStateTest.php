@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Schema\SqliteSchemaState;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Filesystem\Filesystem;
@@ -15,11 +16,11 @@ class DatabaseSqliteSchemaStateTest extends TestCase
     public function testLoadSchemaToDatabase(): void
     {
         $config = ['driver' => 'sqlite', 'database' => 'database/database.sqlite', 'prefix' => '', 'foreign_key_constraints' => true, 'name' => 'sqlite'];
-        $connection = m::mock(SQLiteConnection::class);
+        $connection = TestDouble::for(SQLiteConnection::class);
         $connection->shouldReceive('getConfig')->andReturn($config);
         $connection->shouldReceive('getDatabaseName')->andReturn($config['database']);
 
-        $process = m::spy(Process::class);
+        $process = TestDouble::for(Process::class);
         $processFactory = m::spy(function () use ($process) {
             return $process;
         });
@@ -38,12 +39,12 @@ class DatabaseSqliteSchemaStateTest extends TestCase
     public function testLoadSchemaToInMemory(): void
     {
         $config = ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true, 'name' => 'sqlite'];
-        $connection = m::mock(SQLiteConnection::class);
+        $connection = TestDouble::for(SQLiteConnection::class);
         $connection->shouldReceive('getConfig')->andReturn($config);
         $connection->shouldReceive('getDatabaseName')->andReturn($config['database']);
-        $connection->shouldReceive('getPdo')->andReturn($pdo = m::spy(PDO::class));
+        $connection->shouldReceive('getPdo')->andReturn($pdo = TestDouble::for(PDO::class));
 
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldReceive('get')->andReturn('CREATE TABLE IF NOT EXISTS "migrations" ("id" integer not null primary key autoincrement, "migration" varchar not null, "batch" integer not null);');
 
         $schemaState = new SqliteSchemaState($connection, $files);

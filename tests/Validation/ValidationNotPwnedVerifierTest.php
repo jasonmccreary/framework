@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
 use Illuminate\Validation\NotPwnedVerifier;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ValidationNotPwnedVerifierTest extends TestCase
@@ -22,7 +22,7 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testEmptyValues()
     {
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
         $verifier = new NotPwnedVerifier($httpFactory);
 
         foreach (['', false, 0] as $password) {
@@ -35,10 +35,10 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiResponseGoesWrong()
     {
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
 
         $httpFactory
             ->shouldReceive('withHeaders')
@@ -74,8 +74,8 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiGoesDown()
     {
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
         $httpFactory
             ->shouldReceive('withHeaders')
@@ -116,8 +116,8 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
         $differentSuffix = '00000000000000000000000000000000000';
 
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
         $httpFactory
             ->shouldReceive('withHeaders')
@@ -157,13 +157,13 @@ class ValidationNotPwnedVerifierTest extends TestCase
         $container = Container::getInstance();
         $exception = new ConnectionException();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
         $exceptionHandler->shouldReceive('report')->once()->with($exception, []);
         $container->bind(ExceptionHandler::class, function () use ($exceptionHandler) {
             return $exceptionHandler;
         });
 
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
 
         $httpFactory
             ->shouldReceive('withHeaders')

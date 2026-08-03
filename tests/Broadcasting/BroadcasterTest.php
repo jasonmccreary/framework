@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
 use Illuminate\Container\Container;
@@ -9,7 +10,6 @@ use Illuminate\Contracts\Routing\BindingRegistrar;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteBinding;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -64,7 +64,7 @@ class BroadcasterTest extends TestCase
         // Test Explicit Binding...
         $container = new Container;
         Container::setInstance($container);
-        $binder = m::mock(BindingRegistrar::class);
+        $binder = TestDouble::for(BindingRegistrar::class);
         $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn(function () {
             return 'bound';
         });
@@ -87,7 +87,7 @@ class BroadcasterTest extends TestCase
     {
         $container = new Container;
         Container::setInstance($container);
-        $binder = m::mock(BindingRegistrar::class);
+        $binder = TestDouble::for(BindingRegistrar::class);
         $callback = RouteBinding::forModel($container, BroadcasterTestEloquentModelStub::class);
 
         $binder->shouldReceive('getBindingCallback')->times(2)->with('model')->andReturn($callback);
@@ -202,7 +202,7 @@ class BroadcasterTest extends TestCase
             //
         });
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('user')
             ->once()
             ->withNoArgs()
@@ -220,7 +220,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('user')
             ->once()
             ->with('myguard')
@@ -241,7 +241,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard2', 'myguard1']]);
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('user')
             ->once()
             ->with('myguard1')
@@ -269,7 +269,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('user')
             ->once()
             ->with('myguard')
@@ -286,7 +286,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard1', 'myguard2']]);
 
-        $request = m::mock(Request::class);
+        $request = TestDouble::for(Request::class);
         $request->shouldReceive('user')
             ->once()
             ->with('myguard1')

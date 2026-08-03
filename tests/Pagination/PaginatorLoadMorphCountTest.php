@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Pagination;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\AbstractPaginator;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class PaginatorLoadMorphCountTest extends TestCase
@@ -16,7 +16,7 @@ class PaginatorLoadMorphCountTest extends TestCase
             'App\\Company' => ['employees', 'calendars'],
         ];
 
-        $items = m::mock(Collection::class);
+        $items = TestDouble::for(Collection::class);
         $items->shouldReceive('loadMorphCount')->once()->with('parentable', $relations);
 
         $p = (new class extends AbstractPaginator {

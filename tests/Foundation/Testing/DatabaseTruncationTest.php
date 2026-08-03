@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Foundation\Testing;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseTruncationTest extends TestCase
@@ -180,7 +180,7 @@ class DatabaseTruncationTest extends TestCase
     ): Connection {
         $actual = [];
 
-        $schema = m::mock($builder ?? Builder::class);
+        $schema = TestDouble::for($builder ?? Builder::class);
         $schema->shouldReceive('getTables')->with($schemas)->once()->andReturn(
             empty($schemas)
                 ? $allTables
@@ -188,9 +188,9 @@ class DatabaseTruncationTest extends TestCase
         );
         $schema->shouldReceive('getCurrentSchemaListing')->once()->andReturn($schemas);
 
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn($prefix);
-        $connection->shouldReceive('getEventDispatcher')->once()->andReturn($dispatcher = m::mock(Dispatcher::class));
+        $connection->shouldReceive('getEventDispatcher')->once()->andReturn($dispatcher = TestDouble::for(Dispatcher::class));
         $connection->shouldReceive('unsetEventDispatcher')->once();
         $connection->shouldReceive('setEventDispatcher')->once()->with($dispatcher);
         $connection->shouldReceive('getSchemaBuilder')->once()->andReturn($schema);
@@ -201,7 +201,7 @@ class DatabaseTruncationTest extends TestCase
             ->andReturnUsing(function (string $tableName) use (&$actual) {
                 $actual[] = $tableName;
 
-                $table = m::mock();
+                $table = TestDouble::for(\stdClass::class);
                 $table->shouldReceive('exists')->andReturnTrue();
                 $table->shouldReceive('truncate');
 
