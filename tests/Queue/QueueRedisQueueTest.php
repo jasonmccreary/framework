@@ -38,7 +38,7 @@ class QueueRedisQueueTest extends TestCase
 
         $id = $queue->push('foo', ['data']);
         $this->assertSame('foo', $id);
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }
@@ -67,7 +67,7 @@ class QueueRedisQueueTest extends TestCase
 
         $id = $queue->push('foo', ['data']);
         $this->assertSame('foo', $id);
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Queue::createPayloadUsing(null);
 
@@ -102,7 +102,7 @@ class QueueRedisQueueTest extends TestCase
 
         $id = $queue->push('foo', ['data']);
         $this->assertSame('foo', $id);
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Queue::createPayloadUsing(null);
 
@@ -135,7 +135,7 @@ class QueueRedisQueueTest extends TestCase
 
         $id = $queue->later(1, 'foo', ['data']);
         $this->assertSame('foo', $id);
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }
@@ -164,7 +164,7 @@ class QueueRedisQueueTest extends TestCase
             json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'id' => 'foo', 'attempts' => 0, 'delay' => 5]));
 
         $queue->later($date->addSeconds(5), 'foo', ['data']);
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }

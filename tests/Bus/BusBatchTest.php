@@ -702,7 +702,7 @@ class BusBatchTest extends TestCase
                 return unserialize(base64_decode($argument['options'])) === $pendingBatch->options;
             });
 
-        $builder->shouldHaveReceived('first');
+        $builder->received('first');
     }
 
     #[DataProvider('serializedOptions')]
