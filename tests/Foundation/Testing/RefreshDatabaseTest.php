@@ -52,9 +52,7 @@ class RefreshDatabaseTest extends TestCase
     {
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => false,
                 '--seed' => false,
@@ -69,9 +67,7 @@ class RefreshDatabaseTest extends TestCase
 
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => true,
                 '--drop-types' => false,
                 '--seed' => false,
@@ -86,9 +82,7 @@ class RefreshDatabaseTest extends TestCase
 
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => true,
                 '--seed' => false,

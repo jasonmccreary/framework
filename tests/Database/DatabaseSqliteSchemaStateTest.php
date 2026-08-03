@@ -17,8 +17,8 @@ class DatabaseSqliteSchemaStateTest extends TestCase
     {
         $config = ['driver' => 'sqlite', 'database' => 'database/database.sqlite', 'prefix' => '', 'foreign_key_constraints' => true, 'name' => 'sqlite'];
         $connection = TestDouble::for(SQLiteConnection::class);
-        $connection->shouldReceive('getConfig')->andReturn($config);
-        $connection->shouldReceive('getDatabaseName')->andReturn($config['database']);
+        $connection->allows('getConfig')->returns($config);
+        $connection->allows('getDatabaseName')->returns($config['database']);
 
         $process = TestDouble::for(Process::class);
         $processFactory = m::spy(function () use ($process) {
@@ -40,12 +40,12 @@ class DatabaseSqliteSchemaStateTest extends TestCase
     {
         $config = ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true, 'name' => 'sqlite'];
         $connection = TestDouble::for(SQLiteConnection::class);
-        $connection->shouldReceive('getConfig')->andReturn($config);
-        $connection->shouldReceive('getDatabaseName')->andReturn($config['database']);
-        $connection->shouldReceive('getPdo')->andReturn($pdo = TestDouble::for(PDO::class));
+        $connection->allows('getConfig')->returns($config);
+        $connection->allows('getDatabaseName')->returns($config['database']);
+        $connection->allows('getPdo')->returns($pdo = TestDouble::for(PDO::class));
 
         $files = TestDouble::for(Filesystem::class);
-        $files->shouldReceive('get')->andReturn('CREATE TABLE IF NOT EXISTS "migrations" ("id" integer not null primary key autoincrement, "migration" varchar not null, "batch" integer not null);');
+        $files->allows('get')->returns('CREATE TABLE IF NOT EXISTS "migrations" ("id" integer not null primary key autoincrement, "migration" varchar not null, "batch" integer not null);');
 
         $schemaState = new SqliteSchemaState($connection, $files);
         $schemaState->load('database/schema/sqlite-schema.dump');

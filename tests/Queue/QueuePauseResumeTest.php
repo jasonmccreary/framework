@@ -26,7 +26,7 @@ class QueuePauseResumeTest extends TestCase
 
         // Mock the cache facade to return our cache repository
         $cacheMock = TestDouble::for(\stdClass::class);
-        $cacheMock->shouldReceive('store')->andReturn($this->cache);
+        $cacheMock->allows('store')->returns($this->cache);
 
         $app = [
             'config' => [

@@ -29,8 +29,8 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldNotReceive('addCallbackForRollback');
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->never();
 
             return $transactionManager;
         });
@@ -42,8 +42,8 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldNotReceive('addCallback')->andReturn(null);
-            $transactionManager->shouldNotReceive('addCallbackForRollback');
+            $transactionManager->expects('addCallback')->returns(null)->never();
+            $transactionManager->expects('addCallbackForRollback')->never();
 
             return $transactionManager;
         });
@@ -61,8 +61,8 @@ class QueueConnectionTest extends TestCase
 
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldNotReceive('addCallbackForRollback');
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->never();
 
             return $transactionManager;
         });
@@ -78,8 +78,8 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldReceive('addCallbackForRollback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->returns(null);
 
             return $transactionManager;
         });
@@ -91,8 +91,8 @@ class QueueConnectionTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldNotReceive('addCallback')->andReturn(null);
-            $transactionManager->shouldNotReceive('addCallbackForRollback')->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null)->never();
+            $transactionManager->expects('addCallbackForRollback')->returns(null)->never();
 
             return $transactionManager;
         });
@@ -110,8 +110,8 @@ class QueueConnectionTest extends TestCase
 
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
-            $transactionManager->shouldReceive('addCallbackForRollback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
+            $transactionManager->expects('addCallbackForRollback')->returns(null);
 
             return $transactionManager;
         });

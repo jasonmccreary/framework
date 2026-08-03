@@ -37,35 +37,24 @@ class FoundationAuthenticationTest extends TestCase
         $guard = TestDouble::for(Guard::class);
 
         $auth = TestDouble::for(AuthManager::class);
-        $auth->shouldReceive('guard')
-            ->once()
-            ->andReturn($guard);
+        $auth->expects('guard')->returns($guard);
 
         $this->app = TestDouble::for(Application::class);
-        $this->app->shouldReceive('make')
-            ->once()
-            ->withArgs(['auth'])
-            ->andReturn($auth);
+        $this->app->expects('make')->with('auth')->returns($auth);
 
         return $guard;
     }
 
     public function testAssertAuthenticated()
     {
-        $this->mockGuard()
-            ->shouldReceive('check')
-            ->once()
-            ->andReturn(true);
+        $this->mockGuard()->expects('check')->returns(true);
 
         $this->assertAuthenticated();
     }
 
     public function testAssertGuest()
     {
-        $this->mockGuard()
-            ->shouldReceive('check')
-            ->once()
-            ->andReturn(false);
+        $this->mockGuard()->expects('check')->returns(false);
 
         $this->assertGuest();
     }
@@ -73,17 +62,12 @@ class FoundationAuthenticationTest extends TestCase
     public function testAssertAuthenticatedAs()
     {
         $expected = TestDouble::for(Authenticatable::class);
-        $expected->shouldReceive('getAuthIdentifier')
-            ->andReturn('1');
+        $expected->allows('getAuthIdentifier')->returns('1');
 
-        $this->mockGuard()
-            ->shouldReceive('user')
-            ->once()
-            ->andReturn($expected);
+        $this->mockGuard()->expects('user')->returns($expected);
 
         $user = TestDouble::for(Authenticatable::class);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn('1');
+        $user->allows('getAuthIdentifier')->returns('1');
 
         $this->assertAuthenticatedAs($user);
     }
@@ -94,18 +78,11 @@ class FoundationAuthenticationTest extends TestCase
 
         $provider = TestDouble::for(UserProvider::class);
 
-        $provider->shouldReceive('retrieveByCredentials')
-            ->with($credentials)
-            ->andReturn($user);
+        $provider->allows('retrieveByCredentials')->with($credentials)->returns($user);
 
-        $provider->shouldReceive('validateCredentials')
-            ->with($user, $credentials)
-            ->andReturn($this->credentials === $credentials);
+        $provider->allows('validateCredentials')->with($user, $credentials)->returns($this->credentials === $credentials);
 
-        $this->mockGuard()
-            ->shouldReceive('getProvider')
-            ->once()
-            ->andReturn($provider);
+        $this->mockGuard()->expects('getProvider')->returns($provider);
     }
 
     public function testAssertCredentials()

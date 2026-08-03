@@ -14,17 +14,17 @@ class DatabaseSoftDeletingTraitTest extends TestCase
     {
         $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->passthru();
-        $model->shouldReceive('newModelQuery')->andReturn($query = TestDouble::for(stdClass::class));
-        $query->shouldReceive('where')->once()->with('id', '=', 1)->andReturn($query);
-        $query->shouldReceive('update')->once()->with([
+        $model->allows('newModelQuery')->returns($query = TestDouble::for(stdClass::class));
+        $query->expects('where')->with('id', '=', 1)->returns($query);
+        $query->expects('update')->with([
             'deleted_at' => 'date-time',
             'updated_at' => 'date-time',
         ]);
-        $model->shouldReceive('syncOriginalAttributes')->once()->with([
+        $model->expects('syncOriginalAttributes')->with([
             'deleted_at',
             'updated_at',
         ]);
-        $model->shouldReceive('usesTimestamps')->once()->andReturn(true);
+        $model->expects('usesTimestamps')->returns(true);
         $model->delete();
 
         $this->assertInstanceOf(Carbon::class, $model->deleted_at);
@@ -34,9 +34,9 @@ class DatabaseSoftDeletingTraitTest extends TestCase
     {
         $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->passthru();
-        $model->shouldReceive('fireModelEvent')->with('restoring')->andReturn(true);
-        $model->shouldReceive('save')->once();
-        $model->shouldReceive('fireModelEvent')->with('restored', false)->andReturn(true);
+        $model->allows('fireModelEvent')->with('restoring')->returns(true);
+        $model->expects('save');
+        $model->allows('fireModelEvent')->with('restored', false)->returns(true);
 
         $model->restore();
 
@@ -47,8 +47,8 @@ class DatabaseSoftDeletingTraitTest extends TestCase
     {
         $model = TestDouble::for(DatabaseSoftDeletingTraitStub::class);
         $model->passthru();
-        $model->shouldReceive('fireModelEvent')->with('restoring')->andReturn(false);
-        $model->shouldReceive('save')->never();
+        $model->allows('fireModelEvent')->with('restoring')->returns(false);
+        $model->expects('save')->never();
 
         $this->assertFalse($model->restore());
     }

@@ -25,21 +25,15 @@ class FailoverQueueTest extends TestCase
             'sync',
         ]);
 
-        $queue->shouldReceive('connection')->once()->with('redis')->andReturn(
-            $redis = TestDouble::for('stdClass'),
-        );
+        $queue->expects('connection')->with('redis')->returns($redis = TestDouble::for('stdClass'));
 
-        $queue->shouldReceive('connection')->once()->with('sync')->andReturn(
-            $sync = TestDouble::for('stdClass'),
-        );
+        $queue->expects('connection')->with('sync')->returns($sync = TestDouble::for('stdClass'));
 
-        $events->shouldReceive('dispatch')->once();
+        $events->expects('dispatch');
 
-        $redis->shouldReceive('push')->once()->andReturnUsing(
-            fn () => throw new \Exception('error')
-        );
+        $redis->expects('push')->resolves(fn () => throw new \Exception('error'));
 
-        $sync->shouldReceive('push')->once();
+        $sync->expects('push');
 
         $failover->push('some-job');
     }

@@ -13,11 +13,8 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItScansUsingDefaultNode()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
-        $client->shouldReceive('scan')
-            ->once()
-            ->with(0, ['127.0.0.1', '6379'], '*', 10)
-            ->andReturn(['key']);
+        $client->expects('_masters')->returns([['127.0.0.1', '6379']]);
+        $client->expects('scan')->with(0, ['127.0.0.1', '6379'], '*', 10)->returns(['key']);
 
         $connection = new PhpRedisClusterConnection($client);
         $this->assertEquals([0, ['key']], $connection->scan(0));
@@ -26,8 +23,8 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItOnlyFetchesDefaultNodeOnce()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
-        $client->shouldReceive('scan')->twice();
+        $client->expects('_masters')->returns([['127.0.0.1', '6379']]);
+        $client->expects('scan')->times(2);
 
         $connection = new PhpRedisClusterConnection($client);
         $connection->scan(0);
@@ -37,10 +34,7 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItScansUsingOptionNode()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('scan')
-            ->once()
-            ->with(0, 'option-node', '*', 10)
-            ->andReturn(['key']);
+        $client->expects('scan')->with(0, 'option-node', '*', 10)->returns(['key']);
 
         $connection = new PhpRedisClusterConnection($client);
         $this->assertEquals([0, ['key']], $connection->scan(0, ['node' => 'option-node']));
@@ -49,8 +43,8 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItThrowsExceptionWithoutNodes()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([]);
-        $client->shouldReceive('scan');
+        $client->expects('_masters')->returns([]);
+        $client->allows('scan');
 
         $this->expectExceptionMessage('Unable to determine default node. No master nodes found in the cluster.');
 
@@ -61,11 +55,8 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItReturnsFalseWhenCursorIsZeroAndResultIsEmpty()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
-        $client->shouldReceive('scan')
-            ->once()
-            ->with(0, ['127.0.0.1', '6379'], '*', 10)
-            ->andReturn(false);
+        $client->expects('_masters')->returns([['127.0.0.1', '6379']]);
+        $client->expects('scan')->with(0, ['127.0.0.1', '6379'], '*', 10)->returns(false);
 
         $connection = new PhpRedisClusterConnection($client);
         $this->assertFalse($connection->scan(0));
@@ -74,12 +65,12 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItFlushesAllMasterNodes()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([
+        $client->expects('_masters')->returns([
             ['127.0.0.1', '6379'],
             ['127.0.0.2', '6379'],
         ]);
-        $client->shouldReceive('flushdb')->once()->with(['127.0.0.1', '6379']);
-        $client->shouldReceive('flushdb')->once()->with(['127.0.0.2', '6379']);
+        $client->expects('flushdb')->with(['127.0.0.1', '6379']);
+        $client->expects('flushdb')->with(['127.0.0.2', '6379']);
 
         $connection = new PhpRedisClusterConnection($client);
         $connection->flushdb();
@@ -88,12 +79,12 @@ class PhpRedisClusterConnectionTest extends TestCase
     public function testItFlushesAllMasterNodesAsync()
     {
         $client = TestDouble::for(\RedisCluster::class);
-        $client->shouldReceive('_masters')->once()->andReturn([
+        $client->expects('_masters')->returns([
             ['127.0.0.1', '6379'],
             ['127.0.0.2', '6379'],
         ]);
-        $client->shouldReceive('rawCommand')->once()->with(['127.0.0.1', '6379'], 'flushdb', 'async');
-        $client->shouldReceive('rawCommand')->once()->with(['127.0.0.2', '6379'], 'flushdb', 'async');
+        $client->expects('rawCommand')->with(['127.0.0.1', '6379'], 'flushdb', 'async');
+        $client->expects('rawCommand')->with(['127.0.0.2', '6379'], 'flushdb', 'async');
 
         $connection = new PhpRedisClusterConnection($client);
         $connection->flushdb('ASYNC');

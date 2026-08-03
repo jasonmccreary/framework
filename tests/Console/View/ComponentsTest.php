@@ -71,18 +71,12 @@ class ComponentsTest extends TestCase
     {
         $output = TestDouble::for(OutputStyle::class);
 
-        $output->shouldReceive('confirm')
-            ->with('Question?', false)
-            ->once()
-            ->andReturnTrue();
+        $output->expects('confirm')->with('Question?', false)->returns(true);
 
         $result = (new Components\Confirm($output))->render('Question?');
         $this->assertTrue($result);
 
-        $output->shouldReceive('confirm')
-            ->with('Question?', true)
-            ->once()
-            ->andReturnTrue();
+        $output->expects('confirm')->with('Question?', true)->returns(true);
 
         $result = (new Components\Confirm($output))->render('Question?', true);
         $this->assertTrue($result);
@@ -92,10 +86,7 @@ class ComponentsTest extends TestCase
     {
         $output = TestDouble::for(OutputStyle::class);
 
-        $output->shouldReceive('askQuestion')
-            ->with(m::type(ChoiceQuestion::class))
-            ->once()
-            ->andReturn('a');
+        $output->expects('askQuestion')->with(m::type(ChoiceQuestion::class))->returns('a');
 
         $result = (new Components\Choice($output))->render('Question?', ['a', 'b']);
         $this->assertSame('a', $result);

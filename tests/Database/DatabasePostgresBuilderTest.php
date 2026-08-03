@@ -16,11 +16,9 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = TestDouble::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
-        $connection->shouldReceive('getConfig')->once()->with('charset')->andReturn('utf8');
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $connection->shouldReceive('statement')->once()->with(
-            'create database "my_temporary_database" encoding "utf8"'
-        )->andReturn(true);
+        $connection->expects('getConfig')->with('charset')->returns('utf8');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('statement')->with('create database "my_temporary_database" encoding "utf8"')->returns(true);
 
         $builder = $this->getBuilder($connection);
         $builder->createDatabase('my_temporary_database');
@@ -31,10 +29,8 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = TestDouble::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $connection->shouldReceive('statement')->once()->with(
-            'drop database if exists "my_database_a"'
-        )->andReturn(true);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('statement')->with('drop database if exists "my_database_a"')->returns(true);
 
         $builder = $this->getBuilder($connection);
 
@@ -44,13 +40,13 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testHasTableWhenSchemaUnqualifiedAndSearchPathMissing()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
-        $connection->shouldReceive('getConfig')->with('schema')->andReturn(null);
+        $connection->allows('getConfig')->with('search_path')->returns(null);
+        $connection->allows('getConfig')->with('schema')->returns(null);
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileTableExists')->andReturn('sql');
-        $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileTableExists')->returns('sql');
+        $connection->allows('scalar')->with('sql')->returns(1);
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -60,12 +56,12 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testHasTableWhenSchemaUnqualifiedAndSearchPathFilled()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('myapp,public');
+        $connection->allows('getConfig')->with('search_path')->returns('myapp,public');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileTableExists')->andReturn('sql');
-        $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileTableExists')->returns('sql');
+        $connection->allows('scalar')->with('sql')->returns(1);
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -75,13 +71,13 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testHasTableWhenSchemaUnqualifiedAndSearchPathFallbackFilled()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
-        $connection->shouldReceive('getConfig')->with('schema')->andReturn(['myapp', 'public']);
+        $connection->allows('getConfig')->with('search_path')->returns(null);
+        $connection->allows('getConfig')->with('schema')->returns(['myapp', 'public']);
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileTableExists')->andReturn('sql');
-        $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileTableExists')->returns('sql');
+        $connection->allows('scalar')->with('sql')->returns(1);
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -91,13 +87,13 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testHasTableWhenSchemaUnqualifiedAndSearchPathIsUserVariable()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('$user');
+        $connection->allows('getConfig')->with('username')->returns('foouser');
+        $connection->allows('getConfig')->with('search_path')->returns('$user');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileTableExists')->andReturn('sql');
-        $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileTableExists')->returns('sql');
+        $connection->allows('scalar')->with('sql')->returns(1);
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('foo'));
@@ -107,12 +103,12 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testHasTableWhenSchemaQualifiedAndSearchPathMismatches()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
+        $connection->allows('getConfig')->with('search_path')->returns('public');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileTableExists')->andReturn('sql');
-        $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileTableExists')->returns('sql');
+        $connection->allows('scalar')->with('sql')->returns(1);
+        $connection->allows('getTablePrefix');
         $builder = $this->getBuilder($connection);
 
         $this->assertTrue($builder->hasTable('myapp.foo'));
@@ -124,7 +120,7 @@ class DatabasePostgresBuilderTest extends TestCase
 
         $connection = $this->getConnection();
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
         $builder = $this->getBuilder($connection);
 
         $builder->hasTable('mydatabase.myapp.foo');
@@ -133,16 +129,16 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testGetColumnListingWhenSchemaUnqualifiedAndSearchPathMissing()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
-        $connection->shouldReceive('getConfig')->with('schema')->andReturn(null);
+        $connection->allows('getConfig')->with('search_path')->returns(null);
+        $connection->allows('getConfig')->with('schema')->returns(null);
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->allows('processColumns')->returns([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
 
         $builder->getColumnListing('foo');
@@ -151,15 +147,15 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testGetColumnListingWhenSchemaUnqualifiedAndSearchPathFilled()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('myapp,public');
+        $connection->allows('getConfig')->with('search_path')->returns('myapp,public');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->allows('processColumns')->returns([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
 
         $builder->getColumnListing('foo');
@@ -168,16 +164,16 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testGetColumnListingWhenSchemaUnqualifiedAndSearchPathIsUserVariable()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('$user');
+        $connection->allows('getConfig')->with('username')->returns('foouser');
+        $connection->allows('getConfig')->with('search_path')->returns('$user');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileColumns')->with(null, 'foo')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->allows('processColumns')->returns([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
 
         $builder->getColumnListing('foo');
@@ -186,15 +182,15 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testGetColumnListingWhenSchemaQualifiedAndSearchPathMismatches()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
+        $connection->allows('getConfig')->with('search_path')->returns('public');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $grammar->shouldReceive('compileColumns')->with('myapp', 'foo')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
-        $connection->shouldReceive('getTablePrefix');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $grammar->allows('compileColumns')->with('myapp', 'foo')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'some_column']]);
+        $connection->allows('getTablePrefix');
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->allows('processColumns')->returns([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
 
         $builder->getColumnListing('myapp.foo');
@@ -205,9 +201,9 @@ class DatabasePostgresBuilderTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
+        $connection->allows('getConfig')->with('search_path')->returns('public');
         $grammar = TestDouble::for(PostgresGrammar::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
         $builder = $this->getBuilder($connection);
 
         $builder->getColumnListing('mydatabase.myapp.foo');
@@ -216,17 +212,17 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testDropAllTablesWhenSearchPathIsString()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
-        $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
+        $connection->allows('getConfig')->with('search_path')->returns('public');
+        $connection->allows('getConfig')->with('dont_drop')->returns(['foo']);
         $grammar = TestDouble::for(PostgresGrammar::class);
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $grammar->shouldReceive('compileTables')->andReturn('sql');
-        $processor->shouldReceive('processTables')->once()->andReturn([['name' => 'users', 'schema' => 'public', 'schema_qualified_name' => 'public.users']]);
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'users', 'schema' => 'public', 'schema_qualified_name' => 'public.users']]);
-        $grammar->shouldReceive('compileDropAllTables')->with(['public.users'])->andReturn('drop table "public"."users" cascade');
-        $connection->shouldReceive('statement')->with('drop table "public"."users" cascade');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $grammar->allows('compileTables')->returns('sql');
+        $processor->expects('processTables')->returns([['name' => 'users', 'schema' => 'public', 'schema_qualified_name' => 'public.users']]);
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'users', 'schema' => 'public', 'schema_qualified_name' => 'public.users']]);
+        $grammar->allows('compileDropAllTables')->with(['public.users'])->returns('drop table "public"."users" cascade');
+        $connection->allows('statement')->with('drop table "public"."users" cascade');
         $builder = $this->getBuilder($connection);
 
         $builder->dropAllTables();
@@ -235,18 +231,18 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testDropAllTablesWhenSearchPathIsStringOfMany()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn('"$user", public, foo_bar-Baz.Áüõß');
-        $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
+        $connection->allows('getConfig')->with('username')->returns('foouser');
+        $connection->allows('getConfig')->with('search_path')->returns('"$user", public, foo_bar-Baz.Áüõß');
+        $connection->allows('getConfig')->with('dont_drop')->returns(['foo']);
         $grammar = TestDouble::for(PostgresGrammar::class);
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processTables')->once()->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
-        $grammar->shouldReceive('compileTables')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
-        $grammar->shouldReceive('compileDropAllTables')->with(['foouser.users'])->andReturn('drop table "foouser"."users" cascade');
-        $connection->shouldReceive('statement')->with('drop table "foouser"."users" cascade');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->expects('processTables')->returns([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
+        $grammar->allows('compileTables')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
+        $grammar->allows('compileDropAllTables')->with(['foouser.users'])->returns('drop table "foouser"."users" cascade');
+        $connection->allows('statement')->with('drop table "foouser"."users" cascade');
         $builder = $this->getBuilder($connection);
 
         $builder->dropAllTables();
@@ -255,23 +251,23 @@ class DatabasePostgresBuilderTest extends TestCase
     public function testDropAllTablesWhenSearchPathIsArrayOfMany()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
-        $connection->shouldReceive('getConfig')->with('search_path')->andReturn([
+        $connection->allows('getConfig')->with('username')->returns('foouser');
+        $connection->allows('getConfig')->with('search_path')->returns([
             '$user',
             '"dev"',
             "'test'",
             'spaced schema',
         ]);
-        $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
+        $connection->allows('getConfig')->with('dont_drop')->returns(['foo']);
         $grammar = TestDouble::for(PostgresGrammar::class);
         $processor = TestDouble::for(PostgresProcessor::class);
-        $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
-        $connection->shouldReceive('getPostProcessor')->andReturn($processor);
-        $processor->shouldReceive('processTables')->once()->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
-        $grammar->shouldReceive('compileTables')->andReturn('sql');
-        $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
-        $grammar->shouldReceive('compileDropAllTables')->with(['foouser.users'])->andReturn('drop table "foouser"."users" cascade');
-        $connection->shouldReceive('statement')->with('drop table "foouser"."users" cascade');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->allows('getPostProcessor')->returns($processor);
+        $processor->expects('processTables')->returns([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
+        $grammar->allows('compileTables')->returns('sql');
+        $connection->allows('selectFromWriteConnection')->with('sql')->returns([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
+        $grammar->allows('compileDropAllTables')->with(['foouser.users'])->returns('drop table "foouser"."users" cascade');
+        $connection->allows('statement')->with('drop table "foouser"."users" cascade');
         $builder = $this->getBuilder($connection);
 
         $builder->dropAllTables();

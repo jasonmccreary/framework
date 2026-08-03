@@ -28,7 +28,7 @@ class PredisConnectionTest extends TestCase
         $predis = new PredisConnection($client = TestDouble::for(Client::class));
         $predis->setEventDispatcher($event);
 
-        $client->shouldReceive($command)->with(...$parameters)->andReturnTrue();
+        $client->allows($command)->with(...$parameters)->returns(true);
 
         $this->assertTrue($predis->command($command, $parameters));
 
