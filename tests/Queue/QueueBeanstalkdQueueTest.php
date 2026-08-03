@@ -87,8 +87,8 @@ class QueueBeanstalkdQueueTest extends TestCase
         $tube = new TubeName('default');
 
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class))
-            ->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
+        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class));
+        $pheanstalk->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
 
         $jobId = TestDouble::for(JobIdInterface::class);
         $jobId->shouldReceive('getId')->once();
@@ -106,8 +106,8 @@ class QueueBeanstalkdQueueTest extends TestCase
         $tube = new TubeName('default');
 
         $pheanstalk = $this->queue->getPheanstalk();
-        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class))
-            ->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
+        $pheanstalk->shouldReceive('watch')->once()->with(m::type(TubeName::class));
+        $pheanstalk->shouldReceive('listTubesWatched')->once()->andReturn(new TubeList($tube));
 
         $jobId = TestDouble::for(JobIdInterface::class);
         $jobId->shouldReceive('getId')->once();
