@@ -21,7 +21,6 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Builder;
-use Mockery as m;
 use PDO;
 use PDOException;
 use PDOStatement;

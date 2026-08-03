@@ -7,7 +7,6 @@ use JMac\Testing\TestDouble;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class EnvironmentEncryptCommandTest extends TestCase

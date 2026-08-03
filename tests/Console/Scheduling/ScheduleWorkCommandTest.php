@@ -9,7 +9,6 @@ use Illuminate\Console\Scheduling\ScheduleWorkCommand;
 use Illuminate\Console\Signals;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Symfony\Component\Console\Input\ArrayInput;

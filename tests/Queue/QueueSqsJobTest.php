@@ -9,7 +9,6 @@ use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Queue\Jobs\SqsJob;
 use Illuminate\Queue\SqsQueue;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

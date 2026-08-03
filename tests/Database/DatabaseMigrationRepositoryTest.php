@@ -9,7 +9,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 use Illuminate\Support\Collection;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
