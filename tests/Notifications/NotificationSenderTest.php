@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Notifications;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
@@ -231,7 +232,7 @@ class NotificationSenderTest extends TestCase
 
         $events = TestDouble::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->shouldReceive('dispatch')->once()->withArgs(function ($event) {
             return $event instanceof NotificationFailed && $event->data['exception'] instanceof TransportException;
         });
@@ -253,7 +254,7 @@ class NotificationSenderTest extends TestCase
 
         $events = TestDouble::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch');
 
         $sender = new NotificationSender($manager, $bus, $events);

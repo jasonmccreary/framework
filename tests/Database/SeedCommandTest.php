@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
@@ -42,8 +43,8 @@ class SeedCommandTest extends TestCase
         $container->expects('environment')->returns('testing');
         $container->allows('runningUnitTests')->returns('true');
         $container->allows('make')->with('DatabaseSeeder')->returns($seeder);
-        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
-        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
+        $container->allows('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -80,8 +81,8 @@ class SeedCommandTest extends TestCase
         $container->expects('environment')->returns('testing');
         $container->allows('runningUnitTests')->returns('true');
         $container->allows('make')->with(UserWithoutModelEventsSeeder::class)->returns($seeder);
-        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
-        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
+        $container->allows('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -108,8 +109,8 @@ class SeedCommandTest extends TestCase
         $container = TestDouble::for(Container::class);
         $container->allows('call');
         $container->allows('runningUnitTests')->returns('true');
-        $container->allows('make')->with(OutputStyle::class, m::any())->returns($outputStyle);
-        $container->allows('make')->with(Factory::class, m::any())->returns(new Factory($outputStyle));
+        $container->allows('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->allows('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\Console\Migrations\ResetCommand;
@@ -28,7 +29,7 @@ class DatabaseMigrationResetCommandTest extends TestCase
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
         $migrator->expects('paths')->returns([]);
-        $migrator->expects('usingConnection')->with(null, m::type(Closure::class))->resolves(function ($connection, $callback) {
+        $migrator->expects('usingConnection')->with(null, Argument::type(Closure::class))->resolves(function ($connection, $callback) {
             $callback();
         });
         $migrator->expects('repositoryExists')->returns(true);
@@ -45,7 +46,7 @@ class DatabaseMigrationResetCommandTest extends TestCase
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
         $migrator->expects('paths')->returns([]);
-        $migrator->expects('usingConnection')->with('foo', m::type(Closure::class))->resolves(function ($connection, $callback) {
+        $migrator->expects('usingConnection')->with('foo', Argument::type(Closure::class))->resolves(function ($connection, $callback) {
             $callback();
         });
         $migrator->expects('repositoryExists')->returns(true);

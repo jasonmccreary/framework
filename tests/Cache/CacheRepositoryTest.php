@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use ArrayIterator;
 use BadMethodCallException;
@@ -565,7 +566,7 @@ class CacheRepositoryTest extends TestCase
         $lock = TestDouble::for(Lock::class);
 
         $store->expects('lock')->with('foo', 30, null)->returns($lock);
-        $lock->expects('block')->with(15, m::type('callable'))->resolves(function ($seconds, $callback) {
+        $lock->expects('block')->with(15, Argument::type('callable'))->resolves(function ($seconds, $callback) {
             return $callback();
         });
 
@@ -583,7 +584,7 @@ class CacheRepositoryTest extends TestCase
         $lock = TestDouble::for(Lock::class);
 
         $store->expects('lock')->with('foo', 10, 'my-owner')->returns($lock);
-        $lock->expects('block')->with(10, m::type('callable'))->resolves(function ($seconds, $callback) {
+        $lock->expects('block')->with(10, Argument::type('callable'))->resolves(function ($seconds, $callback) {
             return $callback();
         });
 

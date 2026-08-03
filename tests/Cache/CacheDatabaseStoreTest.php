@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Cache\DatabaseStore;
@@ -35,7 +36,7 @@ class CacheDatabaseStoreTest extends TestCase
 
         $deleteQuery = TestDouble::for(stdClass::class);
         $deleteQuery->expects('whereIn')->with('key', ['prefixfoo', 'prefixilluminate:cache:flexible:created:foo'])->returns($deleteQuery);
-        $deleteQuery->expects('where')->with('expiration', '<=', m::any())->returns($deleteQuery);
+        $deleteQuery->expects('where')->with('expiration', '<=', Argument::any())->returns($deleteQuery);
         $deleteQuery->expects('delete')->returns(null);
 
         $store->getConnection()->shouldReceive('table')->twice()->with('table')->andReturn($getQuery, $deleteQuery);
@@ -161,7 +162,7 @@ class CacheDatabaseStoreTest extends TestCase
         $table = TestDouble::for(stdClass::class);
         $cache = TestDouble::for(stdClass::class);
 
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);
@@ -171,7 +172,7 @@ class CacheDatabaseStoreTest extends TestCase
         $this->assertFalse($store->increment('foo'));
 
         $cache->value = serialize('bar');
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);
@@ -181,7 +182,7 @@ class CacheDatabaseStoreTest extends TestCase
         $this->assertFalse($store->increment('foo'));
 
         $cache->value = serialize(2);
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);
@@ -200,7 +201,7 @@ class CacheDatabaseStoreTest extends TestCase
         $table = TestDouble::for(stdClass::class);
         $cache = TestDouble::for(stdClass::class);
 
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);
@@ -210,7 +211,7 @@ class CacheDatabaseStoreTest extends TestCase
         $this->assertFalse($store->decrement('foo'));
 
         $cache->value = serialize('bar');
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);
@@ -220,7 +221,7 @@ class CacheDatabaseStoreTest extends TestCase
         $this->assertFalse($store->decrement('foo'));
 
         $cache->value = serialize(3);
-        $store->getConnection()->expects('transaction')->with(m::type(Closure::class))->resolves(function ($closure) {
+        $store->getConnection()->expects('transaction')->with(Argument::type(Closure::class))->resolves(function ($closure) {
             return $closure();
         });
         $store->getConnection()->expects('table')->with('table')->returns($table);

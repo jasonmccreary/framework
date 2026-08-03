@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Support\DeferrableProvider;
@@ -27,7 +28,7 @@ class FoundationApplicationTest extends TestCase
         $app['translator'] = $trans = TestDouble::for(stdClass::class);
         $trans->expects('setLocale')->with('foo');
         $app['events'] = $events = TestDouble::for(stdClass::class);
-        $events->expects('dispatch')->with(m::on(function (LocaleUpdated $event) {
+        $events->expects('dispatch')->with(Argument::satisfies(function (LocaleUpdated $event) {
             return $event->locale === 'foo' && $event->previousLocale === 'bar';
         }));
 

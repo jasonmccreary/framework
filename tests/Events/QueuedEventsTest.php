@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Container\Container;
@@ -33,7 +34,7 @@ class QueuedEventsTest extends TestCase
 
         $queue->expects('connection')->with(null)->returns($queue);
 
-        $queue->expects('pushOn')->with(null, m::type(CallQueuedListener::class));
+        $queue->expects('pushOn')->with(null, Argument::type(CallQueuedListener::class));
 
         $d->setQueueResolver(function () use ($queue) {
             return $queue;
@@ -82,7 +83,7 @@ class QueuedEventsTest extends TestCase
 
         $queue->expects('connection')->with('some_other_connection')->returns($queue);
 
-        $queue->expects('pushOn')->with(null, m::type(CallQueuedListener::class));
+        $queue->expects('pushOn')->with(null, Argument::type(CallQueuedListener::class));
 
         $d->setQueueResolver(function () use ($queue) {
             return $queue;
@@ -99,7 +100,7 @@ class QueuedEventsTest extends TestCase
 
         $queue->expects('connection')->with(null)->returns($queue);
 
-        $queue->expects('laterOn')->with(null, 20, m::type(CallQueuedListener::class));
+        $queue->expects('laterOn')->with(null, 20, Argument::type(CallQueuedListener::class));
 
         $d->setQueueResolver(function () use ($queue) {
             return $queue;
@@ -183,7 +184,7 @@ class QueuedEventsTest extends TestCase
 
         $queue->expects('connection')->with(null)->returns($queue);
 
-        $queue->expects('laterOn')->with(null, 60, m::type(CallQueuedListener::class));
+        $queue->expects('laterOn')->with(null, 60, Argument::type(CallQueuedListener::class));
 
         $d->setQueueResolver(function () use ($queue) {
             return $queue;
