@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
@@ -136,7 +137,7 @@ class CacheCommandMutexTest extends TestCase
     {
         $lock->expects('lock')
             ->once()
-            ->with(m::type('string'), m::type('int'))
+            ->with(Argument::type('string'), Argument::type('int'))
             ->andReturns($lock);
 
         $lock->expects('get')

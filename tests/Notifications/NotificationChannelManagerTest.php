@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Notifications;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -43,9 +44,9 @@ class NotificationChannelManagerTest extends TestCase
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $driver->expects('send');
-        $events->allows('dispatch')->with(m::type(NotificationSent::class));
+        $events->allows('dispatch')->with(Argument::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
     }
@@ -80,11 +81,11 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $events->expects('until')->with(m::type(NotificationSending::class))->returns(false);
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->expects('until')->with(Argument::type(NotificationSending::class))->returns(false);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $manager->expects('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $driver->expects('send');
-        $events->allows('dispatch')->with(m::type(NotificationSent::class));
+        $events->allows('dispatch')->with(Argument::type(NotificationSent::class));
 
         $manager->send([new NotificationChannelManagerTestNotifiable], new NotificationChannelManagerTestNotificationWithTwoChannels);
     }
@@ -98,7 +99,7 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $manager->expects('driver')->never();
         $events->expects('dispatch')->never();
 
@@ -114,10 +115,10 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $manager->expects('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $driver->expects('send');
-        $events->expects('dispatch')->with(m::type(NotificationSent::class));
+        $events->expects('dispatch')->with(Argument::type(NotificationSent::class));
 
         $manager->send([new NotificationChannelManagerTestNotifiable], new NotificationChannelManagerTestNotCancelledNotification);
     }
@@ -135,9 +136,9 @@ class NotificationChannelManagerTest extends TestCase
         $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $driver->allows('send')->throws(new Exception());
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
-        $events->expects('dispatch')->with(m::type(NotificationFailed::class));
-        $events->expects('dispatch')->never()->with(m::type(NotificationSent::class));
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
+        $events->expects('dispatch')->with(Argument::type(NotificationFailed::class));
+        $events->expects('dispatch')->never()->with(Argument::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
     }
@@ -158,16 +159,16 @@ class NotificationChannelManagerTest extends TestCase
             throw new Exception();
         });
         $listeners = new Collection();
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('listen')->resolves(function ($event, $callback) use ($listeners) {
             $listeners->push($callback);
         });
-        $events->expects('dispatch')->with(m::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
+        $events->expects('dispatch')->with(Argument::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
             foreach ($listeners as $listener) {
                 $listener($event);
             }
         });
-        $events->expects('dispatch')->never()->with(m::type(NotificationSent::class));
+        $events->expects('dispatch')->never()->with(Argument::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
     }
@@ -202,16 +203,16 @@ class NotificationChannelManagerTest extends TestCase
             };
         });
         $listeners = new Collection();
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('listen')->resolves(function ($event, $callback) use ($listeners) {
             $listeners->push($callback);
         });
-        $events->expects('dispatch')->with(m::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
+        $events->expects('dispatch')->with(Argument::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
             foreach ($listeners as $listener) {
                 $listener($event);
             }
         });
-        $events->expects('dispatch')->times(2)->with(m::type(NotificationSent::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
@@ -228,7 +229,7 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
-        $bus->allows('dispatch')->with(m::type(SendQueuedNotifications::class));
+        $bus->allows('dispatch')->with(Argument::type(SendQueuedNotifications::class));
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -246,7 +247,7 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
-        $bus->allows('dispatch')->with(m::type(TestSendQueuedNotifications::class));
+        $bus->allows('dispatch')->with(Argument::type(TestSendQueuedNotifications::class));
         $container->bind(SendQueuedNotifications::class, TestSendQueuedNotifications::class);
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
@@ -482,9 +483,9 @@ class NotificationChannelManagerTest extends TestCase
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $driver->expects('send')->returns($response = TestDouble::for(\stdClass::class));
-        $events->allows('dispatch')->with(m::type(NotificationSent::class));
+        $events->allows('dispatch')->with(Argument::type(NotificationSent::class));
 
         $manager->send($notifiable = new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerWithAfterSendingMethodNotification);
 

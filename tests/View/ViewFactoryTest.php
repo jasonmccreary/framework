@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\View;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Closure;
 use ErrorException;
@@ -182,11 +183,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('creating: name', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: name', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('creating: name', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('creating: name', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('name');
@@ -200,11 +201,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('creating: namespaced::*', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: namespaced::*', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('creating: namespaced::my-package-view', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('creating: namespaced::my-package-view', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('namespaced::my-package-view');
@@ -218,13 +219,13 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('creating: namespaced::*', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: namespaced::*', Argument::type(Closure::class));
 
-        $factory->getDispatcher()->expects('listen')->with('creating: welcome', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: welcome', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('creating: namespaced::my-package-view', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('creating: namespaced::my-package-view', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('namespaced::my-package-view');
@@ -238,11 +239,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('creating: *', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: *', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('creating: name', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('creating: name', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('name');
@@ -256,11 +257,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('creating: components.button', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('creating: components.button', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('creating: components/button', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('creating: components/button', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('components/button');
@@ -274,11 +275,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('composing: name', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: name', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: name', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: name', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('name');
@@ -292,11 +293,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('composing: name', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: name', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: name', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: name', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('name');
@@ -310,11 +311,11 @@ class ViewFactoryTest extends TestCase
     {
         $factory = $this->getFactory();
 
-        $factory->getDispatcher()->expects('listen')->with('composing: namespaced::*', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: namespaced::*', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: namespaced::my-package-view', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: namespaced::my-package-view', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('namespaced::my-package-view');
@@ -327,13 +328,13 @@ class ViewFactoryTest extends TestCase
     public function testCallComposersDoesDispatchEventsWhenIsNecessaryUsingNamespacedNestedWildcards()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: namespaced::*', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: namespaced::*', Argument::type(Closure::class));
 
-        $factory->getDispatcher()->expects('listen')->with('composing: welcome', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: welcome', Argument::type(Closure::class));
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: namespaced::my-package-view', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: namespaced::my-package-view', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('namespaced::my-package-view');
@@ -349,9 +350,9 @@ class ViewFactoryTest extends TestCase
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('listen')->with('composing: *', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: *', Argument::type(Closure::class));
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: name', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: name', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('name');
@@ -367,9 +368,9 @@ class ViewFactoryTest extends TestCase
 
         $factory->getDispatcher()->allows('hasListeners')->returns(true);
 
-        $factory->getDispatcher()->expects('listen')->with('composing: components.button', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: components.button', Argument::type(Closure::class));
 
-        $factory->getDispatcher()->expects('dispatch')->with('composing: components/button', m::type('array'));
+        $factory->getDispatcher()->expects('dispatch')->with('composing: components/button', Argument::type('array'));
 
         $view = TestDouble::for(View::class);
         $view->expects('name')->returns('components/button');
@@ -382,7 +383,7 @@ class ViewFactoryTest extends TestCase
     public function testComposersAreProperlyRegistered()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: foo', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $callback = $factory->composer('foo', function () {
             return 'bar';
         });
@@ -394,9 +395,9 @@ class ViewFactoryTest extends TestCase
     public function testComposersCanBeMassRegistered()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: bar', m::type(Closure::class));
-        $factory->getDispatcher()->expects('listen')->with('composing: qux', m::type(Closure::class));
-        $factory->getDispatcher()->expects('listen')->with('composing: foo', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: bar', Argument::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: qux', Argument::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $composers = $factory->composers([
             'foo' => 'bar',
             'baz@baz' => ['qux', 'foo'],
@@ -414,7 +415,7 @@ class ViewFactoryTest extends TestCase
     public function testClassCallbacks()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: foo', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $factory->setContainer($container = TestDouble::for(Container::class));
         $container->expects('make')->with('FooComposer')->returns($composer = TestDouble::for(stdClass::class));
         $composer->expects('compose')->with('view')->returns('composed');
@@ -427,7 +428,7 @@ class ViewFactoryTest extends TestCase
     public function testClassCallbacksWithMethods()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: foo', m::type(Closure::class));
+        $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $factory->setContainer($container = TestDouble::for(Container::class));
         $container->expects('make')->with('FooComposer')->returns($composer = TestDouble::for(stdClass::class));
         $composer->expects('doComposer')->with('view')->returns('composed');
@@ -444,7 +445,7 @@ class ViewFactoryTest extends TestCase
         $dispatcher = TestDouble::for(DispatcherContract::class);
         $factory->setDispatcher($dispatcher);
 
-        $dispatcher->shouldReceive('listen', m::any())->once();
+        $dispatcher->shouldReceive('listen', Argument::any())->once();
 
         $view->expects('name')->returns('name');
 
@@ -459,7 +460,7 @@ class ViewFactoryTest extends TestCase
     public function testComposersAreRegisteredWithSlashAndDot()
     {
         $factory = $this->getFactory();
-        $factory->getDispatcher()->expects('listen')->with('composing: foo.bar', m::any())->times(2);
+        $factory->getDispatcher()->expects('listen')->with('composing: foo.bar', Argument::any())->times(2);
         $factory->composer('foo.bar', '');
         $factory->composer('foo/bar', '');
     }
