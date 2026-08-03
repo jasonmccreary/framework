@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
@@ -173,7 +174,7 @@ class SupportServiceProviderTest extends TestCase
         $translator = TestDouble::for(Translator::class);
         $translator->expects('addPath')->with(__DIR__.'/translations');
 
-        $this->app->expects('afterResolving')->with('translator', m::on(function ($callback) use ($translator) {
+        $this->app->expects('afterResolving')->with('translator', Argument::satisfies(function ($callback) use ($translator) {
             $callback($translator);
 
             return true;
@@ -188,7 +189,7 @@ class SupportServiceProviderTest extends TestCase
         $translator = TestDouble::for(Translator::class);
         $translator->expects('addNamespace')->with('namespace', __DIR__.'/translations');
 
-        $this->app->expects('afterResolving')->with('translator', m::on(function ($callback) use ($translator) {
+        $this->app->expects('afterResolving')->with('translator', Argument::satisfies(function ($callback) use ($translator) {
             $callback($translator);
 
             return true;

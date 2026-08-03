@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -22,7 +23,7 @@ class RedisEventsTest extends TestCase
         $client->allows('get')->with('key')->throws($exception);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->with(m::on(function ($event) use ($exception) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($exception) {
             return $event instanceof CommandFailed
                 && $event->command === 'get'
                 && $event->parameters === ['key']
@@ -46,8 +47,8 @@ class RedisEventsTest extends TestCase
         $client->allows('get')->with('key')->throws($exception);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->with(m::type(CommandFailed::class));
-        $events->expects('dispatch')->with(m::type(CommandExecuted::class))->never();
+        $events->expects('dispatch')->with(Argument::type(CommandFailed::class));
+        $events->expects('dispatch')->with(Argument::type(CommandExecuted::class))->never();
 
         $connection = new PhpRedisConnection($client);
         $connection->setEventDispatcher($events);
@@ -67,7 +68,7 @@ class RedisEventsTest extends TestCase
         $client->allows('get')->with('key')->throws($exception);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->with(m::on(function ($event) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof CommandFailed
                 && $event->connectionName === 'test-connection';
         }));
@@ -88,7 +89,7 @@ class RedisEventsTest extends TestCase
         $client = TestDouble::for(Redis::class);
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('listen')->with(CommandFailed::class, m::type('Closure'));
+        $events->expects('listen')->with(CommandFailed::class, Argument::type('Closure'));
 
         $connection = new PhpRedisConnection($client);
         $connection->setEventDispatcher($events);

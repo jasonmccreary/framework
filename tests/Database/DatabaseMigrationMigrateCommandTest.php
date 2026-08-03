@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -53,7 +54,7 @@ class DatabaseMigrationMigrateCommandTest extends TestCase
         $connection->allows('getSchemaState')->returns($schemaState = TestDouble::for(stdClass::class));
         $schemaState->allows('handleOutputUsing')->returns($schemaState);
         $schemaState->expects('load')->with(__DIR__.'/stubs/schema.sql');
-        $dispatcher->expects('dispatch')->with(m::type(SchemaLoaded::class));
+        $dispatcher->expects('dispatch')->with(Argument::type(SchemaLoaded::class));
         $migrator->expects('setOutput')->returns($migrator);
         $migrator->expects('run')->with([__DIR__.DIRECTORY_SEPARATOR.'migrations'], ['pretend' => false, 'step' => false]);
         $migrator->allows('getNotes')->returns([]);

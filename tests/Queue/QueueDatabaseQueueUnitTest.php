@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Bus\Batchable;
 use Illuminate\Container\Container;
@@ -253,7 +254,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $database->allows('table')->with('table')->returns($query = TestDouble::for(stdClass::class));
         $query->allows('where')->with('queue', 'default')->returns($query);
         $query->allows('whereNull')->with('reserved_at')->returns($query);
-        $query->allows('where')->with('available_at', '<=', m::any())->returns($query);
+        $query->allows('where')->with('available_at', '<=', Argument::any())->returns($query);
         $query->allows('get')->returns(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
 
         $jobs = $queue->pendingJobs();
@@ -278,7 +279,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $database->allows('table')->with('table')->returns($query = TestDouble::for(stdClass::class));
         $query->allows('where')->with('queue', 'default')->returns($query);
         $query->allows('whereNull')->with('reserved_at')->returns($query);
-        $query->allows('where')->with('available_at', '>', m::any())->returns($query);
+        $query->allows('where')->with('available_at', '>', Argument::any())->returns($query);
         $query->allows('get')->returns(collect([(object) ['id' => 2, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
 
         $jobs = $queue->delayedJobs();
@@ -327,7 +328,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $database->allows('table')->with('table')->returns($query = TestDouble::for(stdClass::class));
         $query->allows('whereNull')->with('reserved_at')->returns($query);
-        $query->allows('where')->with('available_at', '<=', m::any())->returns($query);
+        $query->allows('where')->with('available_at', '<=', Argument::any())->returns($query);
         $query->allows('get')->returns(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 0, 'reserved_at' => null],
             (object) ['id' => 2, 'queue' => 'emails', 'payload' => $payload2, 'attempts' => 0, 'reserved_at' => null],
@@ -358,7 +359,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $database->allows('table')->with('table')->returns($query = TestDouble::for(stdClass::class));
         $query->allows('whereNull')->with('reserved_at')->returns($query);
-        $query->allows('where')->with('available_at', '>', m::any())->returns($query);
+        $query->allows('where')->with('available_at', '>', Argument::any())->returns($query);
         $query->allows('get')->returns(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 0, 'reserved_at' => null],
             (object) ['id' => 2, 'queue' => 'emails', 'payload' => $payload2, 'attempts' => 0, 'reserved_at' => null],

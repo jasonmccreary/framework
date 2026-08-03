@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
@@ -41,11 +42,11 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
 
         $console->allows('find')->with('migrate:reset')->returns($resetCommand);
         $console->allows('find')->with('migrate')->returns($migrateCommand);
-        $dispatcher->expects('dispatch')->with(m::type(DatabaseRefreshed::class));
+        $dispatcher->expects('dispatch')->with(Argument::type(DatabaseRefreshed::class));
 
         $quote = DIRECTORY_SEPARATOR === '\\' ? '"' : "'";
-        $resetCommand->allows('run')->with(new InputMatcher("--force=1 {$quote}migrate:reset{$quote}"), m::any());
-        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), m::any());
+        $resetCommand->allows('run')->with(new InputMatcher("--force=1 {$quote}migrate:reset{$quote}"), Argument::any());
+        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), Argument::any());
 
         $this->runCommand($command);
     }
@@ -66,11 +67,11 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
 
         $console->allows('find')->with('migrate:rollback')->returns($rollbackCommand);
         $console->allows('find')->with('migrate')->returns($migrateCommand);
-        $dispatcher->expects('dispatch')->with(m::type(DatabaseRefreshed::class));
+        $dispatcher->expects('dispatch')->with(Argument::type(DatabaseRefreshed::class));
 
         $quote = DIRECTORY_SEPARATOR === '\\' ? '"' : "'";
-        $rollbackCommand->allows('run')->with(new InputMatcher("--step=2 --force=1 {$quote}migrate:rollback{$quote}"), m::any());
-        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), m::any());
+        $rollbackCommand->allows('run')->with(new InputMatcher("--step=2 --force=1 {$quote}migrate:rollback{$quote}"), Argument::any());
+        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), Argument::any());
 
         $this->runCommand($command, ['--step' => 2]);
     }

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -127,8 +128,8 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $builder->expects('where')->with('taggables.taggable_type', get_class($parent));
 
         $grammar = TestDouble::for(Grammar::class);
-        $grammar->allows('isExpression')->with(m::type(Expression::class))->returns(true);
-        $grammar->allows('isExpression')->with(m::type('string'))->returns(false);
+        $grammar->allows('isExpression')->with(Argument::type(Expression::class))->returns(true);
+        $grammar->allows('isExpression')->with(Argument::type('string'))->returns(false);
         $stdClass = TestDouble::for(stdClass::class);
         $stdClass->allows('getGrammar')->returns($grammar);
 

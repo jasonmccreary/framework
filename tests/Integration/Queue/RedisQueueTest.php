@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -535,8 +536,8 @@ class RedisQueueTest extends TestCase
     public function testBulkJobQueuedEvent($driver)
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->with(m::type(JobQueueing::class))->returns(null)->times(3);
-        $events->expects('dispatch')->with(m::type(JobQueued::class))->returns(null)->times(3);
+        $events->expects('dispatch')->with(Argument::type(JobQueueing::class))->returns(null)->times(3);
+        $events->expects('dispatch')->with(Argument::type(JobQueued::class))->returns(null)->times(3);
 
         $container = TestDouble::for(Container::class);
         $container->expects('bound')->with('events')->returns(true)->times(6);

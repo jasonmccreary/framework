@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Cache\DatabaseLock;
 use Illuminate\Database\Connection;
@@ -153,7 +154,7 @@ class DatabaseLockTest extends DatabaseTestCase
 
         $insertBuilder->expects('insert')->returns(true);
 
-        $deleteBuilder->expects('where')->with('expiration', '<=', m::any())->returns($deleteBuilder);
+        $deleteBuilder->expects('where')->with('expiration', '<=', Argument::any())->returns($deleteBuilder);
         $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where expiration <= ?',

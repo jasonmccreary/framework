@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Closure;
 use Exception;
@@ -90,7 +91,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->shouldReceive('error')->withArgs(['Exception message', m::hasKey('exception')])->once();
+        $logger->shouldReceive('error')->withArgs(['Exception message', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
 
         $this->handler->report(new RuntimeException('Exception message'));
     }
@@ -150,7 +151,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->shouldReceive('error')->withArgs(['Exception message', m::hasKey('exception')])->once();
+        $logger->shouldReceive('error')->withArgs(['Exception message', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
 
         $this->handler->report(new UnReportableException('Exception message'));
     }
@@ -160,9 +161,9 @@ class FoundationExceptionsHandlerTest extends TestCase
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
 
-        $logger->shouldReceive('critical')->withArgs(['Critical message', m::hasKey('exception')])->once();
-        $logger->shouldReceive('error')->withArgs(['Error message', m::hasKey('exception')])->once();
-        $logger->shouldReceive('log')->withArgs(['custom', 'Custom message', m::hasKey('exception')])->once();
+        $logger->shouldReceive('critical')->withArgs(['Critical message', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
+        $logger->shouldReceive('error')->withArgs(['Error message', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
+        $logger->shouldReceive('log')->withArgs(['custom', 'Custom message', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
 
         $this->handler->level(InvalidArgumentException::class, LogLevel::CRITICAL);
         $this->handler->level(OutOfRangeException::class, 'custom');
@@ -400,8 +401,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
             $redirector->expects('to')->returns($responder = TestDouble::for(RedirectResponse::class));
 
-            $responder->expects('withInput')->with(m::on(
-                function ($argument) use (&$argumentActual) {
+            $responder->expects('withInput')->with(Argument::satisfies(function ($argument) use (&$argumentActual) {
                     $argumentActual = $argument;
 
                     return true;
@@ -469,7 +469,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->shouldReceive('error')->withArgs(['2 records were found.', m::hasKey('exception')])->once();
+        $logger->shouldReceive('error')->withArgs(['2 records were found.', Argument::satisfies(fn ($actual) => (is_array($actual) || $actual instanceof \ArrayAccess) && array_key_exists('exception', (array) $actual))])->once();
 
         $this->handler->report(new MultipleRecordsFoundException(2));
     }

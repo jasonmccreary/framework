@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use ErrorException;
 use Illuminate\Config\Repository as Config;
@@ -78,7 +79,7 @@ class HandleExceptionsTest extends TestCase
 
         $logger->expects('channel')->with('deprecations')->andReturnSelf();
         $logger->expects('warning')->with(
-            m::on(fn (string $message) => (bool) preg_match(
+            Argument::satisfies(fn (string $message) => (bool) preg_match(
                 <<<REGEXP
                 #ErrorException: str_contains\(\): Passing null to parameter \#2 \(\\\$needle\) of type string is deprecated in /home/user/laravel/routes/web\.php:17
                 Stack trace:
@@ -168,7 +169,7 @@ class HandleExceptionsTest extends TestCase
 
         $logger->expects('channel')->with('deprecations')->andReturnSelf();
         $logger->expects('warning')->with(
-            m::on(fn (string $message) => (bool) preg_match(
+            Argument::satisfies(fn (string $message) => (bool) preg_match(
                 <<<REGEXP
                 #ErrorException: str_contains\(\): Passing null to parameter \#2 \(\\\$needle\) of type string is deprecated in /home/user/laravel/routes/web\.php:17
                 Stack trace:

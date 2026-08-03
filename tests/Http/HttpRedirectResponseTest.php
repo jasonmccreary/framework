@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Illuminate\Contracts\Support\MessageProvider;
@@ -106,8 +107,8 @@ class HttpRedirectResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->allows('get')->with('errors', m::type(ViewErrorBag::class))->returns(new ViewErrorBag);
-        $session->expects('flash')->with('errors', m::type(ViewErrorBag::class));
+        $session->allows('get')->with('errors', Argument::type(ViewErrorBag::class))->returns(new ViewErrorBag);
+        $session->expects('flash')->with('errors', Argument::type(ViewErrorBag::class));
         $provider = TestDouble::for(MessageProvider::class);
         $provider->expects('getMessageBag')->returns(new MessageBag);
         $response->withErrors($provider);
@@ -195,8 +196,8 @@ class HttpRedirectResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $response->setSession($session = TestDouble::for(Store::class));
-        $session->allows('get')->with('errors', m::type(ViewErrorBag::class))->returns(new ViewErrorBag);
-        $session->expects('flash')->with('errors', m::type(ViewErrorBag::class));
+        $session->allows('get')->with('errors', Argument::type(ViewErrorBag::class))->returns(new ViewErrorBag);
+        $session->expects('flash')->with('errors', Argument::type(ViewErrorBag::class));
         $provider = ['foo' => 'bar'];
         $response->withErrors($provider);
     }
