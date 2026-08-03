@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
@@ -2384,8 +2385,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSent()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->times(5)->with(m::type(RequestSending::class));
-        $events->expects('dispatch')->times(5)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2400,8 +2401,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSentAsync()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->times(5)->with(m::type(RequestSending::class));
-        $events->expects('dispatch')->times(5)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2419,8 +2420,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredForEveryRetry()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->times(2)->with(m::type(RequestSending::class));
-        $events->expects('dispatch')->times(2)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake([
@@ -2457,8 +2458,8 @@ class HttpClientTest extends TestCase
     public function testClonedClientsWorkSuccessfullyWithTheRequestObject()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('dispatch')->with(m::type(RequestSending::class));
-        $events->expects('dispatch')->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake(['example.com' => $factory::response('foo', 200)]);

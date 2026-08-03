@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\ConnectionResolverInterface;
@@ -48,7 +49,7 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
         $builder->allows('where')->with('baz', 'taylor');
         $builder->allows('where')->with('faz', true);
         $builder->allows('where')->with('not', '!=', 'admin');
-        $builder->allows('where')->with(m::type(Closure::class))->resolves(function () use ($builder, $closure) {
+        $builder->allows('where')->with(Argument::type(Closure::class))->resolves(function () use ($builder, $closure) {
             $closure($builder);
         });
         $builder->allows('where')->with('closure', 1);

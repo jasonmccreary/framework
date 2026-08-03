@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -287,7 +288,7 @@ class DatabaseEloquentHasManyTest extends TestCase
         $relation->getRelated()->allows('newCollection')->resolves(function ($array = []) {
             return new Collection($array);
         });
-        $model->expects('setRelation')->with('foo', m::type(Collection::class));
+        $model->expects('setRelation')->with('foo', Argument::type(Collection::class));
         $models = $relation->initRelation([$model], 'foo');
 
         $this->assertEquals([$model], $models);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\View\Factory;
@@ -328,8 +329,8 @@ class MailMailerTest extends TestCase
         $view->expects('render')->returns('rendered.view');
 
         $events = TestDouble::for(Dispatcher::class);
-        $events->expects('until')->with(m::type(MessageSending::class));
-        $events->expects('dispatch')->with(m::type(MessageSent::class));
+        $events->expects('until')->with(Argument::type(MessageSending::class));
+        $events->expects('dispatch')->with(Argument::type(MessageSent::class));
 
         $mailer = new Mailer('array', $view, new ArrayTransport, $events);
 

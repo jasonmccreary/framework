@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Bus\Dispatcher;
@@ -121,7 +122,7 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
 
     public function testReportingExceptions()
     {
-        $this->spy(ExceptionHandler::class)->expects('report')->times(2)->with(m::type(RuntimeException::class), []);
+        $this->spy(ExceptionHandler::class)->expects('report')->times(2)->with(Argument::type(RuntimeException::class), []);
 
         $job = new class
         {

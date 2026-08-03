@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Aws\Result;
 use Aws\Sqs\Exception\SqsException;
@@ -977,7 +978,7 @@ class QueueSqsQueueTest extends TestCase
 
         $captured = null;
 
-        $this->sqs->expects('sendMessageBatch')->with(m::on(function ($args) use (&$captured) {
+        $this->sqs->expects('sendMessageBatch')->with(Argument::satisfies(function ($args) use (&$captured) {
             $captured = $args;
 
             return true;
@@ -1007,7 +1008,7 @@ class QueueSqsQueueTest extends TestCase
 
         $batchSizes = [];
 
-        $this->sqs->expects('sendMessageBatch')->times(2)->with(m::on(function ($args) use (&$batchSizes) {
+        $this->sqs->expects('sendMessageBatch')->times(2)->with(Argument::satisfies(function ($args) use (&$batchSizes) {
             $batchSizes[] = count($args['Entries']);
 
             return true;
@@ -1032,7 +1033,7 @@ class QueueSqsQueueTest extends TestCase
 
         $batchSizes = [];
 
-        $this->sqs->expects('sendMessageBatch')->times(2)->with(m::on(function ($args) use (&$batchSizes) {
+        $this->sqs->expects('sendMessageBatch')->times(2)->with(Argument::satisfies(function ($args) use (&$batchSizes) {
             $batchSizes[] = count($args['Entries']);
 
             return true;
@@ -1103,7 +1104,7 @@ class QueueSqsQueueTest extends TestCase
 
         $captured = null;
 
-        $this->sqs->expects('sendMessageBatch')->with(m::on(function ($args) use (&$captured) {
+        $this->sqs->expects('sendMessageBatch')->with(Argument::satisfies(function ($args) use (&$captured) {
             $captured = $args;
 
             return true;
@@ -1161,7 +1162,7 @@ class QueueSqsQueueTest extends TestCase
 
         $captured = [];
 
-        $this->sqs->expects('sendMessageBatch')->times(2)->with(m::on(function ($args) use (&$captured) {
+        $this->sqs->expects('sendMessageBatch')->times(2)->with(Argument::satisfies(function ($args) use (&$captured) {
             $captured[] = $args;
 
             return true;
@@ -1272,7 +1273,7 @@ class QueueSqsQueueTest extends TestCase
         $job->deduplicator = fn ($payload, $queue) => 'dedupe-'.$payload;
 
         $store = TestDouble::for(CacheRepository::class);
-        $store->expects('put')->with(m::type('string'), 'original-payload');
+        $store->expects('put')->with(Argument::type('string'), 'original-payload');
 
         $cache = TestDouble::for(CacheFactory::class);
         $cache->allows('store')->with('sqs-overflow')->returns($store);
@@ -1291,7 +1292,7 @@ class QueueSqsQueueTest extends TestCase
 
         $captured = null;
 
-        $this->sqs->expects('sendMessageBatch')->with(m::on(function ($args) use (&$captured) {
+        $this->sqs->expects('sendMessageBatch')->with(Argument::satisfies(function ($args) use (&$captured) {
             $captured = $args;
 
             return true;

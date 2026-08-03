@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
@@ -209,7 +210,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $builder->expects('getQuery')->returns($baseQuery);
         $builder->expects('getQuery')->returns($parentQuery);
 
-        $builder->expects('select')->with(m::type(Expression::class))->returns($builder);
+        $builder->expects('select')->with(Argument::type(Expression::class))->returns($builder);
         $relation->getParent()->allows('qualifyColumn')->returns('table.id');
         $builder->expects('whereColumn')->with('table.id', '=', 'table.foreign_key')->returns($baseQuery);
         $baseQuery->expects('setBindings')->with([], 'select');
