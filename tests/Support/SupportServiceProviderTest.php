@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -19,8 +20,8 @@ class SupportServiceProviderTest extends TestCase
         ServiceProvider::$publishes = [];
         ServiceProvider::$publishGroups = [];
 
-        $this->app = $app = m::mock(Application::class)->makePartial();
-        $config = m::mock(Config::class)->makePartial();
+        $this->app = $app = TestDouble::for(Application::class)->passthru();
+        $config = TestDouble::for(Config::class)->passthru();
 
         $config = new Config();
 
@@ -169,7 +170,7 @@ class SupportServiceProviderTest extends TestCase
 
     public function testLoadTranslationsFromWithoutNamespace()
     {
-        $translator = m::mock(Translator::class);
+        $translator = TestDouble::for(Translator::class);
         $translator->shouldReceive('addPath')->once()->with(__DIR__.'/translations');
 
         $this->app->shouldReceive('afterResolving')->once()->with('translator', m::on(function ($callback) use ($translator) {
@@ -184,7 +185,7 @@ class SupportServiceProviderTest extends TestCase
 
     public function testLoadTranslationsFromWithNamespace()
     {
-        $translator = m::mock(Translator::class);
+        $translator = TestDouble::for(Translator::class);
         $translator->shouldReceive('addNamespace')->once()->with('namespace', __DIR__.'/translations');
 
         $this->app->shouldReceive('afterResolving')->once()->with('translator', m::on(function ($callback) use ($translator) {

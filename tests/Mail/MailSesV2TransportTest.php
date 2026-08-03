@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\TestDouble;
 use Aws\Command;
 use Aws\Exception\AwsException;
 use Aws\SesV2\SesV2Client;
@@ -57,8 +58,8 @@ class MailSesV2TransportTest extends TestCase
         $message->getHeaders()->add(new MetadataHeader('FooTag', 'TagValue'));
         $message->getHeaders()->addTextHeader('X-SES-LIST-MANAGEMENT-OPTIONS', 'contactListName=TestList;topicName=TestTopic');
 
-        $client = m::mock(SesV2Client::class);
-        $sesResult = m::mock();
+        $client = TestDouble::for(SesV2Client::class);
+        $sesResult = TestDouble::for(\stdClass::class);
         $sesResult->shouldReceive('get')
             ->with('MessageId')
             ->once()
@@ -84,7 +85,7 @@ class MailSesV2TransportTest extends TestCase
         $message->sender('myself@example.com');
         $message->to('me@example.com');
 
-        $client = m::mock(SesV2Client::class);
+        $client = TestDouble::for(SesV2Client::class);
         $client->shouldReceive('sendEmail')->once()
             ->andThrow(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
 

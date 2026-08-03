@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Cache\DatabaseLock;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
@@ -146,9 +147,9 @@ class DatabaseLockTest extends DatabaseTestCase
     #[TestWith(['Table does not exist', 1146, false])]
     public function testIgnoresConcurrencyException(string $message, int $code, bool $hasConcurrenyError)
     {
-        $connection = m::mock(Connection::class);
-        $insertBuilder = m::mock(Builder::class);
-        $deleteBuilder = m::mock(Builder::class);
+        $connection = TestDouble::for(Connection::class);
+        $insertBuilder = TestDouble::for(Builder::class);
+        $deleteBuilder = TestDouble::for(Builder::class);
 
         $insertBuilder->shouldReceive('insert')->once()->andReturn(true);
 
@@ -178,8 +179,8 @@ class DatabaseLockTest extends DatabaseTestCase
     #[TestWith(['Table does not exist', 1146, false])]
     public function testReleaseIgnoresConcurrencyException(string $message, int $code, bool $hasConcurrencyError)
     {
-        $connection = m::mock(Connection::class);
-        $deleteBuilder = m::mock(Builder::class);
+        $connection = TestDouble::for(Connection::class);
+        $deleteBuilder = TestDouble::for(Builder::class);
 
         $owner = 'owner-123';
 

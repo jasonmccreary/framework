@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Session;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Session\CookieSessionHandler;
 use Illuminate\Session\Store;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Support\ViewErrorBag;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SessionHandlerInterface;
@@ -420,7 +420,7 @@ class SessionStoreTest extends TestCase
         $this->assertFalse($session->handlerNeedsRequest());
         $session->getHandler()->shouldReceive('setRequest')->never();
 
-        $session = new Store('test', m::mock(new CookieSessionHandler(new CookieJar, 60, false)));
+        $session = new Store('test', TestDouble::for(new CookieSessionHandler(new CookieJar, 60, false)));
         $this->assertTrue($session->handlerNeedsRequest());
         $session->getHandler()->shouldReceive('setRequest')->once();
         $request = new Request;
@@ -843,7 +843,7 @@ class SessionStoreTest extends TestCase
     {
         return [
             $this->getSessionName(),
-            m::mock(SessionHandlerInterface::class),
+            TestDouble::for(SessionHandlerInterface::class),
             $this->getSessionId(),
             $serialization,
         ];

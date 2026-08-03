@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
@@ -11,7 +12,6 @@ use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Illuminate\Database\Schema\Grammars\SQLiteGrammar;
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Tests\Database\Fixtures\Enums\Foo;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -582,7 +582,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testAddingNativeJson()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection
             ->shouldReceive('getTablePrefix')->andReturn('')
             ->shouldReceive('getConfig')->once()->with('use_native_json')->andReturn(true)
@@ -611,7 +611,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testAddingNativeJsonb()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection
             ->shouldReceive('getTablePrefix')->andReturn('')
             ->shouldReceive('getConfig')->once()->with('use_native_jsonb')->andReturn(true)
@@ -1075,8 +1075,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testRenamingAndChangingColumnsWork()
     {
-        $builder = mock(SQLiteBuilder::class)
-            ->makePartial()
+        $builder = TestDouble::for(SQLiteBuilder::class)->passthru()
             ->shouldReceive('getColumns')->andReturn([
                 ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
                 ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
@@ -1103,8 +1102,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testRenamingAndChangingColumnsWorkWithSchema()
     {
-        $builder = mock(SQLiteBuilder::class)
-            ->makePartial()
+        $builder = TestDouble::for(SQLiteBuilder::class)->passthru()
             ->shouldReceive('getColumns')->andReturn([
                 ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
                 ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
@@ -1134,7 +1132,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
         ?SQLiteBuilder $builder = null,
         $prefix = ''
     ) {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar ??= $this->getGrammar($connection);
         $builder ??= $this->getBuilder();
 
@@ -1154,8 +1152,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function getBuilder()
     {
-        return mock(SQLiteBuilder::class)
-            ->makePartial()
+        return TestDouble::for(SQLiteBuilder::class)->passthru()
             ->shouldReceive('getColumns')->andReturn([])
             ->shouldReceive('getIndexes')->andReturn([])
             ->shouldReceive('getForeignKeys')->andReturn([])

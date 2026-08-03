@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class LoadEnvironmentVariablesTest extends TestCase
@@ -19,7 +19,7 @@ class LoadEnvironmentVariablesTest extends TestCase
 
     protected function getAppMock($file)
     {
-        $app = m::mock(Application::class);
+        $app = TestDouble::for(Application::class);
 
         $app->shouldReceive('configurationIsCached')
             ->once()->with()->andReturn(false);

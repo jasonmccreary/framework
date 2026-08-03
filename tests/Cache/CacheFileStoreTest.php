@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Cache\FileStore;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -164,7 +165,7 @@ class CacheFileStoreTest extends TestCase
 
     public function testStoreItemProperlySetsPermissions()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldIgnoreMissing();
         $store = $this->getMockBuilder(FileStore::class)->onlyMethods(['expiration'])->setConstructorArgs([$files, __DIR__, 0644])->getMock();
         $hash = sha1('foo');
@@ -184,7 +185,7 @@ class CacheFileStoreTest extends TestCase
 
     public function testStoreItemDirectoryProperlySetsPermissions()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldIgnoreMissing();
         $store = $this->getMockBuilder(FileStore::class)->onlyMethods(['expiration'])->setConstructorArgs([$files, __DIR__, 0606])->getMock();
         $hash = sha1('foo');

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
@@ -555,7 +556,7 @@ class RedisConnectionTest extends TestCase
     public function testItDispatchesQueryEvent()
     {
         foreach ($this->connections() as $redis) {
-            $redis->setEventDispatcher($events = m::mock(Dispatcher::class));
+            $redis->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
 
             $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
                 $this->assertSame('get', $event->command);

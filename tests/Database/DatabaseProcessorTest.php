@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Processors\Processor;
-use Mockery as m;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
@@ -15,10 +15,10 @@ class DatabaseProcessorTest extends TestCase
     {
         $pdo = $this->createMock(ProcessorTestPDOStub::class);
         $pdo->expects($this->once())->method('lastInsertId')->with('id')->willReturn('1');
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $connection->shouldReceive('insert')->once()->with('sql', ['foo']);
         $connection->shouldReceive('getPdo')->once()->andReturn($pdo);
-        $builder = m::mock(Builder::class);
+        $builder = TestDouble::for(Builder::class);
         $builder->shouldReceive('getConnection')->andReturn($connection);
         $processor = new Processor;
         $result = $processor->processInsertGetId($builder, 'sql', ['foo'], 'id');
