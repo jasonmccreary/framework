@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -53,7 +52,10 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
         $builder->expects('where')->with('club_user.is_admin', '=', 1, 'and');
 
         $builder->allows('getQuery')->returns($mockQueryBuilder = TestDouble::for(stdClass::class));
-        $mockQueryBuilder->allows('getGrammar')->returns(m::mock(Grammar::class, ['isExpression' => false]));
+        $grammar = TestDouble::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $mockQueryBuilder->allows('getGrammar')->returns($grammar);
 
         return [$builder, $parent, 'club_user', 'club_id', 'user_id', 'id', 'id', null, false];
     }

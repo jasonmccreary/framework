@@ -8,7 +8,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Console\RouteListCommand;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class RouteListCommandTest extends TestCase
@@ -19,9 +18,13 @@ class RouteListCommandTest extends TestCase
     {
         parent::setUp();
 
+        $dispatcher2 = TestDouble::for(Dispatcher::class);
+        $dispatcher2->allows('dispatch')->returns(null);
+        $dispatcher2->allows('fire')->returns(null);
+
         $this->app = new Application(
             $laravel = new \Illuminate\Foundation\Application(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null, 'fire' => null]),
+            $dispatcher2,
             'testing',
         );
 
@@ -269,7 +272,11 @@ class RouteListCommandTest extends TestCase
 
         $app = new Application(
             $laravel,
-            m::mock(Dispatcher::class, ['dispatch' => null, 'fire' => null]),
+      $dispatcher = TestDouble::for(Dispatcher::class);
+      $dispatcher->allows('dispatch')->returns(null);
+      $dispatcher->allows('fire')->returns(null);
+
+            $dispatcher,
             'testing',
         );
         $app->addCommands([$command]);
