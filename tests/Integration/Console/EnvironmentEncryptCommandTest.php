@@ -51,8 +51,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->expectsOutputToContain('.env.production.encrypted')
             ->assertExitCode(0);
 
-        $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.production.encrypted'), Argument::any());
+        $this->filesystem->received('put')->with(base_path('.env.production.encrypted'), Argument::any());
     }
 
     public function testItGeneratesTheCorrectFileWhenNotUsingEnvironment(): void
@@ -64,8 +63,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->expectsOutputToContain('.env.encrypted')
             ->assertExitCode(0);
 
-        $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), Argument::any());
+        $this->filesystem->received('put')->with(base_path('.env.encrypted'), Argument::any());
     }
 
     public function testItFailsWhenEnvironmentFileCannotBeFound(): void
@@ -97,8 +95,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->expectsOutputToContain('.env.encrypted')
             ->assertExitCode(0);
 
-        $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), Argument::any());
+        $this->filesystem->received('put')->with(base_path('.env.encrypted'), Argument::any());
     }
 
     public function testItEncryptsWithGivenKeyAndDisplaysIt(): void
@@ -351,11 +348,9 @@ ENV;
             ->expectsOutputToContain('.env.encrypted')
             ->assertExitCode(0);
 
-        $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), Argument::any());
+        $this->filesystem->received('put')->with(base_path('.env.encrypted'), Argument::any());
 
-        $this->filesystem->shouldHaveReceived('delete')
-            ->with(base_path('.env'));
+        $this->filesystem->received('delete')->with(base_path('.env'));
     }
 
     public function testItEncryptsWithInteractivelyGivenKeyAndDisplaysIt(): void
