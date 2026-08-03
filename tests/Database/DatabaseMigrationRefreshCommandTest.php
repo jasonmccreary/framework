@@ -11,7 +11,6 @@ use Illuminate\Database\Console\Migrations\ResetCommand;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Events\DatabaseRefreshed;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Input\ArrayInput;

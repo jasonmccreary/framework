@@ -9,7 +9,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Env;
-use Mockery as m;
 use Monolog\Handler\NullHandler;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;

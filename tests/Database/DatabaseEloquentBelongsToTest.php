@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToTest extends TestCase
