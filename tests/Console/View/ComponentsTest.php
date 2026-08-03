@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console\View;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components;
 use Illuminate\Database\Migrations\MigrationResult;
@@ -68,7 +69,7 @@ class ComponentsTest extends TestCase
 
     public function testConfirm()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
         $output->shouldReceive('confirm')
             ->with('Question?', false)
@@ -89,7 +90,7 @@ class ComponentsTest extends TestCase
 
     public function testChoice()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
         $output->shouldReceive('askQuestion')
             ->with(m::type(ChoiceQuestion::class))

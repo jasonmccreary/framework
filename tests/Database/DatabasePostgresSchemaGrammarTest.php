@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,7 +11,6 @@ use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Tests\Database\Fixtures\Enums\Foo;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -1371,7 +1371,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
         ?PostgresBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = m::mock(Connection::class)
+        $connection = TestDouble::for(Connection::class)
             ->shouldReceive('getTablePrefix')->andReturn($prefix)
             ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(null)
             ->getMock();
@@ -1392,7 +1392,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
 
     public function getBuilder()
     {
-        return mock(PostgresBuilder::class);
+        return TestDouble::for(PostgresBuilder::class);
     }
 
     /** @return list<array{method: string, type: string, user: int|null, grammar: false|int|null, expected: int|null}> */

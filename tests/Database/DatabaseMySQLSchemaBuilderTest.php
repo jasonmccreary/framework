@@ -2,19 +2,19 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\MySqlProcessor;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Database\Schema\MySqlBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMySQLSchemaBuilderTest extends TestCase
 {
     public function testHasTable()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(MySqlGrammar::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(MySqlGrammar::class);
         $connection->shouldReceive('getDatabaseName')->andReturn('db');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $builder = new MySqlBuilder($connection);
@@ -27,9 +27,9 @@ class DatabaseMySQLSchemaBuilderTest extends TestCase
 
     public function testGetColumnListing()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(MySqlGrammar::class);
-        $processor = m::mock(MySqlProcessor::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(MySqlGrammar::class);
+        $processor = TestDouble::for(MySqlProcessor::class);
         $connection->shouldReceive('getDatabaseName')->andReturn('db');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);

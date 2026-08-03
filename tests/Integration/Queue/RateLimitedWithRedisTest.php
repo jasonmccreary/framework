@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Cache\RateLimiter;
@@ -13,7 +14,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Str;
-use Mockery as m;
 use Orchestra\Testbench\Attributes\RequiresEnv;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
@@ -134,7 +134,7 @@ class RateLimitedWithRedisTest extends TestCase
         $testJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -153,7 +153,7 @@ class RateLimitedWithRedisTest extends TestCase
         $testJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('release')->once();
@@ -172,7 +172,7 @@ class RateLimitedWithRedisTest extends TestCase
         $testJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);

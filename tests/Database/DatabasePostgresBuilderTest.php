@@ -2,18 +2,18 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\PostgresBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabasePostgresBuilderTest extends TestCase
 {
     public function testCreateDatabase()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
         $connection->shouldReceive('getConfig')->once()->with('charset')->andReturn('utf8');
@@ -28,7 +28,7 @@ class DatabasePostgresBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
@@ -46,7 +46,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
         $connection->shouldReceive('getConfig')->with('schema')->andReturn(null);
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileTableExists')->andReturn('sql');
         $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
@@ -61,7 +61,7 @@ class DatabasePostgresBuilderTest extends TestCase
     {
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('myapp,public');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileTableExists')->andReturn('sql');
         $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
@@ -77,7 +77,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
         $connection->shouldReceive('getConfig')->with('schema')->andReturn(['myapp', 'public']);
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileTableExists')->andReturn('sql');
         $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
@@ -93,7 +93,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('$user');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileTableExists')->andReturn('sql');
         $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
@@ -108,7 +108,7 @@ class DatabasePostgresBuilderTest extends TestCase
     {
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileTableExists')->andReturn('sql');
         $connection->shouldReceive('scalar')->with('sql')->andReturn(1);
@@ -123,7 +123,7 @@ class DatabasePostgresBuilderTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $connection = $this->getConnection();
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $builder = $this->getBuilder($connection);
 
@@ -135,12 +135,12 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn(null);
         $connection->shouldReceive('getConfig')->with('schema')->andReturn(null);
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
         $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
         $connection->shouldReceive('getTablePrefix');
-        $processor = m::mock(PostgresProcessor::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
@@ -152,12 +152,12 @@ class DatabasePostgresBuilderTest extends TestCase
     {
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('myapp,public');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
         $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
         $connection->shouldReceive('getTablePrefix');
-        $processor = m::mock(PostgresProcessor::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
@@ -170,12 +170,12 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('$user');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileColumns')->with(null, 'foo')->andReturn('sql');
         $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
         $connection->shouldReceive('getTablePrefix');
-        $processor = m::mock(PostgresProcessor::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
@@ -187,12 +187,12 @@ class DatabasePostgresBuilderTest extends TestCase
     {
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $grammar->shouldReceive('compileColumns')->with('myapp', 'foo')->andReturn('sql');
         $connection->shouldReceive('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'some_column']]);
         $connection->shouldReceive('getTablePrefix');
-        $processor = m::mock(PostgresProcessor::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processColumns')->andReturn([['name' => 'some_column']]);
         $builder = $this->getBuilder($connection);
@@ -206,7 +206,7 @@ class DatabasePostgresBuilderTest extends TestCase
 
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
-        $grammar = m::mock(PostgresGrammar::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $builder = $this->getBuilder($connection);
 
@@ -218,8 +218,8 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection = $this->getConnection();
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('public');
         $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
-        $grammar = m::mock(PostgresGrammar::class);
-        $processor = m::mock(PostgresProcessor::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $grammar->shouldReceive('compileTables')->andReturn('sql');
@@ -238,8 +238,8 @@ class DatabasePostgresBuilderTest extends TestCase
         $connection->shouldReceive('getConfig')->with('username')->andReturn('foouser');
         $connection->shouldReceive('getConfig')->with('search_path')->andReturn('"$user", public, foo_bar-Baz.Áüõß');
         $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
-        $grammar = m::mock(PostgresGrammar::class);
-        $processor = m::mock(PostgresProcessor::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processTables')->once()->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
@@ -263,8 +263,8 @@ class DatabasePostgresBuilderTest extends TestCase
             'spaced schema',
         ]);
         $connection->shouldReceive('getConfig')->with('dont_drop')->andReturn(['foo']);
-        $grammar = m::mock(PostgresGrammar::class);
-        $processor = m::mock(PostgresProcessor::class);
+        $grammar = TestDouble::for(PostgresGrammar::class);
+        $processor = TestDouble::for(PostgresProcessor::class);
         $connection->shouldReceive('getSchemaGrammar')->once()->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $processor->shouldReceive('processTables')->once()->andReturn([['name' => 'users', 'schema' => 'foouser', 'schema_qualified_name' => 'foouser.users']]);
@@ -279,7 +279,7 @@ class DatabasePostgresBuilderTest extends TestCase
 
     protected function getConnection()
     {
-        return m::mock(Connection::class);
+        return TestDouble::for(Connection::class);
     }
 
     protected function getBuilder($connection)

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Cache\ArrayStore;
@@ -15,7 +16,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class RateLimitedTest extends TestCase
@@ -58,7 +58,7 @@ class RateLimitedTest extends TestCase
 
     public function testRateLimitedJobsAreNotExecutedOnLimitReached2()
     {
-        $cache = m::mock(Cache::class);
+        $cache = TestDouble::for(Cache::class);
         $cache->shouldReceive('get')->andReturn(0, 1, null);
         $cache->shouldReceive('add')->andReturn(true, true);
         $cache->shouldReceive('increment')->andReturn(1);
@@ -79,7 +79,7 @@ class RateLimitedTest extends TestCase
         RateLimitedTestJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('release')->once()->withArgs(function ($delay) {
@@ -192,7 +192,7 @@ class RateLimitedTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -211,7 +211,7 @@ class RateLimitedTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('release')->once();
@@ -230,7 +230,7 @@ class RateLimitedTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('release')->once()->withArgs([$releaseAfter]);
@@ -249,7 +249,7 @@ class RateLimitedTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
         $job->shouldReceive('hasFailed')->once()->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);

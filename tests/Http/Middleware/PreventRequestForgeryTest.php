@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http\Middleware;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Session\Session;
@@ -10,7 +11,6 @@ use Illuminate\Http\Exceptions\OriginMismatchException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class PreventRequestForgeryTest extends TestCase
@@ -142,7 +142,7 @@ class PreventRequestForgeryTest extends TestCase
             $server
         );
 
-        $session = m::mock(Session::class);
+        $session = TestDouble::for(Session::class);
         $session->shouldReceive('token')->andReturn('test-token');
         $request->setLaravelSession($session);
 
@@ -152,8 +152,8 @@ class PreventRequestForgeryTest extends TestCase
     protected function createMiddleware()
     {
         return new PreventRequestForgeryTestStub(
-            m::mock(Application::class),
-            m::mock(Encrypter::class)
+            TestDouble::for(Application::class),
+            TestDouble::for(Encrypter::class)
         );
     }
 }
