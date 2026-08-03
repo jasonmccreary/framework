@@ -583,13 +583,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingNativeJson()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection
-            ->shouldReceive('getTablePrefix')->andReturn('')
-            ->shouldReceive('getConfig')->once()->with('use_native_json')->andReturn(true)
-            ->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection))
-            ->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder())
-            ->shouldReceive('getServerVersion')->andReturn('3.35')
-            ->getMock();
+        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection->shouldReceive('getConfig')->once()->with('use_native_json')->andReturn(true);
+        $connection->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection));
+        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder());
+        $connection->shouldReceive('getServerVersion')->andReturn('3.35') ->getMock();
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->json('foo');
@@ -612,13 +610,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingNativeJsonb()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection
-            ->shouldReceive('getTablePrefix')->andReturn('')
-            ->shouldReceive('getConfig')->once()->with('use_native_jsonb')->andReturn(true)
-            ->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection))
-            ->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder())
-            ->shouldReceive('getServerVersion')->andReturn('3.35')
-            ->getMock();
+        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection->shouldReceive('getConfig')->once()->with('use_native_jsonb')->andReturn(true);
+        $connection->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection));
+        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder());
+        $connection->shouldReceive('getServerVersion')->andReturn('3.35') ->getMock();
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->jsonb('foo');
