@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Console\Concerns;
 
+use JMac\Testing\TestDouble;
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -20,7 +20,7 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = m::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = TestDouble::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
         $output->shouldReceive('createProgressBar')
@@ -54,7 +54,7 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = m::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = TestDouble::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
         $totalSteps = 5;

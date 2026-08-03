@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -10,7 +11,6 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMigratorIntegrationTest extends TestCase
@@ -58,7 +58,7 @@ class DatabaseMigratorIntegrationTest extends TestCase
             new Filesystem
         );
 
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
         $output->shouldReceive('write');
         $output->shouldReceive('writeln');
         $output->shouldReceive('newLinesWritten');

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -36,8 +37,8 @@ class QueueWorkerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->events = m::spy(Dispatcher::class);
-        $this->exceptionHandler = m::spy(ExceptionHandler::class);
+        $this->events = TestDouble::for(Dispatcher::class);
+        $this->exceptionHandler = TestDouble::for(ExceptionHandler::class);
 
         Container::setInstance($container = new Container);
 
@@ -645,7 +646,7 @@ class QueueWorkerTest extends TestCase
             }
         };
 
-        $handler = m::mock(CallQueuedHandler::class);
+        $handler = TestDouble::for(CallQueuedHandler::class);
         $handler->shouldReceive('getRunningCommand')->andReturn($interruptible);
 
         $worker = $this->getWorker('default', ['queue' => []]);

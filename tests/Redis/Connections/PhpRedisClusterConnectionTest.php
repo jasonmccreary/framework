@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\Redis\Connections;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Redis\Connections\PhpRedisClusterConnection;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +12,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 {
     public function testItScansUsingDefaultNode()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
         $client->shouldReceive('scan')
             ->once()
@@ -25,7 +25,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItOnlyFetchesDefaultNodeOnce()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
         $client->shouldReceive('scan')->twice();
 
@@ -36,7 +36,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItScansUsingOptionNode()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('scan')
             ->once()
             ->with(0, 'option-node', '*', 10)
@@ -48,7 +48,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItThrowsExceptionWithoutNodes()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([]);
         $client->shouldReceive('scan');
 
@@ -60,7 +60,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItReturnsFalseWhenCursorIsZeroAndResultIsEmpty()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([['127.0.0.1', '6379']]);
         $client->shouldReceive('scan')
             ->once()
@@ -73,7 +73,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItFlushesAllMasterNodes()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([
             ['127.0.0.1', '6379'],
             ['127.0.0.2', '6379'],
@@ -87,7 +87,7 @@ class PhpRedisClusterConnectionTest extends TestCase
 
     public function testItFlushesAllMasterNodesAsync()
     {
-        $client = m::mock(\RedisCluster::class);
+        $client = TestDouble::for(\RedisCluster::class);
         $client->shouldReceive('_masters')->once()->andReturn([
             ['127.0.0.1', '6379'],
             ['127.0.0.2', '6379'],

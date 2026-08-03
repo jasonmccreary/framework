@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -16,9 +16,9 @@ class FoundationProviderRepositoryTest extends TestCase
 {
     public function testServicesAreRegisteredWhenManifestIsNotRecompiled()
     {
-        $app = m::mock(Application::class);
+        $app = TestDouble::for(Application::class);
 
-        $repo = m::mock(ProviderRepository::class.'[createProvider,loadManifest,shouldRecompile]', [$app, m::mock(Filesystem::class), [__DIR__.'/services.php']]);
+        $repo = TestDouble::for(ProviderRepository::class)->passthru(new ProviderRepository($app, TestDouble::for(Filesystem::class), [__DIR__.'/services.php']));
         $repo->shouldReceive('loadManifest')->once()->andReturn(['eager' => ['foo'], 'deferred' => ['deferred'], 'providers' => ['providers'], 'when' => []]);
         $repo->shouldReceive('shouldRecompile')->once()->andReturn(false);
 
@@ -31,21 +31,21 @@ class FoundationProviderRepositoryTest extends TestCase
 
     public function testManifestIsProperlyRecompiled()
     {
-        $app = m::mock(Application::class);
+        $app = TestDouble::for(Application::class);
 
-        $repo = m::mock(ProviderRepository::class.'[createProvider,loadManifest,writeManifest,shouldRecompile]', [$app, m::mock(Filesystem::class), [__DIR__.'/services.php']]);
+        $repo = TestDouble::for(ProviderRepository::class)->passthru(new ProviderRepository($app, TestDouble::for(Filesystem::class), [__DIR__.'/services.php']));
 
         $repo->shouldReceive('loadManifest')->once()->andReturn(['eager' => [], 'deferred' => ['deferred']]);
         $repo->shouldReceive('shouldRecompile')->once()->andReturn(true);
 
         // foo mock is just a deferred provider
-        $repo->shouldReceive('createProvider')->once()->with('foo')->andReturn($fooMock = m::mock(stdClass::class));
+        $repo->shouldReceive('createProvider')->once()->with('foo')->andReturn($fooMock = TestDouble::for(stdClass::class));
         $fooMock->shouldReceive('isDeferred')->once()->andReturn(true);
         $fooMock->shouldReceive('provides')->once()->andReturn(['foo.provides1', 'foo.provides2']);
         $fooMock->shouldReceive('when')->once()->andReturn([]);
 
         // bar mock is added to eagers since it's not reserved
-        $repo->shouldReceive('createProvider')->once()->with('bar')->andReturn($barMock = m::mock(ServiceProvider::class));
+        $repo->shouldReceive('createProvider')->once()->with('bar')->andReturn($barMock = TestDouble::for(ServiceProvider::class));
         $barMock->shouldReceive('isDeferred')->once()->andReturn(false);
         $repo->shouldReceive('writeManifest')->once()->andReturnUsing(function ($manifest) {
             return $manifest;
@@ -60,7 +60,7 @@ class FoundationProviderRepositoryTest extends TestCase
 
     public function testShouldRecompileReturnsCorrectValue()
     {
-        $repo = new ProviderRepository(m::mock(ApplicationContract::class), new Filesystem, __DIR__.'/services.php');
+        $repo = new ProviderRepository(TestDouble::for(ApplicationContract::class), new Filesystem, __DIR__.'/services.php');
         $this->assertTrue($repo->shouldRecompile(null, []));
         $this->assertTrue($repo->shouldRecompile(['providers' => ['foo']], ['foo', 'bar']));
         $this->assertFalse($repo->shouldRecompile(['providers' => ['foo']], ['foo']));
@@ -68,7 +68,7 @@ class FoundationProviderRepositoryTest extends TestCase
 
     public function testLoadManifestReturnsParsedJSON()
     {
-        $repo = new ProviderRepository(m::mock(ApplicationContract::class), $files = m::mock(Filesystem::class), __DIR__.'/services.php');
+        $repo = new ProviderRepository(TestDouble::for(ApplicationContract::class), $files = TestDouble::for(Filesystem::class), __DIR__.'/services.php');
         $files->shouldReceive('exists')->once()->with(__DIR__.'/services.php')->andReturn(true);
         $files->shouldReceive('getRequire')->once()->with(__DIR__.'/services.php')->andReturn($array = ['users' => ['dayle' => true], 'when' => []]);
 
@@ -77,7 +77,7 @@ class FoundationProviderRepositoryTest extends TestCase
 
     public function testWriteManifestStoresToProperLocation()
     {
-        $repo = new ProviderRepository(m::mock(ApplicationContract::class), $files = m::mock(Filesystem::class), __DIR__.'/services.php');
+        $repo = new ProviderRepository(TestDouble::for(ApplicationContract::class), $files = TestDouble::for(Filesystem::class), __DIR__.'/services.php');
         $files->shouldReceive('replace')->once()->with(__DIR__.'/services.php', '<?php return '.var_export(['foo'], true).';');
 
         $result = $repo->writeManifest(['foo']);
@@ -90,7 +90,7 @@ class FoundationProviderRepositoryTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessageMatches('/^The (.*) directory must be present and writable.$/');
 
-        $repo = new ProviderRepository(m::mock(ApplicationContract::class), $files = m::mock(Filesystem::class), __DIR__.'/cache/services.php');
+        $repo = new ProviderRepository(TestDouble::for(ApplicationContract::class), $files = TestDouble::for(Filesystem::class), __DIR__.'/cache/services.php');
         $files->shouldReceive('replace')->never();
 
         $repo->writeManifest(['foo']);

@@ -2,19 +2,19 @@
 
 namespace Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbSchemaBuilderTest extends TestCase
 {
     public function testHasTable()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(MariaDbGrammar::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(MariaDbGrammar::class);
         $connection->shouldReceive('getDatabaseName')->andReturn('db');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $builder = new MariaDbBuilder($connection);
@@ -27,9 +27,9 @@ class DatabaseMariaDbSchemaBuilderTest extends TestCase
 
     public function testGetColumnListing()
     {
-        $connection = m::mock(Connection::class);
-        $grammar = m::mock(MariaDbGrammar::class);
-        $processor = m::mock(MariaDbProcessor::class);
+        $connection = TestDouble::for(Connection::class);
+        $grammar = TestDouble::for(MariaDbGrammar::class);
+        $processor = TestDouble::for(MariaDbProcessor::class);
         $connection->shouldReceive('getDatabaseName')->andReturn('db');
         $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);

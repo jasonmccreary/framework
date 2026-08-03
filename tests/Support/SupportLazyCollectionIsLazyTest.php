@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ItemNotFoundException;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\MultipleItemsFoundException;
 use Illuminate\Support\Sleep;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -1314,7 +1314,7 @@ class SupportLazyCollectionIsLazyTest extends TestCase
 
     public function testTakeUntilTimeoutIsLazy()
     {
-        tap(m::mock(LazyCollection::class.'[now]')->times(100), function ($mock) {
+        tap(TestDouble::for(LazyCollection::class)->passthru()->times(100), function ($mock) {
             $this->assertDoesNotEnumerateCollection($mock, function ($mock) {
                 $timeout = Carbon::now();
 
@@ -1334,7 +1334,7 @@ class SupportLazyCollectionIsLazyTest extends TestCase
             });
         });
 
-        tap(m::mock(LazyCollection::class.'[now]')->times(100), function ($mock) {
+        tap(TestDouble::for(LazyCollection::class)->passthru()->times(100), function ($mock) {
             $this->assertEnumeratesCollection($mock, 1, function ($mock) {
                 $timeout = Carbon::now();
 
@@ -1355,7 +1355,7 @@ class SupportLazyCollectionIsLazyTest extends TestCase
             });
         });
 
-        tap(m::mock(LazyCollection::class.'[now]')->times(100), function ($mock) {
+        tap(TestDouble::for(LazyCollection::class)->passthru()->times(100), function ($mock) {
             $this->assertEnumeratesCollectionOnce($mock, function ($mock) {
                 $timeout = Carbon::now();
 

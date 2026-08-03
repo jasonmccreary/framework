@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Console\Migrations\RefreshCommand;
@@ -29,14 +30,14 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $command = new RefreshCommand;
 
         $app = new ApplicationDatabaseRefreshStub(['path.database' => __DIR__]);
-        $dispatcher = $app->instance(Dispatcher::class, $events = m::mock());
-        $console = m::mock(ConsoleApplication::class)->makePartial();
+        $dispatcher = $app->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
+        $console = TestDouble::for(ConsoleApplication::class)->passthru();
         $console->__construct();
         $command->setLaravel($app);
         $command->setApplication($console);
 
-        $resetCommand = m::mock(ResetCommand::class);
-        $migrateCommand = m::mock(MigrateCommand::class);
+        $resetCommand = TestDouble::for(ResetCommand::class);
+        $migrateCommand = TestDouble::for(MigrateCommand::class);
 
         $console->shouldReceive('find')->with('migrate:reset')->andReturn($resetCommand);
         $console->shouldReceive('find')->with('migrate')->andReturn($migrateCommand);
@@ -54,14 +55,14 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $command = new RefreshCommand;
 
         $app = new ApplicationDatabaseRefreshStub(['path.database' => __DIR__]);
-        $dispatcher = $app->instance(Dispatcher::class, $events = m::mock());
-        $console = m::mock(ConsoleApplication::class)->makePartial();
+        $dispatcher = $app->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
+        $console = TestDouble::for(ConsoleApplication::class)->passthru();
         $console->__construct();
         $command->setLaravel($app);
         $command->setApplication($console);
 
-        $rollbackCommand = m::mock(RollbackCommand::class);
-        $migrateCommand = m::mock(MigrateCommand::class);
+        $rollbackCommand = TestDouble::for(RollbackCommand::class);
+        $migrateCommand = TestDouble::for(MigrateCommand::class);
 
         $console->shouldReceive('find')->with('migrate:rollback')->andReturn($rollbackCommand);
         $console->shouldReceive('find')->with('migrate')->andReturn($migrateCommand);
@@ -79,8 +80,8 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $command = new RefreshCommand;
 
         $app = new ApplicationDatabaseRefreshStub(['path.database' => __DIR__]);
-        $dispatcher = $app->instance(Dispatcher::class, $events = m::mock());
-        $console = m::mock(ConsoleApplication::class)->makePartial();
+        $dispatcher = $app->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
+        $console = TestDouble::for(ConsoleApplication::class)->passthru();
         $console->__construct();
         $command->setLaravel($app);
         $command->setApplication($console);

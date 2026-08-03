@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Factory;
@@ -35,8 +36,8 @@ class CacheCommandMutexTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheFactory = m::mock(Factory::class);
-        $this->cacheRepository = m::mock(Repository::class);
+        $this->cacheFactory = TestDouble::for(Factory::class);
+        $this->cacheRepository = TestDouble::for(Repository::class);
         $this->mutex = new CacheCommandMutex($this->cacheFactory);
         $this->command = new class extends Command
         {
@@ -115,7 +116,7 @@ class CacheCommandMutexTest extends TestCase
 
     public function testCanCreateMutexWithCustomConnectionWithLockProvider()
     {
-        $lock = m::mock(LockProvider::class);
+        $lock = TestDouble::for(LockProvider::class);
         $this->cacheFactory->expects('store')->once()->with('test')->andReturn($this->cacheRepository);
         $this->cacheRepository->expects('getStore')->twice()->andReturn($lock);
 
@@ -136,7 +137,7 @@ class CacheCommandMutexTest extends TestCase
 
     private function mockUsingLockProvider(): m\MockInterface
     {
-        $lock = m::mock(LockProvider::class);
+        $lock = TestDouble::for(LockProvider::class);
         $this->cacheFactory->expects('store')->once()->andReturn($this->cacheRepository);
         $this->cacheRepository->expects('getStore')->twice()->andReturn($lock);
 
