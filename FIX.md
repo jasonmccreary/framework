@@ -1,5 +1,8 @@
 # Shift: unhandled `Mockery::mock($existingInstance)->makePartial()` case
 
+Full commit with this fix (and the two cases that genuinely needed manual conversion, for contrast):
+https://github.com/jasonmccreary/framework/commit/fc319f0891
+
 ## Context
 
 Shift's Mockery → Test Double converter rebuilds `Mockery::mock(Foo::class, [$args])->makePartial()`
