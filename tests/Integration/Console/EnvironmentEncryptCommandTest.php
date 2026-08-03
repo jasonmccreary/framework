@@ -18,21 +18,15 @@ class EnvironmentEncryptCommandTest extends TestCase
         parent::setUp();
 
         $this->filesystem = TestDouble::for(Filesystem::class);
-        $this->filesystem->shouldReceive('get')
-            ->andReturn(true)
-            ->shouldReceive('put')
-            ->andReturn('APP_NAME=Laravel');
+        $this->filesystem->shouldReceive('get') ->andReturn(true);
+        $this->filesystem->shouldReceive('put') ->andReturn('APP_NAME=Laravel');
         File::swap($this->filesystem);
     }
 
     public function testItFailsWithInvalidCipherFails(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt', ['--cipher' => 'invalid'])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -42,12 +36,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItFailsUsingCipherWithInvalidKey(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt', ['--cipher' => 'aes-128-cbc', '--key' => 'invalid'])
             ->expectsOutputToContain('incorrect key length')
@@ -56,12 +46,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheCorrectFileWhenUsingEnvironment(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt', ['--env' => 'production'])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -74,13 +60,9 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheCorrectFileWhenNotUsingEnvironment(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false)
-            ->shouldReceive('get');
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
+        $this->filesystem->shouldReceive('get');
 
         $this->artisan('env:encrypt')
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -113,12 +95,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheEncryptionFileWhenForcing(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
 
         $this->artisan('env:encrypt', ['--force' => true])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -131,12 +109,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsWithGivenKeyAndDisplaysIt(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt', ['--key' => $key = 'ANvVbPbE0tWMHpUySh6liY4WaCmAYKXP'])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -147,12 +121,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsWithGivenGeneratedBase64KeyAndDisplaysIt(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $key = Encrypter::generateKey('AES-256-CBC');
 
@@ -454,12 +424,8 @@ ENV;
 
     public function testItCanRemoveTheOriginalFile(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt', ['--prune' => true])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -475,12 +441,8 @@ ENV;
 
     public function testItEncryptsWithInteractivelyGivenKeyAndDisplaysIt(): void
     {
-        $this->filesystem->shouldReceive('exists')
-            ->once()
-            ->andReturn(true)
-            ->shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(true);
+        $this->filesystem->shouldReceive('exists') ->once() ->andReturn(false);
 
         $this->artisan('env:encrypt')
             ->expectsQuestion('What encryption key would you like to use?', 'ask')
