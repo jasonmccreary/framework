@@ -129,7 +129,10 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $grammar = TestDouble::for(Grammar::class);
         $grammar->allows('isExpression')->with(m::type(Expression::class))->returns(true);
         $grammar->allows('isExpression')->with(m::type('string'))->returns(false);
-        $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => $grammar]));
+        $stdClass = TestDouble::for(stdClass::class);
+        $stdClass->allows('getGrammar')->returns($grammar);
+
+        $builder->allows('getQuery')->returns($stdClass);
 
         return [$builder, $parent, 'taggable', 'taggables', 'taggable_id', 'tag_id', 'id', 'id', 'relation_name', false];
     }
