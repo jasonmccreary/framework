@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Console\Scheduling;
 
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\Scheduling\ScheduleWorkCommand;
 use Illuminate\Console\Signals;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -18,7 +18,7 @@ use Symfony\Component\Process\Process;
 
 class ScheduleWorkCommandTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
+    use VerifiesDoubles;
 
     /**
      * The signal availability resolver in place before the test ran.
