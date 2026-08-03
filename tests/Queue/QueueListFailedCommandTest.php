@@ -162,7 +162,7 @@ class QueueListFailedCommandTest extends TestCase
 
         // The command resolves the failer via the queue.failer container binding.
         $failer = TestDouble::for(FailedJobProviderInterface::class);
-        $failer->shouldReceive('all')->andReturn($rows);
+        $failer->allows('all')->returns($rows);
         $container->instance('queue.failer', $failer);
 
         $command = new ListFailedCommand;

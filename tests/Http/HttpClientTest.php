@@ -2384,8 +2384,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSent()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->times(5)->with(m::type(RequestSending::class));
-        $events->shouldReceive('dispatch')->times(5)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(5)->with(m::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(m::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2400,8 +2400,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSentAsync()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->times(5)->with(m::type(RequestSending::class));
-        $events->shouldReceive('dispatch')->times(5)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(5)->with(m::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(m::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2419,8 +2419,8 @@ class HttpClientTest extends TestCase
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredForEveryRetry()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->times(2)->with(m::type(RequestSending::class));
-        $events->shouldReceive('dispatch')->times(2)->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->times(2)->with(m::type(RequestSending::class));
+        $events->expects('dispatch')->times(2)->with(m::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake([
@@ -2457,8 +2457,8 @@ class HttpClientTest extends TestCase
     public function testClonedClientsWorkSuccessfullyWithTheRequestObject()
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->once()->with(m::type(RequestSending::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(ResponseReceived::class));
+        $events->expects('dispatch')->with(m::type(RequestSending::class));
+        $events->expects('dispatch')->with(m::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake(['example.com' => $factory::response('foo', 200)]);

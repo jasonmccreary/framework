@@ -194,12 +194,12 @@ class WorkCommandTest extends QueueTestCase
         Worker::$restartable = false;
 
         $cache = TestDouble::for(Repository::class);
-        $cache->shouldNotReceive('get')->with('illuminate:queue:restart');
-        $cache->shouldReceive('many')->andReturn([]);
+        $cache->expects('get')->with('illuminate:queue:restart')->never();
+        $cache->allows('many')->returns([]);
 
         $cacheManager = TestDouble::for(CacheManager::class);
-        $cacheManager->shouldReceive('driver')->andReturn($cache);
-        $cacheManager->shouldReceive('store')->andReturn($cache);
+        $cacheManager->allows('driver')->returns($cache);
+        $cacheManager->allows('store')->returns($cache);
 
         $this->app->instance('cache', $cacheManager);
 
@@ -224,12 +224,12 @@ class WorkCommandTest extends QueueTestCase
 
         $cache = TestDouble::for(Repository::class);
 
-        $cache->shouldReceive('get')->with('illuminate:queue:restart')->andReturn(null);
-        $cache->shouldNotReceive('many');
+        $cache->allows('get')->with('illuminate:queue:restart')->returns(null);
+        $cache->expects('many')->never();
 
         $cacheManager = TestDouble::for(CacheManager::class);
-        $cacheManager->shouldReceive('driver')->andReturn($cache);
-        $cacheManager->shouldReceive('store')->andReturn($cache);
+        $cacheManager->allows('driver')->returns($cache);
+        $cacheManager->allows('store')->returns($cache);
 
         $this->app->instance('cache', $cacheManager);
 

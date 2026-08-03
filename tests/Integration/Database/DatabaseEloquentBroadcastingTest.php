@@ -201,7 +201,7 @@ class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
             });
 
         $manager = TestDouble::for(BroadcastingFactory::class);
-        $manager->shouldReceive('connection')->once()->with(null)->andReturn($broadcaster);
+        $manager->expects('connection')->with(null)->returns($broadcaster);
 
         (new BroadcastEvent($event))->handle($manager);
 

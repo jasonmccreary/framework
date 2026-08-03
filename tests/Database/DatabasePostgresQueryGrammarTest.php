@@ -13,7 +13,7 @@ class DatabasePostgresQueryGrammarTest extends TestCase
     public function testToRawSql()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('escape')->with('foo', false)->andReturn("'foo'");
+        $connection->allows('escape')->with('foo', false)->returns("'foo'");
         $grammar = new PostgresGrammar($connection);
 
         $query = $grammar->substituteBindingsIntoRawSql(
@@ -45,7 +45,7 @@ class DatabasePostgresQueryGrammarTest extends TestCase
     public function testCompileTruncate()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection->allows('getTablePrefix')->returns('');
 
         $postgres = new PostgresGrammar($connection);
         $builder = TestDouble::for(Builder::class);

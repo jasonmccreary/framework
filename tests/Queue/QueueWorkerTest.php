@@ -647,7 +647,7 @@ class QueueWorkerTest extends TestCase
         };
 
         $handler = TestDouble::for(CallQueuedHandler::class);
-        $handler->shouldReceive('getRunningCommand')->andReturn($interruptible);
+        $handler->allows('getRunningCommand')->returns($interruptible);
 
         $worker = $this->getWorker('default', ['queue' => []]);
         $job = new WorkerFakeJob;

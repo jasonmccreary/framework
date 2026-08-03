@@ -110,7 +110,7 @@ class CacheManagerTest extends TestCase
         $disk = new ArrayFilesystem;
 
         $filesystem = TestDouble::for(\stdClass::class);
-        $filesystem->shouldReceive('disk')->with('s3')->once()->andReturn($disk);
+        $filesystem->expects('disk')->with('s3')->returns($disk);
 
         $app = $this->getApp([
             'cache' => [
@@ -275,9 +275,7 @@ class CacheManagerTest extends TestCase
             ->times(4)
             ->andReturn(new ArrayStore);
 
-        $cacheManager->shouldReceive('getDefaultDriver')
-            ->once()
-            ->andReturn('array');
+        $cacheManager->expects('getDefaultDriver')->returns('array');
 
         foreach (['array', ['array'], null] as $option) {
             $cacheManager->store('array');

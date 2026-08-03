@@ -35,14 +35,9 @@ class TestDatabasesTest extends TestCase
     {
         DB::shouldReceive('purge')->once();
 
-        config()->shouldReceive('get')
-            ->once()
-            ->with('database.connections.mysql.url', false)
-            ->andReturn(false);
+        config()->expects('get')->with('database.connections.mysql.url', false)->returns(false);
 
-        config()->shouldReceive('set')
-            ->once()
-            ->with('database.connections.mysql.database', 'my_database_test_1');
+        config()->expects('set')->with('database.connections.mysql.database', 'my_database_test_1');
 
         $this->switchToDatabase('my_database_test_1');
     }
@@ -52,14 +47,9 @@ class TestDatabasesTest extends TestCase
     {
         DB::shouldReceive('purge')->once();
 
-        config()->shouldReceive('get')
-            ->once()
-            ->with('database.connections.mysql.url', false)
-            ->andReturn($url);
+        config()->expects('get')->with('database.connections.mysql.url', false)->returns($url);
 
-        config()->shouldReceive('set')
-            ->once()
-            ->with('database.connections.mysql.url', $testUrl);
+        config()->expects('set')->with('database.connections.mysql.url', $testUrl);
 
         $this->switchToDatabase($testDatabase);
     }

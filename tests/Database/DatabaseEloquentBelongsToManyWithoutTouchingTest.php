@@ -19,8 +19,8 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
     {
         /** @var Article $related */
         $related = TestDouble::for(Article::class)->passthru();
-        $related->shouldReceive('getUpdatedAtColumn')->never();
-        $related->shouldReceive('freshTimestampString')->never();
+        $related->expects('getUpdatedAtColumn')->never();
+        $related->expects('freshTimestampString')->never();
 
         $this->assertFalse($related::isIgnoringTouch());
 
@@ -28,17 +28,15 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
             $this->assertTrue($related::isIgnoringTouch());
 
             $builder = TestDouble::for(Builder::class);
-            $builder->shouldReceive('join');
+            $builder->allows('join');
             $parent = TestDouble::for(User::class);
 
-            $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
-            $builder->shouldReceive('getModel')->andReturn($related);
-            $builder->shouldReceive('where');
-            $builder->shouldReceive('getQuery')->andReturn(
-                m::mock(stdClass::class, ['getGrammar' => m::mock(Grammar::class, ['isExpression' => false])])
-            );
+            $parent->allows('getAttribute')->with('id')->returns(1);
+            $builder->allows('getModel')->returns($related);
+            $builder->allows('where');
+            $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => m::mock(Grammar::class, ['isExpression' => false])]));
             $relation = new BelongsToMany($builder, $parent, 'article_users', 'user_id', 'article_id', 'id', 'id');
-            $builder->shouldReceive('update')->never();
+            $builder->expects('update')->never();
 
             $relation->touch();
         });

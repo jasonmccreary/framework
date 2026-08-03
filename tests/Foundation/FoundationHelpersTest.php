@@ -29,19 +29,19 @@ class FoundationHelpersTest extends TestCase
         $this->assertInstanceOf(CacheRepository::class, cache());
 
         // 2. cache(['foo' => 'bar'], 1);
-        $cache->shouldReceive('put')->once()->with('foo', 'bar', 1);
+        $cache->expects('put')->with('foo', 'bar', 1);
         cache(['foo' => 'bar'], 1);
 
         // 3. cache('foo');
-        $cache->shouldReceive('get')->once()->with('foo', null)->andReturn('bar');
+        $cache->expects('get')->with('foo', null)->returns('bar');
         $this->assertSame('bar', cache('foo'));
 
         // 4. cache('foo', null);
-        $cache->shouldReceive('get')->once()->with('foo', null)->andReturn('bar');
+        $cache->expects('get')->with('foo', null)->returns('bar');
         $this->assertSame('bar', cache('foo', null));
 
         // 5. cache('baz', 'default');
-        $cache->shouldReceive('get')->once()->with('baz', 'default')->andReturn('default');
+        $cache->expects('get')->with('baz', 'default')->returns('default');
         $this->assertSame('default', cache('baz', 'default'));
     }
 
@@ -50,7 +50,7 @@ class FoundationHelpersTest extends TestCase
         $app = new Application;
         $app['events'] = $dispatcher = TestDouble::for(Dispatcher::class);
 
-        $dispatcher->shouldReceive('dispatch')->once()->with('a', 'b', 'c')->andReturn('foo');
+        $dispatcher->expects('dispatch')->with('a', 'b', 'c')->returns('foo');
         $this->assertSame('foo', event('a', 'b', 'c'));
     }
 
@@ -58,8 +58,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -74,8 +74,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
         mix('unversioned.css');
@@ -90,8 +90,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -114,8 +114,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = TestDouble::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         mkdir($directory = __DIR__.'/mix');
         $manifest = $this->makeManifest('mix');
@@ -293,9 +293,7 @@ class FoundationHelpersTest extends TestCase
     public function testAbortReceivesCodeAsInteger()
     {
         $app = TestDouble::for(Application::class);
-        $app->shouldReceive('abort')
-            ->with($code = 400, $message = 'Bad request', $headers = ['X-FOO' => 'BAR'])
-            ->once();
+        $app->expects('abort')->with($code = 400, $message = 'Bad request', $headers = ['X-FOO' => 'BAR']);
 
         Container::setInstance($app);
 

@@ -19,8 +19,8 @@ class LogLoggerTest extends TestCase
     public function testMethodsPassErrorAdditionsToMonolog()
     {
         $writer = new Logger($monolog = TestDouble::for(Monolog::class));
-        $monolog->shouldReceive('isHandling')->with('error')->andReturn(true);
-        $monolog->shouldReceive('error')->once()->with('foo', []);
+        $monolog->allows('isHandling')->with('error')->returns(true);
+        $monolog->expects('error')->with('foo', []);
 
         $writer->error('foo');
     }
@@ -30,8 +30,8 @@ class LogLoggerTest extends TestCase
         $writer = new Logger($monolog = TestDouble::for(Monolog::class));
         $writer->withContext(['bar' => 'baz']);
 
-        $monolog->shouldReceive('isHandling')->with('error')->andReturn(true);
-        $monolog->shouldReceive('error')->once()->with('foo', ['bar' => 'baz']);
+        $monolog->allows('isHandling')->with('error')->returns(true);
+        $monolog->expects('error')->with('foo', ['bar' => 'baz']);
 
         $writer->error('foo');
     }
@@ -42,7 +42,7 @@ class LogLoggerTest extends TestCase
         $writer->withContext(['bar' => 'baz']);
         $writer->withoutContext();
 
-        $monolog->shouldReceive('isHandling')->with('error')->andReturn(true);
+        $monolog->allows('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', []);
 
         $writer->error('foo');
@@ -54,8 +54,8 @@ class LogLoggerTest extends TestCase
         $writer->withContext(['bar' => 'baz', 'forget' => 'me']);
         $writer->withoutContext(['forget']);
 
-        $monolog->shouldReceive('isHandling')->with('error')->andReturn(true);
-        $monolog->shouldReceive('error')->once()->with('foo', ['bar' => 'baz']);
+        $monolog->allows('isHandling')->with('error')->returns(true);
+        $monolog->expects('error')->with('foo', ['bar' => 'baz']);
 
         $writer->error('foo');
     }
@@ -63,8 +63,8 @@ class LogLoggerTest extends TestCase
     public function testLoggerFiresEventsDispatcher()
     {
         $writer = new Logger($monolog = TestDouble::for(Monolog::class), $events = new Dispatcher);
-        $monolog->shouldReceive('isHandling')->with('error')->andReturn(true);
-        $monolog->shouldReceive('error')->once()->with('foo', []);
+        $monolog->allows('isHandling')->with('error')->returns(true);
+        $monolog->expects('error')->with('foo', []);
 
         $events->listen(MessageLogged::class, function ($event) {
             $_SERVER['__log.level'] = $event->level;
@@ -102,7 +102,7 @@ class LogLoggerTest extends TestCase
         $callback = function () {
             return 'success';
         };
-        $events->shouldReceive('listen')->with(MessageLogged::class, $callback)->once();
+        $events->expects('listen')->with(MessageLogged::class, $callback);
 
         $writer->listen($callback);
     }
@@ -115,8 +115,8 @@ class LogLoggerTest extends TestCase
         $writer->withContext(['ip' => '127.0.0.1', 'timestamp' => '1986-10-29']);
         $writer->withoutContext(['timestamp']);
 
-        $monolog->shouldReceive('isHandling')->with('info')->andReturn(true);
-        $monolog->shouldReceive('info')->once()->with('User action', [
+        $monolog->allows('isHandling')->with('info')->returns(true);
+        $monolog->expects('info')->with('User action', [
             'user_id' => 123,
             'action' => 'login',
             'ip' => '127.0.0.1',

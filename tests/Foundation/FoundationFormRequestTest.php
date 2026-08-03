@@ -97,7 +97,7 @@ class FoundationFormRequestTest extends TestCase
 
         $request = $this->createRequest(['no' => 'name']);
 
-        $this->mocks['redirect']->shouldReceive('withInput->withErrors');
+        $this->mocks['redirect']->allows('withInput->withErrors');
 
         $request->validateResolved();
     }

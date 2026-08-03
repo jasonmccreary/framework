@@ -64,9 +64,7 @@ class LazilyRefreshDatabaseTest extends TestCase
     {
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => false,
                 '--seed' => false,
@@ -80,8 +78,7 @@ class LazilyRefreshDatabaseTest extends TestCase
     {
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->never();
+        $kernel->expects('call')->never();
 
         $this->refreshDatabase();
 
@@ -93,9 +90,7 @@ class LazilyRefreshDatabaseTest extends TestCase
     {
         $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => false,
                 '--seed' => false,

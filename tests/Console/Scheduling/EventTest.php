@@ -285,7 +285,7 @@ class EventTest extends TestCase
             $beforeCallbackCalled = true;
         });
 
-        $mutex->shouldReceive('create')->once()->with($event)->andReturn(false);
+        $mutex->expects('create')->with($event)->returns(false);
 
         $event->run($container);
 
@@ -312,8 +312,8 @@ class EventTest extends TestCase
 
         $event->withoutOverlapping();
 
-        $mutex->shouldReceive('create')->twice()->with($event)->andReturn(false, true);
-        $mutex->shouldReceive('forget')->once()->with($event);
+        $mutex->expects('create')->times(2)->with($event)->returns(false, true);
+        $mutex->expects('forget')->with($event);
 
         $event->run($container);
         $this->assertTrue($event->skippedBecauseOverlapping);

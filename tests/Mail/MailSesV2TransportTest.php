@@ -60,19 +60,14 @@ class MailSesV2TransportTest extends TestCase
 
         $client = TestDouble::for(SesV2Client::class);
         $sesResult = TestDouble::for(\stdClass::class);
-        $sesResult->shouldReceive('get')
-            ->with('MessageId')
-            ->once()
-            ->andReturn('ses-message-id');
-        $client->shouldReceive('sendEmail')->once()
-            ->with(m::on(function ($arg) {
+        $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
+        $client->expects('sendEmail')->with(m::on(function ($arg) {
                 return $arg['Source'] === 'myself@example.com' &&
                     $arg['Destination']['ToAddresses'] === ['me@example.com', 'you@example.com'] &&
                     $arg['ListManagementOptions'] === ['ContactListName' => 'TestList', 'TopicName' => 'TestTopic'] &&
                     $arg['EmailTags'] === [['Name' => 'FooTag', 'Value' => 'TagValue']] &&
                     str_contains($arg['Content']['Raw']['Data'], 'Reply-To: Taylor Otwell <taylor@example.com>');
-            }))
-            ->andReturn($sesResult);
+            }))->returns($sesResult);
 
         (new SesV2Transport($client))->send($message);
     }
@@ -86,8 +81,7 @@ class MailSesV2TransportTest extends TestCase
         $message->to('me@example.com');
 
         $client = TestDouble::for(SesV2Client::class);
-        $client->shouldReceive('sendEmail')->once()
-            ->andThrow(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
+        $client->expects('sendEmail')->throws(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
 
         $this->expectException(TransportException::class);
 

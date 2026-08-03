@@ -23,9 +23,9 @@ class QueueBeanstalkdJobTest extends TestCase
     public function testFireProperlyCallsTheJobHandler()
     {
         $job = $this->getJob();
-        $job->getPheanstalkJob()->shouldReceive('getData')->once()->andReturn(json_encode(['job' => 'foo', 'data' => ['data']]));
-        $job->getContainer()->shouldReceive('make')->once()->with('foo')->andReturn($handler = TestDouble::for(stdClass::class));
-        $handler->shouldReceive('fire')->once()->with($job, ['data']);
+        $job->getPheanstalkJob()->expects('getData')->returns(json_encode(['job' => 'foo', 'data' => ['data']]));
+        $job->getContainer()->expects('make')->with('foo')->returns($handler = TestDouble::for(stdClass::class));
+        $handler->expects('fire')->with($job, ['data']);
 
         $job->fire();
     }
@@ -33,12 +33,12 @@ class QueueBeanstalkdJobTest extends TestCase
     public function testFailProperlyCallsTheJobHandler()
     {
         $job = $this->getJob();
-        $job->getPheanstalkJob()->shouldReceive('getData')->andReturn(json_encode(['job' => 'foo', 'uuid' => 'test-uuid', 'data' => ['data']]));
-        $job->getContainer()->shouldReceive('make')->once()->with('foo')->andReturn($handler = TestDouble::for(BeanstalkdJobTestFailedTest::class));
-        $job->getPheanstalk()->shouldReceive('delete')->once()->with($job->getPheanstalkJob())->andReturnSelf();
-        $handler->shouldReceive('failed')->once()->with(['data'], m::type(Exception::class), 'test-uuid', m::type(Job::class));
-        $job->getContainer()->shouldReceive('make')->once()->with(Dispatcher::class)->andReturn($events = TestDouble::for(Dispatcher::class));
-        $events->shouldReceive('dispatch')->once()->with(m::type(JobFailed::class))->andReturnNull();
+        $job->getPheanstalkJob()->allows('getData')->returns(json_encode(['job' => 'foo', 'uuid' => 'test-uuid', 'data' => ['data']]));
+        $job->getContainer()->expects('make')->with('foo')->returns($handler = TestDouble::for(BeanstalkdJobTestFailedTest::class));
+        $job->getPheanstalk()->expects('delete')->with($job->getPheanstalkJob())->returns($job->getPheanstalk());
+        $handler->expects('failed')->with(['data'], m::type(Exception::class), 'test-uuid', m::type(Job::class));
+        $job->getContainer()->expects('make')->with(Dispatcher::class)->returns($events = TestDouble::for(Dispatcher::class));
+        $events->expects('dispatch')->with(m::type(JobFailed::class))->returns(null);
 
         $job->fail(new Exception);
     }
@@ -46,7 +46,7 @@ class QueueBeanstalkdJobTest extends TestCase
     public function testDeleteRemovesTheJobFromBeanstalkd()
     {
         $job = $this->getJob();
-        $job->getPheanstalk()->shouldReceive('delete')->once()->with($job->getPheanstalkJob());
+        $job->getPheanstalk()->expects('delete')->with($job->getPheanstalkJob());
 
         $job->delete();
     }
@@ -54,7 +54,7 @@ class QueueBeanstalkdJobTest extends TestCase
     public function testReleaseProperlyReleasesJobOntoBeanstalkd()
     {
         $job = $this->getJob();
-        $job->getPheanstalk()->shouldReceive('release')->once()->with($job->getPheanstalkJob(), Pheanstalk::DEFAULT_PRIORITY, 0);
+        $job->getPheanstalk()->expects('release')->with($job->getPheanstalkJob(), Pheanstalk::DEFAULT_PRIORITY, 0);
 
         $job->release();
     }
@@ -62,7 +62,7 @@ class QueueBeanstalkdJobTest extends TestCase
     public function testBuryProperlyBuryTheJobFromBeanstalkd()
     {
         $job = $this->getJob();
-        $job->getPheanstalk()->shouldReceive('bury')->once()->with($job->getPheanstalkJob());
+        $job->getPheanstalk()->expects('bury')->with($job->getPheanstalkJob());
 
         $job->bury();
     }
