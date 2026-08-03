@@ -21,14 +21,10 @@ class LoadEnvironmentVariablesTest extends TestCase
     {
         $app = TestDouble::for(Application::class);
 
-        $app->shouldReceive('configurationIsCached')
-            ->once()->with()->andReturn(false);
-        $app->shouldReceive('runningInConsole')
-            ->once()->with()->andReturn(false);
-        $app->shouldReceive('environmentPath')
-            ->once()->with()->andReturn(__DIR__.'/../fixtures');
-        $app->shouldReceive('environmentFile')
-            ->once()->with()->andReturn($file);
+        $app->expects('configurationIsCached')->with()->returns(false);
+        $app->expects('runningInConsole')->with()->returns(false);
+        $app->expects('environmentPath')->with()->returns(__DIR__.'/../fixtures');
+        $app->expects('environmentFile')->with()->returns($file);
 
         return $app;
     }

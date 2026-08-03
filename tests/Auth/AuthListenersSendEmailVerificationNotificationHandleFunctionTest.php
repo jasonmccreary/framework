@@ -31,7 +31,7 @@ class AuthListenersSendEmailVerificationNotificationHandleFunctionTest extends T
     public function testUserIsNotInstanceOfMustVerifyEmail()
     {
         $user = TestDouble::for(User::class);
-        $user->shouldNotReceive('sendEmailVerificationNotification');
+        $user->expects('sendEmailVerificationNotification')->never();
 
         $listener = new SendEmailVerificationNotification;
 

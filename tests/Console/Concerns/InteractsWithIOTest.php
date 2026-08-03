@@ -23,10 +23,7 @@ class InteractsWithIOTest extends TestCase
         $output = TestDouble::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
-        $output->shouldReceive('createProgressBar')
-            ->once()
-            ->with(count($iterable))
-            ->andReturnUsing(function ($steps) use ($bufferedOutput) {
+        $output->expects('createProgressBar')->with(count($iterable))->resolves(function ($steps) use ($bufferedOutput) {
                 // we can't mock ProgressBar because it's final, so return a real one
                 return new ProgressBar($bufferedOutput, $steps);
             });
@@ -59,10 +56,7 @@ class InteractsWithIOTest extends TestCase
 
         $totalSteps = 5;
 
-        $output->shouldReceive('createProgressBar')
-            ->once()
-            ->with($totalSteps)
-            ->andReturnUsing(function ($steps) use ($bufferedOutput) {
+        $output->expects('createProgressBar')->with($totalSteps)->resolves(function ($steps) use ($bufferedOutput) {
                 // we can't mock ProgressBar because it's final, so return a real one
                 return new ProgressBar($bufferedOutput, $steps);
             });

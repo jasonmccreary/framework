@@ -24,11 +24,11 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation()->withDefault();
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentHasOneModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -41,11 +41,11 @@ class DatabaseEloquentHasOneTest extends TestCase
             $newModel->username = 'taylor';
         });
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentHasOneModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -60,11 +60,11 @@ class DatabaseEloquentHasOneTest extends TestCase
             $newModel->username = $parentModel->username;
         });
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentHasOneModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -79,11 +79,11 @@ class DatabaseEloquentHasOneTest extends TestCase
 
         $relation = $this->getRelation()->withDefault($attributes);
 
-        $this->builder->shouldReceive('first')->once()->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentHasOneModelStub;
 
-        $this->related->shouldReceive('newInstance')->once()->andReturn($newModel);
+        $this->related->expects('newInstance')->returns($newModel);
 
         $this->assertSame($newModel, $relation->getResults());
 
@@ -96,7 +96,7 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
         $instance = $this->getMockBuilder(Model::class)->onlyMethods(['save', 'newInstance', 'setAttribute'])->getMock();
-        $relation->getRelated()->shouldReceive('newInstance')->with(['name' => 'taylor'])->andReturn($instance);
+        $relation->getRelated()->allows('newInstance')->with(['name' => 'taylor'])->returns($instance);
         $instance->expects($this->once())->method('setAttribute')->with('foreign_key', 1);
         $instance->expects($this->never())->method('save');
 
@@ -119,7 +119,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $relation = $this->getRelation();
         $created = $this->getMockBuilder(Model::class)->onlyMethods(['save', 'getKey', 'setAttribute'])->getMock();
         $created->expects($this->once())->method('save')->willReturn(true);
-        $relation->getRelated()->shouldReceive('newInstance')->once()->with(['name' => 'taylor'])->andReturn($created);
+        $relation->getRelated()->expects('newInstance')->with(['name' => 'taylor'])->returns($created);
         $created->expects($this->once())->method('setAttribute')->with('foreign_key', 1);
 
         $this->assertEquals($created, $relation->create(['name' => 'taylor']));
@@ -131,9 +131,9 @@ class DatabaseEloquentHasOneTest extends TestCase
         $attributes = ['name' => 'taylor', $relation->getForeignKeyName() => $relation->getParentKey()];
 
         $created = TestDouble::for(Model::class);
-        $created->shouldReceive('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
+        $created->allows('getAttribute')->with($relation->getForeignKeyName())->returns($relation->getParentKey());
 
-        $relation->getRelated()->shouldReceive('forceCreate')->once()->with($attributes)->andReturn($created);
+        $relation->getRelated()->expects('forceCreate')->with($attributes)->returns($created);
 
         $this->assertEquals($created, $relation->forceCreate(['name' => 'taylor']));
         $this->assertEquals(1, $created->getAttribute('foreign_key'));
@@ -143,7 +143,7 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('setRelation')->once()->with('foo', null);
+        $model->expects('setRelation')->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
         $this->assertEquals([$model], $models);
@@ -152,9 +152,9 @@ class DatabaseEloquentHasOneTest extends TestCase
     public function testEagerConstraintsAreProperlyAdded()
     {
         $relation = $this->getRelation();
-        $relation->getParent()->shouldReceive('getKeyName')->once()->andReturn('id');
-        $relation->getParent()->shouldReceive('getKeyType')->once()->andReturn('int');
-        $relation->getQuery()->shouldReceive('whereIntegerInRaw')->once()->with('table.foreign_key', [1, 2]);
+        $relation->getParent()->expects('getKeyName')->returns('id');
+        $relation->getParent()->expects('getKeyType')->returns('int');
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('table.foreign_key', [1, 2]);
         $model1 = new EloquentHasOneModelStub;
         $model1->id = 1;
         $model2 = new EloquentHasOneModelStub;
@@ -206,13 +206,13 @@ class DatabaseEloquentHasOneTest extends TestCase
         $parentQuery = TestDouble::for(BaseBuilder::class);
         $parentQuery->from = 'two';
 
-        $builder->shouldReceive('getQuery')->once()->andReturn($baseQuery);
-        $builder->shouldReceive('getQuery')->once()->andReturn($parentQuery);
+        $builder->expects('getQuery')->returns($baseQuery);
+        $builder->expects('getQuery')->returns($parentQuery);
 
-        $builder->shouldReceive('select')->once()->with(m::type(Expression::class))->andReturnSelf();
-        $relation->getParent()->shouldReceive('qualifyColumn')->andReturn('table.id');
-        $builder->shouldReceive('whereColumn')->once()->with('table.id', '=', 'table.foreign_key')->andReturn($baseQuery);
-        $baseQuery->shouldReceive('setBindings')->once()->with([], 'select');
+        $builder->expects('select')->with(m::type(Expression::class))->returns($builder);
+        $relation->getParent()->allows('qualifyColumn')->returns('table.id');
+        $builder->expects('whereColumn')->with('table.id', '=', 'table.foreign_key')->returns($baseQuery);
+        $baseQuery->expects('setBindings')->with([], 'select');
 
         $relation->getRelationExistenceCountQuery($builder, $builder);
     }
@@ -221,8 +221,8 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->never();
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getTable')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is(null));
     }
@@ -231,13 +231,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->once()->andReturn('table');
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
+        $this->related->expects('getTable')->returns('table');
+        $this->related->expects('getConnectionName')->returns('connection');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
-        $model->shouldReceive('getTable')->once()->andReturn('table');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('connection');
+        $model->expects('getAttribute')->with('foreign_key')->returns(1);
+        $model->expects('getTable')->returns('table');
+        $model->expects('getConnectionName')->returns('connection');
 
         $this->assertTrue($relation->is($model));
     }
@@ -246,13 +246,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->once()->andReturn('table');
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
+        $this->related->expects('getTable')->returns('table');
+        $this->related->expects('getConnectionName')->returns('connection');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn('1');
-        $model->shouldReceive('getTable')->once()->andReturn('table');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('connection');
+        $model->expects('getAttribute')->with('foreign_key')->returns('1');
+        $model->expects('getTable')->returns('table');
+        $model->expects('getConnectionName')->returns('connection');
 
         $this->assertTrue($relation->is($model));
     }
@@ -261,13 +261,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->never();
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getTable')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(null);
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('foreign_key')->returns(null);
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -276,13 +276,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->never();
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getTable')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(2);
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('foreign_key')->returns(2);
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -291,13 +291,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->once()->andReturn('table');
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getTable')->returns('table');
+        $this->related->expects('getConnectionName')->never();
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
-        $model->shouldReceive('getTable')->once()->andReturn('table.two');
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('foreign_key')->returns(1);
+        $model->expects('getTable')->returns('table.two');
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -306,13 +306,13 @@ class DatabaseEloquentHasOneTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getTable')->once()->andReturn('table');
-        $this->related->shouldReceive('getConnectionName')->once()->andReturn('connection');
+        $this->related->expects('getTable')->returns('table');
+        $this->related->expects('getConnectionName')->returns('connection');
 
         $model = TestDouble::for(Model::class);
-        $model->shouldReceive('getAttribute')->once()->with('foreign_key')->andReturn(1);
-        $model->shouldReceive('getTable')->once()->andReturn('table');
-        $model->shouldReceive('getConnectionName')->once()->andReturn('connection.two');
+        $model->expects('getAttribute')->with('foreign_key')->returns(1);
+        $model->expects('getTable')->returns('table');
+        $model->expects('getConnectionName')->returns('connection.two');
 
         $this->assertFalse($relation->is($model));
     }
@@ -320,16 +320,16 @@ class DatabaseEloquentHasOneTest extends TestCase
     protected function getRelation()
     {
         $this->builder = TestDouble::for(Builder::class);
-        $this->builder->shouldReceive('whereNotNull')->with('table.foreign_key');
-        $this->builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
+        $this->builder->allows('whereNotNull')->with('table.foreign_key');
+        $this->builder->allows('where')->with('table.foreign_key', '=', 1);
         $this->related = TestDouble::for(Model::class);
-        $this->builder->shouldReceive('getModel')->andReturn($this->related);
+        $this->builder->allows('getModel')->returns($this->related);
         $this->parent = TestDouble::for(Model::class);
-        $this->parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $this->parent->shouldReceive('getAttribute')->with('username')->andReturn('taylor');
-        $this->parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
-        $this->parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
-        $this->parent->shouldReceive('newQueryWithoutScopes')->andReturn($this->builder);
+        $this->parent->allows('getAttribute')->with('id')->returns(1);
+        $this->parent->allows('getAttribute')->with('username')->returns('taylor');
+        $this->parent->allows('getCreatedAtColumn')->returns('created_at');
+        $this->parent->allows('getUpdatedAtColumn')->returns('updated_at');
+        $this->parent->allows('newQueryWithoutScopes')->returns($this->builder);
 
         return new HasOne($this->builder, $this->parent, 'table.foreign_key', 'id');
     }

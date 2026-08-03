@@ -97,7 +97,7 @@ class FoundationFormRequestTest extends TestCase
 
         $request = $this->createRequest(['no' => 'name']);
 
-        $this->mocks['redirect']->shouldReceive('withInput->withErrors');
+        $this->mocks['redirect']->allows('withInput->withErrors');
 
         $request->validateResolved();
     }
@@ -647,14 +647,11 @@ class FoundationFormRequestTest extends TestCase
     {
         $redirector = $this->mocks['redirector'] = TestDouble::for(Redirector::class);
 
-        $redirector->shouldReceive('getUrlGenerator')->zeroOrMoreTimes()
-            ->andReturn($generator = $this->createMockUrlGenerator());
+        $redirector->allows('getUrlGenerator')->returns($generator = $this->createMockUrlGenerator());
 
-        $redirector->shouldReceive('to')->zeroOrMoreTimes()
-            ->andReturn($this->createMockRedirectResponse());
+        $redirector->allows('to')->returns($this->createMockRedirectResponse());
 
-        $generator->shouldReceive('previous')->zeroOrMoreTimes()
-            ->andReturn('previous');
+        $generator->allows('previous')->returns('previous');
 
         return $redirector;
     }

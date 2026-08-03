@@ -39,13 +39,13 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $resetCommand = TestDouble::for(ResetCommand::class);
         $migrateCommand = TestDouble::for(MigrateCommand::class);
 
-        $console->shouldReceive('find')->with('migrate:reset')->andReturn($resetCommand);
-        $console->shouldReceive('find')->with('migrate')->andReturn($migrateCommand);
-        $dispatcher->shouldReceive('dispatch')->once()->with(m::type(DatabaseRefreshed::class));
+        $console->allows('find')->with('migrate:reset')->returns($resetCommand);
+        $console->allows('find')->with('migrate')->returns($migrateCommand);
+        $dispatcher->expects('dispatch')->with(m::type(DatabaseRefreshed::class));
 
         $quote = DIRECTORY_SEPARATOR === '\\' ? '"' : "'";
-        $resetCommand->shouldReceive('run')->with(new InputMatcher("--force=1 {$quote}migrate:reset{$quote}"), m::any());
-        $migrateCommand->shouldReceive('run')->with(new InputMatcher('--force=1 migrate'), m::any());
+        $resetCommand->allows('run')->with(new InputMatcher("--force=1 {$quote}migrate:reset{$quote}"), m::any());
+        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), m::any());
 
         $this->runCommand($command);
     }
@@ -64,13 +64,13 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $rollbackCommand = TestDouble::for(RollbackCommand::class);
         $migrateCommand = TestDouble::for(MigrateCommand::class);
 
-        $console->shouldReceive('find')->with('migrate:rollback')->andReturn($rollbackCommand);
-        $console->shouldReceive('find')->with('migrate')->andReturn($migrateCommand);
-        $dispatcher->shouldReceive('dispatch')->once()->with(m::type(DatabaseRefreshed::class));
+        $console->allows('find')->with('migrate:rollback')->returns($rollbackCommand);
+        $console->allows('find')->with('migrate')->returns($migrateCommand);
+        $dispatcher->expects('dispatch')->with(m::type(DatabaseRefreshed::class));
 
         $quote = DIRECTORY_SEPARATOR === '\\' ? '"' : "'";
-        $rollbackCommand->shouldReceive('run')->with(new InputMatcher("--step=2 --force=1 {$quote}migrate:rollback{$quote}"), m::any());
-        $migrateCommand->shouldReceive('run')->with(new InputMatcher('--force=1 migrate'), m::any());
+        $rollbackCommand->allows('run')->with(new InputMatcher("--step=2 --force=1 {$quote}migrate:rollback{$quote}"), m::any());
+        $migrateCommand->allows('run')->with(new InputMatcher('--force=1 migrate'), m::any());
 
         $this->runCommand($command, ['--step' => 2]);
     }
@@ -93,7 +93,7 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
         $this->assertSame(1, $code);
 
         $console->shouldNotHaveBeenCalled();
-        $dispatcher->shouldNotReceive('dispatch');
+        $dispatcher->expects('dispatch')->never();
     }
 
     protected function runCommand($command, $input = [])

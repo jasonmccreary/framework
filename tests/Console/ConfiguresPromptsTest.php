@@ -112,9 +112,9 @@ class ConfiguresPromptsTest extends TestCase
 
         $application->shouldReceive('make')->withArgs(fn ($abstract) => $abstract === OutputStyle::class)->andReturn($outputStyle = TestDouble::for(OutputStyle::class));
         $application->shouldReceive('make')->withArgs(fn ($abstract) => $abstract === Factory::class)->andReturn($factory = TestDouble::for(Factory::class));
-        $application->shouldReceive('runningUnitTests')->andReturn(false);
-        $application->shouldReceive('call')->with([$command, 'handle'])->andReturnUsing(fn ($callback) => call_user_func($callback));
-        $outputStyle->shouldReceive('newLinesWritten')->andReturn(1);
+        $application->allows('runningUnitTests')->returns(false);
+        $application->allows('call')->with([$command, 'handle'])->resolves(fn ($callback) => call_user_func($callback));
+        $outputStyle->allows('newLinesWritten')->returns(1);
 
         $expectations($factory);
 
