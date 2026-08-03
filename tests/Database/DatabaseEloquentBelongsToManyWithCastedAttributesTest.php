@@ -2,13 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -64,7 +63,14 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $builder->allows('getModel')->returns($related);
         $related->allows('qualifyColumn');
         $builder->allows('join', 'where');
-        $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => m::mock(Grammar::class, ['isExpression' => false])]));
+
+        $grammar = TestDouble::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $query = TestDouble::for(stdClass::class);
+        $query->allows('getGrammar')->returns($grammar);
+
+        $builder->allows('getQuery')->returns($query);
 
         return new BelongsToMany(
             $builder,

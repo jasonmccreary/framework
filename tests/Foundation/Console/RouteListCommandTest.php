@@ -2,13 +2,12 @@
 
 namespace Illuminate\Tests\Foundation\Console;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Console\RouteListCommand;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class RouteListCommandTest extends TestCase
@@ -19,9 +18,12 @@ class RouteListCommandTest extends TestCase
     {
         parent::setUp();
 
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $this->app = new Application(
             $laravel = new \Illuminate\Foundation\Application(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null, 'fire' => null]),
+            $dispatcher,
             'testing',
         );
 
@@ -267,9 +269,12 @@ class RouteListCommandTest extends TestCase
         $command = new RouteListCommand($router);
         $command->setLaravel($laravel);
 
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $app = new Application(
             $laravel,
-            m::mock(Dispatcher::class, ['dispatch' => null, 'fire' => null]),
+            $dispatcher,
             'testing',
         );
         $app->addCommands([$command]);

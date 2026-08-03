@@ -5,14 +5,14 @@ namespace Illuminate\Tests\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class JsonResourceTest extends TestCase
 {
     public function testJsonResourceNullAttributes()
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
         $model->setAttribute('relation_sum_column', null);
@@ -32,13 +32,18 @@ class JsonResourceTest extends TestCase
 
     public function testJsonResourceToJsonSucceedsWithPriorErrors(): void
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
-        $resource = m::mock(JsonResource::class, ['resource' => $model])
-            ->makePartial()
-            ->shouldReceive('jsonSerialize')->andReturn(['foo' => 'bar'])
-            ->getMock();
+        $resource = new class($model) extends JsonResource
+        {
+            #[\Override]
+            public function jsonSerialize(): array
+            {
+                return ['foo' => 'bar'];
+            }
+        };
 
         // Simulate a JSON error
         json_decode('{');
@@ -49,13 +54,18 @@ class JsonResourceTest extends TestCase
 
     public function testJsonResourceToPrettyPrint(): void
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
-        $resource = m::mock(JsonResource::class, ['resource' => $model])
-            ->makePartial()
-            ->shouldReceive('jsonSerialize')->andReturn(['foo' => 'bar', 'bar' => 'foo', 'number' => 123])
-            ->getMock();
+        $resource = new class($model) extends JsonResource
+        {
+            #[\Override]
+            public function jsonSerialize(): array
+            {
+                return ['foo' => 'bar', 'bar' => 'foo', 'number' => 123];
+            }
+        };
 
         $results = $resource->toPrettyJson();
         $expected = $resource->toJson(JSON_PRETTY_PRINT);

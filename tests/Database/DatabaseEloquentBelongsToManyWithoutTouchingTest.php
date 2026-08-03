@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -34,7 +33,14 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
             $parent->allows('getAttribute')->with('id')->returns(1);
             $builder->allows('getModel')->returns($related);
             $builder->allows('where');
-            $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => m::mock(Grammar::class, ['isExpression' => false])]));
+
+            $grammar = TestDouble::for(Grammar::class);
+            $grammar->allows('isExpression')->returns(false);
+
+            $query = TestDouble::for(stdClass::class);
+            $query->allows('getGrammar')->returns($grammar);
+
+            $builder->allows('getQuery')->returns($query);
             $relation = new BelongsToMany($builder, $parent, 'article_users', 'user_id', 'article_id', 'id', 'id');
             $builder->expects('update')->never();
 
