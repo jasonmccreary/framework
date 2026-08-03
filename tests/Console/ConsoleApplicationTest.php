@@ -135,9 +135,15 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallFullyStringCommandLine()
     {
+        $applicationContract = TestDouble::for(ApplicationContract::class);
+        $applicationContract->allows('version')->returns('6.0');
+
+        $dispatcher6 = TestDouble::for(Dispatcher::class);
+        $dispatcher6->allows('dispatch')->returns(null);
+
         $artisan = new Application(
-            m::mock(ApplicationContract::class, ['version' => '6.0']),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $applicationContract,
+            $dispatcher6,
             'testing'
         );
 
@@ -163,8 +169,11 @@ class ConsoleApplicationTest extends TestCase
     public function testCommandInputPromptsWhenRequiredArgumentIsMissing()
     {
         $artisan = new Application(
-            $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $laravel = new FoundationApplicat$dispatcher5 = TestDouble::for(Dispatcher::class);
+$dispatcher5->allows('dispatch')->returns(null);
+
+ion(__DIR__),
+            $dispatcher5,
             'testing'
         );
 
@@ -183,7 +192,10 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher4,
+       $dispatcher4 = TestDouble::for(Dispatcher::class);
+       $dispatcher4->allows('dispatch')->returns(null);
+
             'testing'
         );
 
@@ -202,9 +214,12 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher3,
             'testing'
-        );
+        );$dispatcher3 = TestDouble::for(Dispatcher::class);
+$dispatcher3->allows('dispatch')->returns(null);
+
+
 
         $artisan->addCommands([$command = new FakeCommandWithArrayInputPrompting()]);
 
@@ -221,11 +236,14 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher2,
             'testing'
         );
 
-        $artisan->addCommands([$command = new FakeCommandWithArrayInputPrompting()]);
+        $artisan->addCommands([$command = new$dispatcher2 = TestDouble::for(Dispatcher::class);
+$dispatcher2->allows('dispatch')->returns(null);
+
+ FakeCommandWithArrayInputPrompting()]);
 
         $exitCode = $artisan->call('fake-command-for-testing-array', [
             'names' => ['foo', 'bar', 'baz'],
@@ -240,11 +258,14 @@ class ConsoleApplicationTest extends TestCase
     {
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
-        $artisan->addCommands([$command = new FakeCommandWithInputPrompting()]);
+        $artisan->addCommands([$command = new FakeCommandWithInputPromp$dispatcher = TestDouble::for(Dispatcher::class);
+$dispatcher->allows('dispatch')->returns(null);
+
+ting()]);
 
         $command->setLaravel($laravel);
 
@@ -302,8 +323,10 @@ class ConsoleApplicationTest extends TestCase
 
     protected function getMockConsole(array $methods)
     {
-        $app = m::mock(ApplicationContract::class, ['version' => '6.0']);
-        $events = m::mock(Dispatcher::class, ['dispatch' => null]);
+        $app = TestDouble::for(ApplicationContract::class);
+        $app->allows('version')->returns('6.0');
+        $events = TestDouble::for(Dispatcher::class);
+        $events->allows('dispatch')->returns(null);
 
         return $this->getMockBuilder(Application::class)->onlyMethods($methods)->setConstructorArgs([
             $app, $events, 'test-version',

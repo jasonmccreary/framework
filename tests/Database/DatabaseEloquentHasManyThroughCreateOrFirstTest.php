@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -388,7 +387,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = m::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
         $connection->allows('getQueryGrammar')->returns($grammar);
         $connection->allows('getTablePrefix')->returns('');
@@ -396,7 +396,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
             return new Builder($connection, $grammar, $processor);
         });
         $connection->allows('getDatabaseName')->returns('database');
-        $resolver = m::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
