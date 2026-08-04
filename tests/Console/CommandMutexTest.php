@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;

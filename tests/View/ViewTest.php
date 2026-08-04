@@ -14,7 +14,6 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ViewTest extends TestCase

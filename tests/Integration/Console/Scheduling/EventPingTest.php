@@ -13,7 +13,6 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class EventPingTest extends TestCase

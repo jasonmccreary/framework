@@ -9,7 +9,6 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class FoundationAuthenticationTest extends TestCase

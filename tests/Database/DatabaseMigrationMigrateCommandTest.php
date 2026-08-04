@@ -10,7 +10,6 @@ use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Events\SchemaLoaded;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Console\Input\ArrayInput;

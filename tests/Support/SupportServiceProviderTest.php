@@ -8,7 +8,6 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Translation\Translator;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class SupportServiceProviderTest extends TestCase
