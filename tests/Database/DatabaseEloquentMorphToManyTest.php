@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Mockery\Adapter\Phpunit\MockeryTestCase as TestCase;
-use Mockery as m;
 use SortDirection;
 use stdClass;
 
