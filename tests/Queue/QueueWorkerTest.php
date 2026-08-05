@@ -59,10 +59,10 @@ class QueueWorkerTest extends TestCase
         $worker = $this->getWorker('default', ['queue' => [$job = new WorkerFakeJob]]);
         $worker->runNextJob('default', 'queue', new WorkerOptions);
         $this->assertTrue($job->fired);
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobPopping::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobPopped::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessing::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobPopping::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobPopped::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
     }
 
     public function testJobPoppingEvent()
@@ -71,11 +71,11 @@ class QueueWorkerTest extends TestCase
         $worker->runNextJob('default', 'queue', new WorkerOptions);
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof JobPopping
                 && $event->connectionName === 'default'
                 && $event->queue === 'queue';
-        }))->once();
+        }))->times(1);
     }
 
     public function testWorkerCanWorkUntilQueueIsEmpty()
@@ -94,9 +94,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessing::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessed::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(2);
     }
 
     public function testWorkerStopsWhenQueueIsEmptyForConfiguredSeconds()
@@ -111,9 +111,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -139,9 +139,9 @@ class QueueWorkerTest extends TestCase
         $this->assertSame(0, $status);
         $this->assertSame(16, $worker->currentTime);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -165,9 +165,9 @@ class QueueWorkerTest extends TestCase
         $this->assertFalse($secondJob->fired);
         $this->assertSame(12, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessing::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(1);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
     }
 
     public function testWorkerMemoryExceededWhenMemoryIsZero()
@@ -220,7 +220,7 @@ class QueueWorkerTest extends TestCase
 
         $worker->runNextJob('default', 'queue', $this->workerOptions());
 
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
+        $this->exceptionHandler->received('report')->with($e);
     }
 
     public function testWorkerSleepsWhenQueueIsEmpty()
@@ -243,9 +243,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertEquals(10, $job->releaseAfter);
         $this->assertFalse($job->deleted);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfExceptionHandlerSaysItShouldntRetry()
@@ -270,7 +270,7 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobReleasedAfterException::class)]);
+        $this->events->received('dispatch')->with(Argument::type(JobReleasedAfterException::class))->never();
     }
 
     public function testExceptionIsNotReportedIfReportJobExceptionsIsDisabled()
@@ -287,8 +287,8 @@ class QueueWorkerTest extends TestCase
             $worker = $this->getWorker('default', ['queue' => [$job]]);
             $worker->runNextJob('default', 'queue', $this->workerOptions(['backoff' => 10]));
 
-            $this->exceptionHandler->shouldNotHaveReceived('report');
-            $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
+            $this->exceptionHandler->received('report')->never();
+            $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
         } finally {
             Worker::$reportJobExceptions = true;
         }
@@ -312,9 +312,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsNotReleasedIfItHasExpired()
@@ -342,9 +342,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfItHasAlreadyExceededMaxAttempts()
@@ -361,9 +361,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertInstanceOf(MaxAttemptsExceededException::class, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with(Argument::type(MaxAttemptsExceededException::class));
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with(Argument::type(MaxAttemptsExceededException::class));
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfItHasAlreadyExpired()
@@ -386,9 +386,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertInstanceOf(MaxAttemptsExceededException::class, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with(Argument::type(MaxAttemptsExceededException::class));
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Argument::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with(Argument::type(MaxAttemptsExceededException::class));
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobBasedMaxRetries()
@@ -465,7 +465,7 @@ class QueueWorkerTest extends TestCase
         $job->delete();
         $worker->runNextJob('default', 'queue', $this->workerOptions());
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
         $this->assertFalse($job->hasFailed());
         $this->assertFalse($job->isReleased());
         $this->assertTrue($job->isDeleted());
@@ -517,7 +517,7 @@ class QueueWorkerTest extends TestCase
         $this->assertTrue($firstJob->fired);
         $this->assertTrue($secondJob->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::type(WorkerStarting::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(WorkerStarting::class))->times(1);
     }
 
     public function testWorkerIdleIsDispatched()
@@ -529,12 +529,12 @@ class QueueWorkerTest extends TestCase
 
         $worker->daemon('default', 'queue', $workerOptions);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerIdle
                 && $event->connectionName === 'default'
                 && $event->queue === 'queue'
                 && $event->workerOptions === $workerOptions;
-        }))->once();
+        }))->times(1);
     }
 
     public function testWorkerStoppingIsDispatched()
@@ -552,7 +552,7 @@ class QueueWorkerTest extends TestCase
         $this->assertTrue($firstJob->fired);
         $this->assertTrue($secondJob->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -578,7 +578,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -607,7 +607,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -626,13 +626,13 @@ class QueueWorkerTest extends TestCase
         $worker = $this->getWorker('default', ['queue' => [$job]]);
         $worker->runNextJob('default', 'queue', $this->workerOptions(['backoff' => 10]));
 
-        $this->events->shouldHaveReceived('dispatch')->with(Argument::satisfies(function ($event) use ($job, $e) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($job, $e) {
             return $event instanceof JobReleasedAfterException
                 && $event->connectionName === 'default'
                 && $event->job === $job
                 && $event->backoff === 10
                 && $event->exception === $e;
-        }))->once();
+        }))->times(1);
     }
 
     public function testInterruptibleJobIsNotifiedOnSignal()

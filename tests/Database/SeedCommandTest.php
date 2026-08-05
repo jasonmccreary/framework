@@ -53,7 +53,7 @@ class SeedCommandTest extends TestCase
         $command->run($input, $output);
         $command->handle();
 
-        $container->shouldHaveReceived('call')->with([$command, 'handle']);
+        $container->received('call')->with([$command, 'handle']);
     }
 
     public function testWithoutModelEvents()
@@ -95,7 +95,7 @@ class SeedCommandTest extends TestCase
 
         Assert::assertSame($dispatcher, Model::getEventDispatcher());
 
-        $container->shouldHaveReceived('call')->with([$command, 'handle']);
+        $container->received('call')->with([$command, 'handle']);
     }
 
     public function testProhibitable()
