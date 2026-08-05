@@ -2,11 +2,10 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Schema\SqliteSchemaState;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Filesystem\Filesystem;
-use Mockery as m;
+use JMac\Testing\TestDouble;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
@@ -21,13 +20,12 @@ class DatabaseSqliteSchemaStateTest extends TestCase
         $connection->allows('getDatabaseName')->returns($config['database']);
 
         $process = TestDouble::for(Process::class);
-        $processFactory = m::spy(function () use ($process) {
+        $processFactory = function () use ($process) {
             return $process;
-        });
+        };
 
         $schemaState = new SqliteSchemaState($connection, null, $processFactory);
         $schemaState->load('database/schema/sqlite-schema.dump');
-
 
         $process->received('mustRun')->with(null, [
             'LARAVEL_LOAD_DATABASE' => 'database/database.sqlite',
