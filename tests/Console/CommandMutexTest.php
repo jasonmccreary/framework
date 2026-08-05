@@ -57,12 +57,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunIsolatedCommandIfNotBlocked()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(true)
-            ->once();
-        $this->commandMutex->shouldReceive('forget')
-            ->andReturn(true)
-            ->once();
+        $this->commandMutex->expects('create')->returns(true);
+        $this->commandMutex->expects('forget')->returns(true);
 
         $this->runCommand();
 
@@ -71,9 +67,7 @@ class CommandMutexTest extends TestCase
 
     public function testCannotRunIsolatedCommandIfBlocked()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(false)
-            ->once();
+        $this->commandMutex->expects('create')->returns(false);
 
         $this->runCommand();
 
@@ -82,12 +76,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunCommandAgainAfterOtherCommandFinished()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(true)
-            ->twice();
-        $this->commandMutex->shouldReceive('forget')
-            ->andReturn(true)
-            ->twice();
+        $this->commandMutex->expects('create')->returns(true)->times(2);
+        $this->commandMutex->expects('forget')->returns(true)->times(2);
 
         $this->runCommand();
         $this->runCommand();

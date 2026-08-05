@@ -133,28 +133,28 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('auth', function () {
             $manager = TestDouble::for(AuthManager::class);
-            $manager->shouldReceive('userResolver')->andReturn(fn ($guard = null) => $manager->guard($guard)->user());
-            $manager->shouldReceive('guard')->with('foo')->andReturnUsing(function () {
+            $manager->allows('userResolver')->returns(fn ($guard = null) => $manager->guard($guard)->user());
+            $manager->allows('guard')->with('foo')->resolves(function () {
                 $guard = TestDouble::for(GuardContract::class);
-                $guard->shouldReceive('user')->andReturn(m:TestDouble::for(AuthenticatableContract::class));
+                $guard->allows('user')->returns(m:TestDouble::for(AuthenticatableContract::class));
 
                 return $guard;
             });
-            $manager->shouldReceive('guard')->with('bar')->andReturnUsing(function () {
+            $manager->allows('guard')->with('bar')->resolves(function () {
                 $guard = TestDouble::for(GuardContract::class);
-                $guard->shouldReceive('user')->andReturn(m:TestDouble::for(AuthenticatableContract::class));
+                $guard->allows('user')->returns(m:TestDouble::for(AuthenticatableContract::class));
 
                 return $guard;
             });
-            $manager->shouldReceive('guard')->with(AuthGuardUnitEnum::unit)->andReturnUsing(function () {
+            $manager->allows('guard')->with(AuthGuardUnitEnum::unit)->resolves(function () {
                 $guard = TestDouble::for(GuardContract::class);
-                $guard->shouldReceive('user')->andReturn(m:TestDouble::for(AuthenticatableContract::class));
+                $guard->allows('user')->returns(m:TestDouble::for(AuthenticatableContract::class));
 
                 return $guard;
             });
-            $manager->shouldReceive('guard')->with(AuthGuardBackedEnum::Backed)->andReturnUsing(function () {
+            $manager->allows('guard')->with(AuthGuardBackedEnum::Backed)->resolves(function () {
                 $guard = TestDouble::for(GuardContract::class);
-                $guard->shouldReceive('user')->andReturn(m:TestDouble::for(AuthenticatableContract::class));
+                $guard->allows('user')->returns(m:TestDouble::for(AuthenticatableContract::class));
 
                 return $guard;
             });
@@ -170,12 +170,12 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('cache', function () {
             $manager = TestDouble::for(CacheManager::class);
-            $manager->shouldReceive('store')->with('foo')->andReturn(TestDouble::for(CacheRepository::class));
-            $manager->shouldReceive('store')->with('bar')->andReturn(TestDouble::for(CacheRepository::class));
-            $manager->shouldReceive('store')->with(CacheStoreUnitEnum::unit)->andReturn(TestDouble::for(CacheRepository::class));
-            $manager->shouldReceive('store')->with(CacheStoreBackedEnum::Backed)->andReturn(TestDouble::for(CacheRepository::class));
-            $manager->shouldReceive('memo')->with('foo')->andReturn(TestDouble::for(CacheRepository::class));
-            $manager->shouldReceive('memo')->with('bar')->andReturn(TestDouble::for(CacheRepository::class));
+            $manager->allows('store')->with('foo')->returns(TestDouble::for(CacheRepository::class));
+            $manager->allows('store')->with('bar')->returns(TestDouble::for(CacheRepository::class));
+            $manager->allows('store')->with(CacheStoreUnitEnum::unit)->returns(TestDouble::for(CacheRepository::class));
+            $manager->allows('store')->with(CacheStoreBackedEnum::Backed)->returns(TestDouble::for(CacheRepository::class));
+            $manager->allows('memo')->with('foo')->returns(TestDouble::for(CacheRepository::class));
+            $manager->allows('memo')->with('bar')->returns(TestDouble::for(CacheRepository::class));
 
             return $manager;
         });
@@ -188,8 +188,8 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('config', function () {
             $repository = TestDouble::for(Repository::class);
-            $repository->shouldReceive('get')->with('foo', null)->andReturn('foo');
-            $repository->shouldReceive('get')->with('bar', null)->andReturn('bar');
+            $repository->allows('get')->with('foo', null)->returns('foo');
+            $repository->allows('get')->with('bar', null)->returns('bar');
 
             return $repository;
         });
@@ -202,8 +202,8 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('db', function () {
             $manager = TestDouble::for(DatabaseManager::class);
-            $manager->shouldReceive('connection')->with('foo')->andReturn(TestDouble::for(Connection::class));
-            $manager->shouldReceive('connection')->with('bar')->andReturn(TestDouble::for(Connection::class));
+            $manager->allows('connection')->with('foo')->returns(TestDouble::for(Connection::class));
+            $manager->allows('connection')->with('bar')->returns(TestDouble::for(Connection::class));
 
             return $manager;
         });
@@ -216,10 +216,10 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container; //
         $container->singleton('auth', function () {
             $manager = TestDouble::for(AuthManager::class);
-            $manager->shouldReceive('guard')->with('foo')->andReturn(TestDouble::for(GuardContract::class));
-            $manager->shouldReceive('guard')->with('bar')->andReturn(TestDouble::for(GuardContract::class));
-            $manager->shouldReceive('guard')->with(AuthGuardUnitEnum::unit)->andReturn(TestDouble::for(GuardContract::class));
-            $manager->shouldReceive('guard')->with(AuthGuardBackedEnum::Backed)->andReturn(TestDouble::for(GuardContract::class));
+            $manager->allows('guard')->with('foo')->returns(TestDouble::for(GuardContract::class));
+            $manager->allows('guard')->with('bar')->returns(TestDouble::for(GuardContract::class));
+            $manager->allows('guard')->with(AuthGuardUnitEnum::unit)->returns(TestDouble::for(GuardContract::class));
+            $manager->allows('guard')->with(AuthGuardBackedEnum::Backed)->returns(TestDouble::for(GuardContract::class));
 
             return $manager;
         });
@@ -232,8 +232,8 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('log', function () {
             $manager = TestDouble::for(LogManager::class);
-            $manager->shouldReceive('channel')->with('foo')->andReturn(TestDouble::for(LoggerInterface::class));
-            $manager->shouldReceive('channel')->with('bar')->andReturn(TestDouble::for(LoggerInterface::class));
+            $manager->allows('channel')->with('foo')->returns(TestDouble::for(LoggerInterface::class));
+            $manager->allows('channel')->with('bar')->returns(TestDouble::for(LoggerInterface::class));
 
             return $manager;
         });
@@ -246,8 +246,8 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('request', function () {
             $request = TestDouble::for(Request::class);
-            $request->shouldReceive('route')->with('foo')->andReturn(TestDouble::for(Model::class));
-            $request->shouldReceive('route')->with('bar')->andReturn('bar');
+            $request->allows('route')->with('foo')->returns(TestDouble::for(Model::class));
+            $request->allows('route')->with('bar')->returns('bar');
 
             return $request;
         });
@@ -260,8 +260,8 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('request', function () {
             $request = TestDouble::for(Request::class);
-            $request->shouldReceive('route')->with('foo')->andReturn(TestDouble::for(Model::class));
-            $request->shouldReceive('route')->with('bar')->andReturn('bar');
+            $request->allows('route')->with('foo')->returns(TestDouble::for(Model::class));
+            $request->allows('route')->with('bar')->returns('bar');
 
             return $request;
         });
@@ -275,7 +275,7 @@ class ContextualAttributeBindingTest extends TestCase
 
         $container->singleton(ContextRepository::class, function () {
             $context = TestDouble::for(ContextRepository::class);
-            $context->shouldReceive('get')->once()->with('foo', null)->andReturn('foo');
+            $context->expects('get')->with('foo', null)->returns('foo');
 
             return $context;
         });
@@ -289,8 +289,8 @@ class ContextualAttributeBindingTest extends TestCase
 
         $container->singleton(ContextRepository::class, function () {
             $context = TestDouble::for(ContextRepository::class);
-            $context->shouldReceive('getHidden')->once()->with('bar', null)->andReturn('bar');
-            $context->shouldNotReceive('get');
+            $context->expects('getHidden')->with('bar', null)->returns('bar');
+            $context->expects('get')->never();
 
             return $context;
         });
@@ -303,10 +303,10 @@ class ContextualAttributeBindingTest extends TestCase
         $container = new Container;
         $container->singleton('filesystem', function () {
             $manager = TestDouble::for(FilesystemManager::class);
-            $manager->shouldReceive('disk')->with('foo')->andReturn(TestDouble::for(Filesystem::class));
-            $manager->shouldReceive('disk')->with('bar')->andReturn(TestDouble::for(Filesystem::class));
-            $manager->shouldReceive('disk')->with(StorageDiskUnitEnum::unit)->andReturn(TestDouble::for(Filesystem::class));
-            $manager->shouldReceive('disk')->with(StorageDiskBackedEnum::Backed)->andReturn(TestDouble::for(Filesystem::class));
+            $manager->allows('disk')->with('foo')->returns(TestDouble::for(Filesystem::class));
+            $manager->allows('disk')->with('bar')->returns(TestDouble::for(Filesystem::class));
+            $manager->allows('disk')->with(StorageDiskUnitEnum::unit)->returns(TestDouble::for(Filesystem::class));
+            $manager->allows('disk')->with(StorageDiskBackedEnum::Backed)->returns(TestDouble::for(Filesystem::class));
 
             return $manager;
         });

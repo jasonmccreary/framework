@@ -60,20 +60,20 @@ class BusBatchTest extends TestCase
 
             $dispatcher = TestDouble::for(new Dispatcher($container));
 
-            $dispatcher->shouldReceive('batch')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
+            $dispatcher->allows('batch')->resolves(function ($jobs) {
                 $pendingBatch = TestDouble::for(PendingBatch::class);
-                $pendingBatch->shouldReceive('name')->andReturnSelf();
-                $pendingBatch->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(TestDouble::for(Batch::class));
+                $pendingBatch->allows('name')->returns($pendingBatch);
+                $pendingBatch->allows('dispatch')->returns(TestDouble::for(Batch::class));
 
                 return $pendingBatch;
-            })->byDefault();
+            });
 
-            $dispatcher->shouldReceive('chain')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
+            $dispatcher->allows('chain')->resolves(function ($jobs) {
                 $pendingChain = TestDouble::for(new PendingChain($jobs, \stdClass::class));
-                $pendingChain->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(TestDouble::for(Batch::class));
+                $pendingChain->allows('dispatch')->returns(TestDouble::for(Batch::class));
 
                 return $pendingChain;
-            })->byDefault();
+            });
 
             $container->instance(BusDispatcher::class, $dispatcher);
             $container->alias(BusDispatcher::class, 'bus');
@@ -145,11 +145,9 @@ class BusBatchTest extends TestCase
         $thirdJob = function () {
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) use ($job, $secondJob) {
+        $connection->expects('bulk')->with(m::on(function ($args) use ($job, $secondJob) {
             return
                 $args[0] == $job &&
                 $args[1] == $secondJob &&
@@ -235,11 +233,9 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job, $secondJob]);
         $this->assertEquals(2, $batch->pendingJobs);
@@ -271,19 +267,17 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job]);
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(m::on(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(m::on(function ($event) use ($batch) {
             return $event instanceof BatchFinished && $event->batch === $batch;
         }));
 
@@ -307,19 +301,17 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job, $secondJob]);
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(m::on(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
+        $events->expects('dispatch')->with(m::on(function ($event) {
             return $event instanceof BatchFinished;
         }));
 
@@ -344,15 +336,13 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job, $secondJob]);
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(m::on(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
@@ -376,11 +366,9 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job, $secondJob]);
         $this->assertEquals(2, $batch->pendingJobs);
@@ -418,11 +406,9 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job, $secondJob]);
         $this->assertEquals(2, $batch->pendingJobs);
@@ -496,11 +482,9 @@ class BusBatchTest extends TestCase
             use Batchable;
         };
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once();
+        $connection->expects('bulk');
 
         $batch = $batch->add([$job]);
 
@@ -543,7 +527,7 @@ class BusBatchTest extends TestCase
 
         $exception = new RuntimeException('Something went wrong.');
 
-        $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($batch, $exception) {
+        $events->expects('dispatch')->with(m::on(function ($event) use ($batch, $exception) {
             return $event instanceof BatchCanceled
                 && $event->batch->id === $batch->id
                 && $event->exception === $exception;
@@ -617,11 +601,9 @@ class BusBatchTest extends TestCase
 
         $thirdJob = new ThirdTestJob;
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
+        $connection->expects('bulk')->with(m::on(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
             return
                 $args[0] == $chainHeadJob
                 && serialize($secondJob) == $args[0]->chained[0]
@@ -656,11 +638,9 @@ class BusBatchTest extends TestCase
         $firstJob = (new ChainHeadJob)->onQueue('custom-queue');
         $secondJob = (new SecondTestJob)->onQueue('custom-queue');
 
-        $queue->shouldReceive('connection')->once()
-            ->with('test-connection')
-            ->andReturn($connection = TestDouble::for(stdClass::class));
+        $queue->expects('connection')->with('test-connection')->returns($connection = TestDouble::for(stdClass::class));
 
-        $connection->shouldReceive('bulk')->once()->with(m::on(function ($args) {
+        $connection->expects('bulk')->with(m::on(function ($args) {
             return true;
         }), '', null);
 
@@ -706,9 +686,9 @@ class BusBatchTest extends TestCase
         $connection = TestDouble::for(PostgresConnection::class);
         $builder = TestDouble::for(Builder::class);
 
-        $connection->shouldReceive('table')->andReturn($builder);
-        $builder->shouldReceive('useWritePdo')->andReturnSelf();
-        $builder->shouldReceive('where')->andReturnSelf();
+        $connection->allows('table')->returns($builder);
+        $builder->allows('useWritePdo')->returns($builder);
+        $builder->allows('where')->returns($builder);
 
         $repository = new DatabaseBatchRepository(
             new BatchFactory(TestDouble::for(Factory::class)), $connection, 'job_batches'
@@ -731,8 +711,7 @@ class BusBatchTest extends TestCase
 
         $connection = TestDouble::for(PostgresConnection::class);
 
-        $connection->shouldReceive('table->useWritePdo->where->first')
-            ->andReturn($m = (object) [
+        $connection->allows('table->useWritePdo->where->first')->returns($m = (object) [
                 'id' => '',
                 'name' => '',
                 'total_jobs' => '',

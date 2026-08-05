@@ -26,11 +26,11 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isDeleted')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $instance->call($job, [
             'command' => serialize(new CallQueuedHandlerTestJob),
@@ -47,11 +47,11 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isDeleted')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $instance->call($job, [
             'command' => serialize($command = new CallQueuedHandlerTestJobWithMiddleware),
@@ -70,11 +70,11 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isDeleted')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $command = $command = new CallQueuedHandlerTestJobWithMiddleware;
         $command->through([new TestJobMiddleware]);
@@ -93,8 +93,8 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => false]);
-        $job->shouldReceive('fail')->once();
+        $job->allows('payload')->returns(['deleteWhenMissingModels' => false]);
+        $job->expects('fail');
 
         $instance->call($job, [
             'command' => serialize(new CallQueuedHandlerExceptionThrowerWithoutDelete),
@@ -108,13 +108,13 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => true]);
-        $job->shouldReceive('getConnectionName')->andReturn('connection');
-        $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerExceptionThrower::class);
-        $job->shouldReceive('markAsFailed')->never();
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('delete')->once();
-        $job->shouldReceive('failed')->never();
+        $job->allows('payload')->returns(['deleteWhenMissingModels' => true]);
+        $job->allows('getConnectionName')->returns('connection');
+        $job->allows('resolveQueuedJobClass')->returns(CallQueuedHandlerExceptionThrower::class);
+        $job->expects('markAsFailed')->never();
+        $job->allows('isDeleted')->returns(false);
+        $job->expects('delete');
+        $job->expects('failed')->never();
 
         $instance->call($job, [
             'command' => serialize(new CallQueuedHandlerExceptionThrower),
@@ -130,13 +130,13 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => true]);
-        $job->shouldReceive('getConnectionName')->andReturn('connection');
-        $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerAttributeExceptionThrower::class);
-        $job->shouldReceive('markAsFailed')->never();
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('delete')->once();
-        $job->shouldReceive('failed')->never();
+        $job->allows('payload')->returns(['deleteWhenMissingModels' => true]);
+        $job->allows('getConnectionName')->returns('connection');
+        $job->allows('resolveQueuedJobClass')->returns(CallQueuedHandlerAttributeExceptionThrower::class);
+        $job->expects('markAsFailed')->never();
+        $job->allows('isDeleted')->returns(false);
+        $job->expects('delete');
+        $job->expects('failed')->never();
 
         $instance->call($job, [
             'command' => serialize(new CallQueuedHandlerAttributeExceptionThrower()),
@@ -152,22 +152,22 @@ class CallQueuedHandlerTest extends TestCase
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
         $batch = TestDouble::for(Batch::class);
-        $batch->shouldReceive('recordSuccessfulJob')->once()->with('job-uuid');
+        $batch->expects('recordSuccessfulJob')->with('job-uuid');
 
         $repository = TestDouble::for(BatchRepository::class);
-        $repository->shouldReceive('find')->once()->with('test-batch-id')->andReturn($batch);
+        $repository->expects('find')->with('test-batch-id')->returns($batch);
         $this->app->instance(BatchRepository::class, $repository);
 
         $serialized = serialize((new CallQueuedHandlerBatchableExceptionThrower)->withBatchId('test-batch-id'));
 
         $job = TestDouble::for(Job::class);
-        $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerBatchableExceptionThrower::class);
-        $job->shouldReceive('markAsFailed')->never();
-        $job->shouldReceive('isDeleted')->andReturn(false);
-        $job->shouldReceive('delete')->once();
-        $job->shouldReceive('failed')->never();
-        $job->shouldReceive('uuid')->andReturn('job-uuid');
-        $job->shouldReceive('payload')->andReturn([
+        $job->allows('resolveQueuedJobClass')->returns(CallQueuedHandlerBatchableExceptionThrower::class);
+        $job->expects('markAsFailed')->never();
+        $job->allows('isDeleted')->returns(false);
+        $job->expects('delete');
+        $job->expects('failed')->never();
+        $job->allows('uuid')->returns('job-uuid');
+        $job->allows('payload')->returns([
             'deleteWhenMissingModels' => true,
             'data' => [
                 'batchId' => 'test-batch-id',

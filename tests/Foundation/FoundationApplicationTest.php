@@ -22,12 +22,12 @@ class FoundationApplicationTest extends TestCase
         $app = new Application;
 
         $app['config'] = $config = TestDouble::for(stdClass::class);
-        $config->shouldReceive('get')->once()->with('app.locale')->andReturn('bar');
-        $config->shouldReceive('set')->once()->with('app.locale', 'foo');
+        $config->expects('get')->with('app.locale')->returns('bar');
+        $config->expects('set')->with('app.locale', 'foo');
         $app['translator'] = $trans = TestDouble::for(stdClass::class);
-        $trans->shouldReceive('setLocale')->once()->with('foo');
+        $trans->expects('setLocale')->with('foo');
         $app['events'] = $events = TestDouble::for(stdClass::class);
-        $events->shouldReceive('dispatch')->once()->with(m::on(function (LocaleUpdated $event) {
+        $events->expects('dispatch')->with(m::on(function (LocaleUpdated $event) {
             return $event->locale === 'foo' && $event->previousLocale === 'bar';
         }));
 
@@ -38,7 +38,7 @@ class FoundationApplicationTest extends TestCase
     {
         $provider = TestDouble::for(ApplicationBasicServiceProviderStub::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 
@@ -91,7 +91,7 @@ class FoundationApplicationTest extends TestCase
     {
         $provider = TestDouble::for(ServiceProvider::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 
@@ -102,7 +102,7 @@ class FoundationApplicationTest extends TestCase
     {
         $provider = TestDouble::for(ServiceProvider::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 

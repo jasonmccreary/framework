@@ -327,10 +327,10 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingForeignID()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('getPostProcessor')->andReturn(new SQliteProcessor);
-        $connection->shouldReceive('selectFromWriteConnection')->andReturn([]);
-        $connection->shouldReceive('scalar')->andReturn('');
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('getPostProcessor')->returns(new SQliteProcessor);
+        $connection->allows('selectFromWriteConnection')->returns([]);
+        $connection->allows('scalar')->returns('');
 
         $blueprint = new Blueprint($connection, 'users');
         $foreignId = $blueprint->foreignId('foo');
@@ -370,10 +370,10 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingForeignIdSpecifyingIndexNameInConstraint()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('getPostProcessor')->andReturn(new SQliteProcessor);
-        $connection->shouldReceive('selectFromWriteConnection')->andReturn([]);
-        $connection->shouldReceive('scalar')->andReturn('');
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('getPostProcessor')->returns(new SQliteProcessor);
+        $connection->allows('selectFromWriteConnection')->returns([]);
+        $connection->allows('scalar')->returns('');
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->foreignId('company_id')->constrained(indexName: 'my_index');
@@ -583,11 +583,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingNativeJson()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('getConfig')->once()->with('use_native_json')->andReturn(true);
-        $connection->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection));
-        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder());
-        $connection->shouldReceive('getServerVersion')->andReturn('3.35') ->getMock();
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->expects('getConfig')->with('use_native_json')->returns(true);
+        $connection->allows('getSchemaGrammar')->returns($this->getGrammar($connection));
+        $connection->allows('getSchemaBuilder')->returns($this->getBuilder());
+        $connection->allows('getServerVersion')->returns('3.35');
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->json('foo');
@@ -610,11 +610,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingNativeJsonb()
     {
         $connection = TestDouble::for(Connection::class);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('getConfig')->once()->with('use_native_jsonb')->andReturn(true);
-        $connection->shouldReceive('getSchemaGrammar')->andReturn($this->getGrammar($connection));
-        $connection->shouldReceive('getSchemaBuilder')->andReturn($this->getBuilder());
-        $connection->shouldReceive('getServerVersion')->andReturn('3.35') ->getMock();
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->expects('getConfig')->with('use_native_jsonb')->returns(true);
+        $connection->allows('getSchemaGrammar')->returns($this->getGrammar($connection));
+        $connection->allows('getSchemaBuilder')->returns($this->getBuilder());
+        $connection->allows('getServerVersion')->returns('3.35');
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->jsonb('foo');
@@ -837,10 +837,10 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testAddingForeignUuid()
     {
         $connection = $this->getConnection();
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('getPostProcessor')->andReturn(new SQliteProcessor);
-        $connection->shouldReceive('selectFromWriteConnection')->andReturn([]);
-        $connection->shouldReceive('scalar')->andReturn('');
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('getPostProcessor')->returns(new SQliteProcessor);
+        $connection->allows('selectFromWriteConnection')->returns([]);
+        $connection->allows('scalar')->returns('');
 
         $blueprint = new Blueprint($connection, 'users');
         $foreignUuid = $blueprint->foreignUuid('foo');
@@ -1015,7 +1015,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
     public function testCreateTableWithVirtualAsColumnWhenJsonColumnHasArrayKey()
     {
         $conn = $this->getConnection();
-        $conn->shouldReceive('getConfig')->andReturn(null);
+        $conn->allows('getConfig')->returns(null);
 
         $blueprint = new Blueprint($conn, 'users');
         $blueprint->create();
@@ -1081,7 +1081,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
             ->getMock();
 
         $connection = $this->getConnection(builder: $builder);
-        $connection->shouldReceive('scalar')->with('pragma foreign_keys')->andReturn(false);
+        $connection->allows('scalar')->with('pragma foreign_keys')->returns(false);
 
         $blueprint = new Blueprint($connection, 'users');
         $blueprint->renameColumn('name', 'first_name');
@@ -1108,7 +1108,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
             ->getMock();
 
         $connection = $this->getConnection(builder: $builder);
-        $connection->shouldReceive('scalar')->with('pragma foreign_keys')->andReturn(false);
+        $connection->allows('scalar')->with('pragma foreign_keys')->returns(false);
 
         $blueprint = new Blueprint($connection, 'my_schema.users');
         $blueprint->renameColumn('name', 'first_name');
@@ -1132,11 +1132,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
         $grammar ??= $this->getGrammar($connection);
         $builder ??= $this->getBuilder();
 
-        $connection->shouldReceive('getTablePrefix')->andReturn($prefix);
-        $connection->shouldReceive('getConfig')->andReturn(null);
-        $connection->shouldReceive('getSchemaGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getSchemaBuilder')->andReturn($builder);
-        $connection->shouldReceive('getServerVersion')->andReturn('3.35');
+        $connection->allows('getTablePrefix')->returns($prefix);
+        $connection->allows('getConfig')->returns(null);
+        $connection->allows('getSchemaGrammar')->returns($grammar);
+        $connection->allows('getSchemaBuilder')->returns($builder);
+        $connection->allows('getServerVersion')->returns('3.35');
         return $connection;
     }
 

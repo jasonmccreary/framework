@@ -56,7 +56,7 @@ class SupportFacadesEventTest extends TestCase
             Event::assertDispatched(EventStub::class);
         });
 
-        $this->events->shouldReceive('dispatch')->once();
+        $this->events->expects('dispatch');
 
         (new FakeForStub)->dispatch();
     }
@@ -80,7 +80,7 @@ class SupportFacadesEventTest extends TestCase
     {
         $arrayRepository = Cache::store('array');
 
-        $this->events->shouldReceive('dispatch')->times(2);
+        $this->events->expects('dispatch')->times(2);
         $arrayRepository->get('foo');
 
         Event::fake();

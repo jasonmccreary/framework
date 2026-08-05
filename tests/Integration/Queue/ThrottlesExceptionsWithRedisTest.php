@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Bus\Dispatcher;
@@ -67,10 +68,10 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->once()->andReturn(false);
-        $job->shouldReceive('release')->with(0)->once();
-        $job->shouldReceive('isReleased')->andReturn(true);
-        $job->shouldReceive('isDeletedOrReleased')->once()->andReturn(true);
+        $job->expects('hasFailed')->returns(false);
+        $job->expects('release')->with(0);
+        $job->allows('isReleased')->returns(true);
+        $job->expects('isDeletedOrReleased')->returns(true);
 
         $instance->call($job, [
             'command' => serialize($command = new $class($key)),
@@ -86,12 +87,12 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->once()->andReturn(false);
-        $job->shouldReceive('release')->withArgs(function ($delay) {
+        $job->expects('hasFailed')->returns(false);
+        $job->expects('release')->with(Argument::satisfies(function ($delay) {
             return $delay >= 600;
-        })->once();
-        $job->shouldReceive('isReleased')->andReturn(true);
-        $job->shouldReceive('isDeletedOrReleased')->once()->andReturn(true);
+        }));
+        $job->allows('isReleased')->returns(true);
+        $job->expects('isDeletedOrReleased')->returns(true);
 
         $instance->call($job, [
             'command' => serialize($command = new $class($key)),
@@ -107,10 +108,10 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
 
         $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->once()->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->once()->andReturn(false);
-        $job->shouldReceive('delete')->once();
+        $job->expects('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->expects('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
 
         $instance->call($job, [
             'command' => serialize($command = new $class($key)),
@@ -121,10 +122,7 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
 
     public function testReportingExceptions()
     {
-        $this->spy(ExceptionHandler::class)
-            ->shouldReceive('report')
-            ->twice()
-            ->with(m::type(RuntimeException::class), []);
+        $this->spy(ExceptionHandler::class)->expects('report')->times(2)->with(m::type(RuntimeException::class), []);
 
         $job = new class
         {

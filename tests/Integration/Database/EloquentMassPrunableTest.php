@@ -56,10 +56,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
 
     public function testPrunesRecords()
     {
-        app('events')
-            ->shouldReceive('dispatch')
-            ->times(2)
-            ->with(m::type(ModelsPruned::class));
+        app('events')->expects('dispatch')->times(2)->with(m::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['name' => 'foo'];
@@ -75,10 +72,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
 
     public function testPrunesSoftDeletedRecords()
     {
-        app('events')
-            ->shouldReceive('dispatch')
-            ->times(3)
-            ->with(m::type(ModelsPruned::class));
+        app('events')->expects('dispatch')->times(3)->with(m::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['deleted_at' => Carbon::now()];

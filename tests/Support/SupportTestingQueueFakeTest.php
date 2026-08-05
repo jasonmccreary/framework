@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Illuminate\Bus\Queueable;
@@ -66,9 +67,9 @@ class SupportTestingQueueFakeTest extends TestCase
         $job = new JobStub;
 
         $manager = TestDouble::for(QueueManager::class);
-        $manager->shouldReceive('push')->once()->withArgs(function ($passedJob) use ($job) {
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }));
 
         $fake = new QueueFake(new Application, JobToFakeStub::class, $manager);
 
@@ -397,9 +398,9 @@ class SupportTestingQueueFakeTest extends TestCase
         $job = new JobStub;
 
         $manager = TestDouble::for(QueueManager::class);
-        $manager->shouldReceive('push')->once()->withArgs(function ($passedJob) use ($job) {
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }));
 
         $fake = (new QueueFake(new Application, [], $manager))->except(JobStub::class);
 

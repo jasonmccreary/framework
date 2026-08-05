@@ -326,7 +326,7 @@ class FilesystemTest extends TestCase
         mkdir(self::$tempDir.'/tmp7', 0777, true);
 
         $files = TestDouble::for(Filesystem::class)->passthru();
-        $files->shouldReceive('deleteDirectory')->once()->andReturn(false);
+        $files->expects('deleteDirectory')->returns(false);
         $this->assertFalse($files->moveDirectory(self::$tempDir.'/tmp6', self::$tempDir.'/tmp7', true));
     }
 

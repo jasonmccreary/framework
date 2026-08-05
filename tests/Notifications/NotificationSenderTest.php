@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Notifications;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
@@ -27,13 +28,13 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch');
+        $bus->allows('dispatch');
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -44,21 +45,17 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'dummy' && $job->channels === ['database'] && $job->connection === 'redis';
-            });
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+            }));
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'dummy' && $job->channels === ['mail'] && $job->connection === 'redis';
-            });
+            }));
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -70,9 +67,9 @@ class NotificationSenderTest extends TestCase
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldNotReceive('dispatch');
+        $bus->expects('dispatch')->never();
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -83,11 +80,11 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldNotReceive('dispatch');
+        $bus->expects('dispatch')->never();
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -99,15 +96,14 @@ class NotificationSenderTest extends TestCase
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->withArgs(function ($job) {
+        $bus->allows('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->middleware[0] instanceof TestNotificationMiddleware;
-            });
+            }));
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $events->expects('listen');
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -118,27 +114,21 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->middleware[0] instanceof TestMailNotificationMiddleware;
-            });
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+            }));
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->middleware[0] instanceof TestDatabaseNotificationMiddleware;
-            });
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+            }));
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return empty($job->middleware);
-            });
+            }));
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -149,21 +139,17 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->connection === 'sync' && $job->channels === ['database'] && $job->queue === 'dummy';
-            });
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+            }));
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->connection === 'redis' && $job->channels === ['mail'] && $job->queue === 'dummy';
-            });
+            }));
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -174,21 +160,17 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->allows('getContainer')->returns(app());
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'dummy' && $job->channels === ['database'] && $job->connection === 'redis';
-            });
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+            }));
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'admin_notifications' && $job->channels === ['mail'] && $job->connection === 'redis';
-            });
+            }));
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -199,19 +181,17 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn('notification-queue');
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn('notification-connection');
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns('notification-queue');
+        $manager->allows('resolveConnectionFromQueueRoute')->returns('notification-connection');
 
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'notification-queue' && $job->channels === ['mail'] && $job->connection === 'notification-connection';
-            });
+            }));
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
+        $events->expects('listen');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -224,17 +204,17 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
+        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $response = TestDouble::for(ResponseInterface::class);
-        $driver->shouldReceive('send')->andThrow(new HttpTransportException('Transport error', $response));
+        $driver->allows('send')->throws(new HttpTransportException('Transport error', $response));
         $bus = TestDouble::for(BusDispatcher::class);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $events->shouldReceive('until')->with(m::type(NotificationSending::class))->andReturn(true);
-        $events->shouldReceive('dispatch')->once()->withArgs(function ($event) {
+        $events->expects('listen');
+        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof NotificationFailed && $event->data['exception'] instanceof TransportException;
-        });
+        }));
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -245,16 +225,16 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('driver')->andReturn($driver = TestDouble::for(\stdClass::class));
+        $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
         $driver->shouldReceive('send')->once()->withArgs(function ($notifiable, $notification) {
             return $notification->channelData === 'default';
         });
         $bus = TestDouble::for(BusDispatcher::class);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen')->once();
-        $events->shouldReceive('until')->with(m::type(NotificationSending::class))->andReturn(true);
-        $events->shouldReceive('dispatch')->once();
+        $events->expects('listen');
+        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->expects('dispatch');
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -277,19 +257,17 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->allows('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'manual-queue';
-            });
+            }));
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -310,19 +288,17 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->allows('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'attribute-queue';
-            });
+            }));
 
         $sender = new NotificationSender($manager, $bus, $events);
 
@@ -348,19 +324,17 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = TestDouble::for(Notifiable::class);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('getContainer')->andReturn(app());
-        $manager->shouldReceive('resolveQueueFromQueueRoute')->andReturn(null);
-        $manager->shouldReceive('resolveConnectionFromQueueRoute')->andReturn(null);
+        $manager->allows('getContainer')->returns(app());
+        $manager->allows('resolveQueueFromQueueRoute')->returns(null);
+        $manager->allows('resolveConnectionFromQueueRoute')->returns(null);
 
         $events = TestDouble::for(EventDispatcher::class);
-        $events->shouldReceive('listen');
+        $events->allows('listen');
 
         $bus = TestDouble::for(BusDispatcher::class);
-        $bus->shouldReceive('dispatch')
-            ->once()
-            ->withArgs(function ($job) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
                 return $job->queue === 'constructor-override-queue';
-            });
+            }));
 
         $sender = new NotificationSender($manager, $bus, $events);
 
