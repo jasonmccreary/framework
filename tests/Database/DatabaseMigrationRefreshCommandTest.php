@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Console\Migrations\RefreshCommand;
@@ -11,6 +9,8 @@ use Illuminate\Database\Console\Migrations\ResetCommand;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Events\DatabaseRefreshed;
 use Illuminate\Foundation\Application;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -102,20 +102,29 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
     }
 }
 
-class InputMatcher extends m\Matcher\MatcherAbstract
+class InputMatcher implements \JMac\Testing\Matching\Matcher
 {
-    /**
-     * @param  \Symfony\Component\Console\Input\ArrayInput  $actual
-     * @return bool
-     */
-    public function match(&$actual)
+    public function __construct(private readonly string $expected)
     {
-        return (string) $actual == $this->_expected;
     }
 
-    public function __toString()
+    public function matches(mixed $actual): bool
     {
-        return '';
+        return (string) $actual == $this->expected;
+    }
+
+    public function describe(): string
+    {
+        return $this->expected;
+    }
+
+    public function explainMismatch(mixed $actual): ?string
+    {
+        if ($this->matches($actual)) {
+            return null;
+        }
+
+        return sprintf('expected input "%s", got "%s"', $this->expected, (string) $actual);
     }
 }
 
