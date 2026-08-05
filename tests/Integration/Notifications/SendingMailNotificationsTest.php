@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
@@ -142,11 +143,11 @@ class SendingMailNotificationsTest extends TestCase
         $this->mailer->shouldReceive('send')->once()->withArgs(function (...$args) use ($notification, $user, $callbackExpectationClosure) {
             $viewArray = $args[0];
 
-            if (! m::on(fn ($closure) => $closure([]) === 'htmlContent')->match($viewArray['html'])) {
+            if (! Argument::satisfies(fn ($closure) => $closure([]) === 'htmlContent')->match($viewArray['html'])) {
                 return false;
             }
 
-            if (! m::on(fn ($closure) => $closure([]) === 'textContent')->match($viewArray['text'])) {
+            if (! Argument::satisfies(fn ($closure) => $closure([]) === 'textContent')->match($viewArray['text'])) {
                 return false;
             }
 
@@ -165,7 +166,7 @@ class SendingMailNotificationsTest extends TestCase
                 return false;
             }
 
-            return m::on($callbackExpectationClosure)->match($args[2]);
+            return Argument::satisfies($callbackExpectationClosure)->match($args[2]);
         });
     }
 
@@ -290,7 +291,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            m::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = TestDouble::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
@@ -320,7 +321,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            m::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = TestDouble::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
@@ -350,7 +351,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            m::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = TestDouble::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);

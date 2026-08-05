@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
@@ -63,7 +64,7 @@ class BusDispatcherTest extends TestCase
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = TestDouble::for(Queue::class);
-            $mock->expects('later')->with(10, m::type(BusDispatcherTestSpecificQueueAndDelayCommand::class), '', 'foo');
+            $mock->expects('later')->with(10, Argument::type(BusDispatcherTestSpecificQueueAndDelayCommand::class), '', 'foo');
 
             return $mock;
         });
@@ -160,8 +161,8 @@ class BusDispatcherTest extends TestCase
         Container::setInstance($container);
 
         $mock = TestDouble::for(Queue::class);
-        $mock->expects('bulk')->with(m::on(fn ($jobs) => count($jobs) === 2), '', null);
-        $mock->expects('bulk')->with(m::on(fn ($jobs) => count($jobs) === 1), '', 'high');
+        $mock->expects('bulk')->with(Argument::satisfies(fn ($jobs) => count($jobs) === 2), '', null);
+        $mock->expects('bulk')->with(Argument::satisfies(fn ($jobs) => count($jobs) === 1), '', 'high');
 
         $dispatcher = new Dispatcher($container, fn () => $mock);
 

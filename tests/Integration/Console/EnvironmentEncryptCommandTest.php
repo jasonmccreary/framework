@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
@@ -55,7 +56,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.production.encrypted'), m::any());
+            ->with(base_path('.env.production.encrypted'), Argument::any());
     }
 
     public function testItGeneratesTheCorrectFileWhenNotUsingEnvironment(): void
@@ -70,7 +71,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), m::any());
+            ->with(base_path('.env.encrypted'), Argument::any());
     }
 
     public function testItFailsWhenEnvironmentFileCannotBeFound(): void
@@ -104,7 +105,7 @@ class EnvironmentEncryptCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), m::any());
+            ->with(base_path('.env.encrypted'), Argument::any());
     }
 
     public function testItEncryptsWithGivenKeyAndDisplaysIt(): void
@@ -139,7 +140,7 @@ class EnvironmentEncryptCommandTest extends TestCase
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns("APP_NAME=Laravel\nAPP_ENV=local");
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) {
                 $lines = explode("\n", rtrim($content));
 
                 return count($lines) === 2
@@ -159,7 +160,7 @@ class EnvironmentEncryptCommandTest extends TestCase
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns("# Comment\nAPP_NAME=Laravel\n\nAPP_ENV=local");
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) {
                 $lines = explode("\n", rtrim($content));
 
                 // Comments and blank lines are skipped
@@ -194,7 +195,7 @@ ENV;
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns($originalContent);
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) use (&$encryptedOutput) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
@@ -236,7 +237,7 @@ ENV;
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns($originalContent);
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) use (&$encryptedOutput) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
@@ -279,7 +280,7 @@ ENV;
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns($originalContent);
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) use (&$encryptedOutput) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
@@ -321,7 +322,7 @@ ENV;
         $filesystem->expects('exists')->with(base_path('.env'))->returns(true);
         $filesystem->expects('exists')->with(base_path('.env.encrypted'))->returns(false);
         $filesystem->expects('get')->with(base_path('.env'))->returns($originalContent);
-        $filesystem->expects('put')->with(base_path('.env.encrypted'), m::on(function ($content) use (&$encryptedOutput) {
+        $filesystem->expects('put')->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
@@ -361,7 +362,7 @@ ENV;
             ->assertExitCode(0);
 
         $this->filesystem->shouldHaveReceived('put')
-            ->with(base_path('.env.encrypted'), m::any());
+            ->with(base_path('.env.encrypted'), Argument::any());
 
         $this->filesystem->shouldHaveReceived('delete')
             ->with(base_path('.env'));

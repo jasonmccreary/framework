@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\RateLimiter;
@@ -27,7 +28,7 @@ class CacheRateLimiterTest extends TestCase
     public function testHitProperlyIncrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 1)->returns(true);
         $cache->expects('add')->with('key', 0, 1)->returns(true);
         $cache->expects('increment')->with('key', 1)->returns(1);
         $cache->allows('getStore')->returns(new ArrayStore);
@@ -39,7 +40,7 @@ class CacheRateLimiterTest extends TestCase
     public function testIncrementProperlyIncrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 1)->returns(true);
         $cache->expects('add')->with('key', 0, 1)->returns(true);
         $cache->expects('increment')->with('key', 5)->returns(5);
         $cache->allows('getStore')->returns(new ArrayStore);
@@ -51,7 +52,7 @@ class CacheRateLimiterTest extends TestCase
     public function testDecrementProperlyDecrementsAttemptCount()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 1)->returns(true);
         $cache->expects('add')->with('key', 0, 1)->returns(true);
         $cache->expects('increment')->with('key', -5)->returns(-5);
         $cache->allows('getStore')->returns(new ArrayStore);
@@ -63,7 +64,7 @@ class CacheRateLimiterTest extends TestCase
     public function testHitHasNoMemoryLeak()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->expects('add')->with('key:timer', m::type('int'), 1)->returns(true);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 1)->returns(true);
         $cache->expects('add')->with('key', 0, 1)->returns(false);
         $cache->expects('increment')->with('key', 1)->returns(1);
         $cache->expects('put')->with('key', 1, 1);
@@ -76,7 +77,7 @@ class CacheRateLimiterTest extends TestCase
     public function testIncrementWithCustomAmountHasNoMemoryLeak()
     {
         $cache = TestDouble::for(Cache::class);
-        $cache->expects('add')->with('key:timer', m::type('int'), 60)->returns(true);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 60)->returns(true);
         $cache->expects('add')->with('key', 0, 60)->returns(false);
         $cache->expects('increment')->with('key', 2)->returns(2);
         $cache->expects('put')->with('key', 2, 60);
@@ -134,7 +135,7 @@ class CacheRateLimiterTest extends TestCase
     {
         $cache = TestDouble::for(Cache::class);
         $cache->expects('get')->with('key', 0)->returns(0);
-        $cache->expects('add')->with('key:timer', m::type('int'), 1);
+        $cache->expects('add')->with('key:timer', Argument::type('int'), 1);
         $cache->expects('add')->with('key', 0, 1)->returns(1);
         $cache->expects('increment')->with('key', 1)->returns(1);
         $cache->allows('getStore')->returns(new ArrayStore);
@@ -153,7 +154,7 @@ class CacheRateLimiterTest extends TestCase
     {
         $cache = TestDouble::for(Cache::class);
         $cache->expects('get')->times(6)->with('key', 0)->returns(0);
-        $cache->expects('add')->times(6)->with('key:timer', m::type('int'), 1);
+        $cache->expects('add')->times(6)->with('key:timer', Argument::type('int'), 1);
         $cache->expects('add')->times(6)->with('key', 0, 1)->returns(1);
         $cache->expects('increment')->times(6)->with('key', 1)->returns(1);
         $cache->allows('getStore')->returns(new ArrayStore);

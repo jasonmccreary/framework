@@ -353,7 +353,7 @@ class ThrottlesExceptionsTest extends TestCase
 
     public function testReportingExceptions()
     {
-        $this->spy(ExceptionHandler::class)->expects('report')->times(2)->with(m::type(RuntimeException::class), []);
+        $this->spy(ExceptionHandler::class)->expects('report')->times(2)->with(Argument::type(RuntimeException::class), []);
 
         $job = new class
         {

@@ -211,7 +211,7 @@ class NotificationSenderTest extends TestCase
 
         $events = TestDouble::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof NotificationFailed && $event->data['exception'] instanceof TransportException;
         }));
@@ -233,7 +233,7 @@ class NotificationSenderTest extends TestCase
 
         $events = TestDouble::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->allows('until')->with(m::type(NotificationSending::class))->returns(true);
+        $events->allows('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch');
 
         $sender = new NotificationSender($manager, $bus, $events);

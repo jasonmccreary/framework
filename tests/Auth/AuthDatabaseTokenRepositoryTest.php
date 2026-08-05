@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Illuminate\Auth\Passwords\DatabaseTokenRepository;
 use Illuminate\Contracts\Auth\CanResetPassword;
@@ -142,7 +143,7 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     {
         $repo = $this->getRepo();
         $repo->getConnection()->expects('table')->with('table')->returns($query = TestDouble::for(stdClass::class));
-        $query->expects('where')->with('created_at', '<', m::any())->returns($query);
+        $query->expects('where')->with('created_at', '<', Argument::any())->returns($query);
         $query->expects('delete');
 
         $repo->deleteExpired();
