@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class AuthPasswordBrokerManagerTest extends TestCase
@@ -15,9 +15,9 @@ class AuthPasswordBrokerManagerTest extends TestCase
     {
         $app = $this->getApp();
 
-        $broker = m::mock(PasswordBroker::class);
+        $broker = TestDouble::for(PasswordBroker::class);
 
-        $manager = m::mock(PasswordBrokerManager::class, [$app])->makePartial()->shouldAllowMockingProtectedMethods();
+        $manager = TestDouble::for(PasswordBrokerManager::class)->passthru(new PasswordBrokerManager($app));
         $manager->shouldReceive('resolve')->with('users')->andReturn($broker);
 
         $result1 = $manager->broker(PasswordBrokerName::Users);

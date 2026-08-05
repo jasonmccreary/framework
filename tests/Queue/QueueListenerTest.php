@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Queue\Listener;
 use Illuminate\Queue\ListenerOptions;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
@@ -15,9 +15,9 @@ class QueueListenerTest extends TestCase
 {
     public function testRunProcessCallsProcess()
     {
-        $process = m::mock(Process::class)->makePartial();
+        $process = TestDouble::for(Process::class)->passthru();
         $process->shouldReceive('run')->once();
-        $listener = m::mock(Listener::class)->makePartial();
+        $listener = TestDouble::for(Listener::class)->passthru();
         $listener->shouldReceive('memoryExceeded')->once()->with(1)->andReturn(false);
 
         $listener->runProcess($process, 1);
@@ -25,9 +25,9 @@ class QueueListenerTest extends TestCase
 
     public function testListenerStopsWhenMemoryIsExceeded()
     {
-        $process = m::mock(Process::class)->makePartial();
+        $process = TestDouble::for(Process::class)->passthru();
         $process->shouldReceive('run')->once();
-        $listener = m::mock(Listener::class)->makePartial();
+        $listener = TestDouble::for(Listener::class)->passthru();
         $listener->shouldReceive('memoryExceeded')->once()->with(1)->andReturn(true);
         $listener->shouldReceive('stop')->once();
 

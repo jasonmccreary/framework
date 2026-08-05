@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Validation\DatabasePresenceVerifier;
@@ -13,10 +14,10 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 {
     public function testBasicCount()
     {
-        $verifier = new DatabasePresenceVerifier($db = m::mock(ConnectionResolverInterface::class));
+        $verifier = new DatabasePresenceVerifier($db = TestDouble::for(ConnectionResolverInterface::class));
         $verifier->setConnection('connection');
-        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = m::mock(stdClass::class));
-        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = m::mock(stdClass::class));
+        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = TestDouble::for(stdClass::class));
+        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = TestDouble::for(stdClass::class));
         $builder->shouldReceive('useWritePdo')->once()->andReturn($builder);
         $builder->shouldReceive('where')->with('column', '=', 'value')->andReturn($builder);
         $extra = ['foo' => 'NULL', 'bar' => 'NOT_NULL', 'baz' => 'taylor', 'faz' => true, 'not' => '!admin'];
@@ -32,10 +33,10 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 
     public function testBasicCountWithClosures()
     {
-        $verifier = new DatabasePresenceVerifier($db = m::mock(ConnectionResolverInterface::class));
+        $verifier = new DatabasePresenceVerifier($db = TestDouble::for(ConnectionResolverInterface::class));
         $verifier->setConnection('connection');
-        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = m::mock(stdClass::class));
-        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = m::mock(stdClass::class));
+        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = TestDouble::for(stdClass::class));
+        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = TestDouble::for(stdClass::class));
         $builder->shouldReceive('useWritePdo')->once()->andReturn($builder);
         $builder->shouldReceive('where')->with('column', '=', 'value')->andReturn($builder);
         $closure = function ($query) {
@@ -58,10 +59,10 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 
     public function testGetCountWithValidExcludeId()
     {
-        $verifier = new DatabasePresenceVerifier($db = m::mock(ConnectionResolverInterface::class));
+        $verifier = new DatabasePresenceVerifier($db = TestDouble::for(ConnectionResolverInterface::class));
         $verifier->setConnection('connection');
-        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = m::mock(stdClass::class));
-        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = m::mock(stdClass::class));
+        $db->shouldReceive('connection')->once()->with('connection')->andReturn($conn = TestDouble::for(stdClass::class));
+        $conn->shouldReceive('table')->once()->with('table')->andReturn($builder = TestDouble::for(stdClass::class));
         $builder->shouldReceive('useWritePdo')->once()->andReturn($builder);
         $builder->shouldReceive('where')->with('column', '=', 'value')->andReturn($builder);
         $builder->shouldReceive('where')->with('id', '<>', 123)->andReturn($builder);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\BatchRepository;
@@ -14,7 +15,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Event;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class CallQueuedHandlerTest extends TestCase
@@ -25,7 +25,7 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isDeleted')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -46,7 +46,7 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isDeleted')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -69,7 +69,7 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('hasFailed')->andReturn(false);
         $job->shouldReceive('isDeleted')->andReturn(false);
         $job->shouldReceive('isReleased')->andReturn(false);
@@ -92,7 +92,7 @@ class CallQueuedHandlerTest extends TestCase
     {
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => false]);
         $job->shouldReceive('fail')->once();
 
@@ -107,7 +107,7 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => true]);
         $job->shouldReceive('getConnectionName')->andReturn('connection');
         $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerExceptionThrower::class);
@@ -129,7 +129,7 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('payload')->andReturn(['deleteWhenMissingModels' => true]);
         $job->shouldReceive('getConnectionName')->andReturn('connection');
         $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerAttributeExceptionThrower::class);
@@ -151,16 +151,16 @@ class CallQueuedHandlerTest extends TestCase
 
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $batch = m::mock(Batch::class);
+        $batch = TestDouble::for(Batch::class);
         $batch->shouldReceive('recordSuccessfulJob')->once()->with('job-uuid');
 
-        $repository = m::mock(BatchRepository::class);
+        $repository = TestDouble::for(BatchRepository::class);
         $repository->shouldReceive('find')->once()->with('test-batch-id')->andReturn($batch);
         $this->app->instance(BatchRepository::class, $repository);
 
         $serialized = serialize((new CallQueuedHandlerBatchableExceptionThrower)->withBatchId('test-batch-id'));
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
         $job->shouldReceive('resolveQueuedJobClass')->andReturn(CallQueuedHandlerBatchableExceptionThrower::class);
         $job->shouldReceive('markAsFailed')->never();
         $job->shouldReceive('isDeleted')->andReturn(false);

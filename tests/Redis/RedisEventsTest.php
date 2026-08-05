@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Redis\Connections\PhpRedisConnection;
@@ -17,10 +18,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = m::mock(Redis::class);
+        $client = TestDouble::for(Redis::class);
         $client->shouldReceive('get')->with('key')->andThrow($exception);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) use ($exception) {
             return $event instanceof CommandFailed
                 && $event->command === 'get'
@@ -41,10 +42,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = m::mock(Redis::class);
+        $client = TestDouble::for(Redis::class);
         $client->shouldReceive('get')->with('key')->andThrow($exception);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::type(CommandFailed::class));
         $events->shouldNotReceive('dispatch')->with(m::type(CommandExecuted::class));
 
@@ -62,10 +63,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = m::mock(Redis::class);
+        $client = TestDouble::for(Redis::class);
         $client->shouldReceive('get')->with('key')->andThrow($exception);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
             return $event instanceof CommandFailed
                 && $event->connectionName === 'test-connection';
@@ -84,9 +85,9 @@ class RedisEventsTest extends TestCase
 
     public function testListenForFailuresRegistersCallback()
     {
-        $client = m::mock(Redis::class);
+        $client = TestDouble::for(Redis::class);
 
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $events->shouldReceive('listen')->once()->with(CommandFailed::class, m::type('Closure'));
 
         $connection = new PhpRedisConnection($client);

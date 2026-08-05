@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use stdClass;
@@ -27,7 +27,7 @@ class BusPendingDispatchTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->job = m::mock(stdClass::class);
+        $this->job = TestDouble::for(stdClass::class);
         $this->pendingDispatch = new PendingDispatchWithoutDestructor($this->job);
 
         parent::setUp();
@@ -103,7 +103,7 @@ class BusPendingDispatchTest extends TestCase
 
     public function testDynamicallyProxyMethods()
     {
-        $newJob = m::mock(stdClass::class);
+        $newJob = TestDouble::for(stdClass::class);
         $this->job->shouldReceive('appendToChain')->once()->with($newJob);
         $this->pendingDispatch->appendToChain($newJob);
     }

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Support\Timebox;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class SupportTimeboxTest extends TestCase
@@ -20,7 +20,7 @@ class SupportTimeboxTest extends TestCase
 
     public function testMakeWaitsForMicroseconds()
     {
-        $mock = m::spy(Timebox::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $mock = TestDouble::for(Timebox::class)->passthru();
         $mock->shouldReceive('usleep')->once();
 
         $mock->call(function () {
@@ -31,7 +31,7 @@ class SupportTimeboxTest extends TestCase
 
     public function testMakeShouldNotSleepWhenEarlyReturnHasBeenFlagged()
     {
-        $mock = m::spy(Timebox::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $mock = TestDouble::for(Timebox::class)->passthru();
         $mock->call(function ($timebox) {
             $timebox->returnEarly();
         }, 10000);
@@ -41,7 +41,7 @@ class SupportTimeboxTest extends TestCase
 
     public function testMakeShouldSleepWhenDontEarlyReturnHasBeenFlagged()
     {
-        $mock = m::spy(Timebox::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $mock = TestDouble::for(Timebox::class)->passthru();
         $mock->shouldReceive('usleep')->once();
 
         $mock->call(function ($timebox) {
@@ -54,7 +54,7 @@ class SupportTimeboxTest extends TestCase
 
     public function testMakeWaitsForMicrosecondsWhenExceptionIsThrown()
     {
-        $mock = m::spy(Timebox::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $mock = TestDouble::for(Timebox::class)->passthru();
         $mock->shouldReceive('usleep')->once();
 
         try {
@@ -70,7 +70,7 @@ class SupportTimeboxTest extends TestCase
 
     public function testMakeShouldNotSleepWhenEarlyReturnHasBeenFlaggedAndExceptionIsThrown()
     {
-        $mock = m::spy(Timebox::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $mock = TestDouble::for(Timebox::class)->passthru();
 
         try {
             $this->expectExceptionMessage('Exception within Timebox callback.');

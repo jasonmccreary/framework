@@ -2,16 +2,16 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\Grammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseAbstractSchemaGrammarTest extends TestCase
 {
     public function testCreateDatabase()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new class($connection) extends Grammar {
         };
 
@@ -20,7 +20,7 @@ class DatabaseAbstractSchemaGrammarTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new class($connection) extends Grammar {
         };
 

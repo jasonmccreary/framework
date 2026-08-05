@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -65,7 +66,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     public function testFindOrNewMethodFindsModel()
     {
         $relation = $this->getRelation();
-        $relation->getQuery()->shouldReceive('find')->once()->with('foo', ['*'])->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('find')->once()->with('foo', ['*'])->andReturn($model = TestDouble::for(stdClass::class));
         $model->shouldReceive('setAttribute')->never();
 
         $this->assertInstanceOf(stdClass::class, $relation->findOrNew('foo'));
@@ -75,7 +76,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('find')->once()->with('foo', ['*'])->andReturn(null);
-        $relation->getRelated()->shouldReceive('newInstance')->once()->with()->andReturn($model = m::mock(Model::class));
+        $relation->getRelated()->shouldReceive('newInstance')->once()->with()->andReturn($model = TestDouble::for(Model::class));
         $model->shouldReceive('setAttribute')->once()->with('foreign_key', 1);
 
         $this->assertInstanceOf(Model::class, $relation->findOrNew('foo'));
@@ -85,7 +86,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
         $model->shouldReceive('setAttribute')->never();
 
         $this->assertInstanceOf(stdClass::class, $relation->firstOrNew(['foo']));
@@ -95,7 +96,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
 
@@ -126,7 +127,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
         $model->shouldReceive('save')->never();
@@ -138,7 +139,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
         $model->shouldReceive('save')->never();
@@ -184,7 +185,7 @@ class DatabaseEloquentHasManyTest extends TestCase
         });
         $relation->getQuery()->shouldReceive('useWritePdo')->once()->andReturn($relation->getQuery());
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
 
         $this->assertInstanceOf(stdClass::class, $found = $relation->createOrFirst(['foo' => 'bar'], ['baz' => 'qux']));
         $this->assertSame($model, $found);
@@ -221,7 +222,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo'])->andReturn($relation->getQuery());
-        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = m::mock(stdClass::class));
+        $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn($model = TestDouble::for(stdClass::class));
         $relation->getRelated()->shouldReceive('newInstance')->never();
 
         $model->wasRecentlyCreated = false;
@@ -239,7 +240,7 @@ class DatabaseEloquentHasManyTest extends TestCase
         });
         $relation->getQuery()->shouldReceive('where')->once()->with(['foo'])->andReturn($relation->getQuery());
         $relation->getQuery()->shouldReceive('first')->once()->with()->andReturn(null);
-        $relation->getRelated()->shouldReceive('newInstance')->once()->with(['foo', 'bar'])->andReturn($model = m::mock(Model::class));
+        $relation->getRelated()->shouldReceive('newInstance')->once()->with(['foo', 'bar'])->andReturn($model = TestDouble::for(Model::class));
 
         $model->wasRecentlyCreated = true;
         $model->shouldReceive('save')->once()->andReturn(true);
@@ -288,7 +289,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $relation->getRelated()->shouldReceive('newCollection')->andReturnUsing(function ($array = []) {
             return new Collection($array);
         });
@@ -376,13 +377,13 @@ class DatabaseEloquentHasManyTest extends TestCase
 
     protected function getRelation()
     {
-        $queryBuilder = m::mock(QueryBuilder::class);
-        $builder = m::mock(Builder::class, [$queryBuilder]);
+        $queryBuilder = TestDouble::for(QueryBuilder::class);
+        $builder = TestDouble::for(new Builder($queryBuilder));
         $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $related = m::mock(Model::class);
+        $related = TestDouble::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
-        $parent = m::mock(Model::class);
+        $parent = TestDouble::for(Model::class);
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
         $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
@@ -411,7 +412,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $attributes[$relation->getForeignKeyName()] = $relation->getParentKey();
 
-        $model = m::mock(Model::class);
+        $model = TestDouble::for(Model::class);
         $model->shouldReceive('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
 
         $relation->getRelated()->shouldReceive('forceCreate')->once()->with($attributes)->andReturn($model);
