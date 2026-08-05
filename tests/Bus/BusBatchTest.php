@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Bus;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
@@ -31,6 +29,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -696,10 +696,10 @@ class BusBatchTest extends TestCase
 
         $repository->store($pendingBatch);
 
-        $builder->shouldHaveReceived('insert')
-            ->withArgs(function ($argument) use ($pendingBatch) {
+        $builder->received('insert')
+            ->with(Argument::satisfies(function ($argument) use ($pendingBatch) {
                 return unserialize(base64_decode($argument['options'])) === $pendingBatch->options;
-            });
+            }));
 
         $builder->received('first');
     }
@@ -712,17 +712,17 @@ class BusBatchTest extends TestCase
         $connection = TestDouble::for(PostgresConnection::class);
 
         $connection->allows('table->useWritePdo->where->first')->returns($m = (object) [
-                'id' => '',
-                'name' => '',
-                'total_jobs' => '',
-                'pending_jobs' => '',
-                'failed_jobs' => '',
-                'failed_job_ids' => '[]',
-                'options' => $serialize,
-                'created_at' => Carbon::now()->getTimestamp(),
-                'cancelled_at' => null,
-                'finished_at' => null,
-            ]);
+            'id' => '',
+            'name' => '',
+            'total_jobs' => '',
+            'pending_jobs' => '',
+            'failed_jobs' => '',
+            'failed_job_ids' => '[]',
+            'options' => $serialize,
+            'created_at' => Carbon::now()->getTimestamp(),
+            'cancelled_at' => null,
+            'finished_at' => null,
+        ]);
 
         $batch = (new DatabaseBatchRepository($factory, $connection, 'job_batches'));
 
