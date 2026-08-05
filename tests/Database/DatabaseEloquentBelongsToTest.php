@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToTest extends TestCase
@@ -205,7 +205,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $relation = $this->getRelation();
         $relation->getRelated()->allows('getKeyName')->returns('id');
         $relation->getRelated()->allows('getKeyType')->returns('int');
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', m::mustBe([]));
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -213,7 +213,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenIncrementingAndNonIntKeyType()
     {
         $relation = $this->getRelation(null, 'string');
-        $relation->getQuery()->expects('whereIn')->with('relation.id', m::mustBe([]));
+        $relation->getQuery()->expects('whereIn')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -223,7 +223,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
         $relation = $this->getRelation();
         $relation->getRelated()->allows('getKeyName')->returns('id');
         $relation->getRelated()->allows('getKeyType')->returns('int');
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', m::mustBe([]));
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }

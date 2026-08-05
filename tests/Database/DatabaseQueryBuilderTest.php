@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Closure;
 use DateInterval;
@@ -34,7 +32,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
 use InvalidArgumentException;
-use Mockery as m;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -4994,7 +4993,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             TestDouble::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(m::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(false);
         $builder->expects('insert')->with(['email' => 'foo', 'name' => 'bar'])->returns(true);
 
@@ -5004,7 +5003,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             TestDouble::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(m::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(true);
         $builder->allows('take')->returns($builder);
         $builder->expects('update')->with(['name' => 'bar'])->returns(1);
@@ -5018,7 +5017,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             TestDouble::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(m::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(true);
 
         $this->assertTrue($builder->updateOrInsert(['email' => 'foo']));
@@ -5446,10 +5445,10 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $builder = $this->getPostgresBuilder();
         $builder->getConnection()->allows('update')->with('update "users" set "options" = ?, "meta" = jsonb_set("meta"::jsonb, \'{"tags"}\', ?), "group_id" = 45, "created_at" = ?', [
-                json_encode(['2fa' => false, 'presets' => ['laravel', 'vue']]),
-                json_encode(['white', 'large']),
-                new DateTime('2019-08-06'),
-            ]);
+            json_encode(['2fa' => false, 'presets' => ['laravel', 'vue']]),
+            json_encode(['white', 'large']),
+            new DateTime('2019-08-06'),
+        ]);
 
         $builder->from('users')->update([
             'options' => ['2fa' => false, 'presets' => ['laravel', 'vue']],
@@ -5463,9 +5462,9 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $builder = $this->getPostgresBuilder();
         $builder->getConnection()->allows('update')->with('update "users" set "options" = jsonb_set("options"::jsonb, \'{1,"2fa"}\', ?), "meta" = jsonb_set("meta"::jsonb, \'{"tags",0,2}\', ?) where ("options"->1->\'2fa\')::jsonb = \'true\'::jsonb', [
-                'false',
-                '"large"',
-            ]);
+            'false',
+            '"large"',
+        ]);
 
         $builder->from('users')->where('options->[1]->2fa', true)->update([
             'options->[1]->2fa' => false,
@@ -5478,9 +5477,9 @@ class DatabaseQueryBuilderTest extends TestCase
         $builder = $this->getSQLiteBuilder();
 
         $builder->getConnection()->allows('update')->with('update "users" set "options" = ?, "group_id" = 45, "created_at" = ?', [
-                json_encode(['2fa' => false, 'presets' => ['laravel', 'vue']]),
-                new DateTime('2019-08-06'),
-            ]);
+            json_encode(['2fa' => false, 'presets' => ['laravel', 'vue']]),
+            new DateTime('2019-08-06'),
+        ]);
 
         $builder->from('users')->update([
             'options' => ['2fa' => false, 'presets' => ['laravel', 'vue']],
@@ -5493,9 +5492,9 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $builder = $this->getSQLiteBuilder();
         $builder->getConnection()->allows('update')->with('update "users" set "group_id" = 45, "created_at" = ?, "options" = json_patch(ifnull("options", json(\'{}\')), json(?))', [
-                new DateTime('2019-08-06'),
-                json_encode(['name' => 'Taylor', 'security' => ['2fa' => false, 'presets' => ['laravel', 'vue']], 'sharing' => ['twitter' => 'username']]),
-            ]);
+            new DateTime('2019-08-06'),
+            json_encode(['name' => 'Taylor', 'security' => ['2fa' => false, 'presets' => ['laravel', 'vue']], 'sharing' => ['twitter' => 'username']]),
+        ]);
 
         $builder->from('users')->update([
             'options->name' => 'Taylor',
@@ -5510,9 +5509,9 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $builder = $this->getSQLiteBuilder();
         $builder->getConnection()->allows('update')->with('update "users" set "options" = json_patch(ifnull("options", json(\'{}\')), json(?)), "meta" = json_patch(ifnull("meta", json(\'{}\')), json(?)) where json_extract("options", \'$[1]."2fa"\') = true', [
-                '{"[1]":{"2fa":false}}',
-                '{"tags[0][2]":"large"}',
-            ]);
+            '{"[1]":{"2fa":false}}',
+            '{"tags[0][2]":"large"}',
+        ]);
 
         $builder->from('users')->where('options->[1]->2fa', true)->update([
             'options->[1]->2fa' => false,

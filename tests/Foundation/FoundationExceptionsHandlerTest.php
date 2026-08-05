@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Closure;
 use Exception;
 use Illuminate\Cache\ArrayStore;
@@ -31,7 +29,8 @@ use Illuminate\Testing\Assert;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
-use Mockery as m;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use OutOfRangeException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
@@ -100,7 +99,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->expects('error')->with('Exception message', m::subset(['foo' => 'bar']));
+        $logger->expects('error')->with('Exception message', Argument::satisfies(fn ($actual) => is_array($actual) && $actual === array_replace_recursive($actual, ['foo' => 'bar'])));
 
         $this->handler->report(new ContextProvidingException('Exception message'));
     }
@@ -109,7 +108,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->expects('error')->with('Exception message', m::subset(['from' => 'user@example.com', 'subject' => 'Hello']));
+        $logger->expects('error')->with('Exception message', Argument::satisfies(fn ($actual) => is_array($actual) && $actual === array_replace_recursive($actual, ['from' => 'user@example.com', 'subject' => 'Hello'])));
 
         $this->handler->report(new RuntimeException('Exception message'), [
             'from' => 'user@example.com',
@@ -121,7 +120,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = TestDouble::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->expects('error')->with('Exception message', m::subset(['foo' => 'overridden']));
+        $logger->expects('error')->with('Exception message', Argument::satisfies(fn ($actual) => is_array($actual) && $actual === array_replace_recursive($actual, ['foo' => 'overridden'])));
 
         $this->handler->report(new ContextProvidingException('Exception message'), [
             'foo' => 'overridden',
