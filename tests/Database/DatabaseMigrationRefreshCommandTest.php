@@ -92,7 +92,7 @@ class DatabaseMigrationRefreshCommandTest extends TestCase
 
         $this->assertSame(1, $code);
 
-        $console->unused();
+        $console->received('find')->never();
         $dispatcher->expects('dispatch')->never();
     }
 
