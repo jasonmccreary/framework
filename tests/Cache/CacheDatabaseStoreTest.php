@@ -9,7 +9,6 @@ use Illuminate\Cache\DatabaseStore;
 use Illuminate\Database\Connection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\SQLiteConnection;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

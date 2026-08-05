@@ -9,7 +9,6 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

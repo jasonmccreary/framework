@@ -24,7 +24,6 @@ use Illuminate\Tests\Queue\Fixtures\FakeSqsJob;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithDeduplication;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithMessageGroup;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

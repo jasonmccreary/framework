@@ -9,7 +9,6 @@ use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\Connections\PredisClusterConnection;
 use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\Limiters\ConcurrencyLimiter;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ConcurrencyLimiterTest extends TestCase

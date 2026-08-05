@@ -22,7 +22,6 @@ use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 use stdClass;
