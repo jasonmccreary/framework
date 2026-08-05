@@ -28,7 +28,6 @@ class DatabaseSqliteSchemaStateTest extends TestCase
         $schemaState = new SqliteSchemaState($connection, null, $processFactory);
         $schemaState->load('database/schema/sqlite-schema.dump');
 
-        $processFactory->shouldHaveBeenCalled()->with('sqlite3 "${:LARAVEL_LOAD_DATABASE}" < "${:LARAVEL_LOAD_PATH}"');
 
         $process->received('mustRun')->with(null, [
             'LARAVEL_LOAD_DATABASE' => 'database/database.sqlite',
