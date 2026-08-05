@@ -22,7 +22,6 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
-use Mockery as m;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -2910,7 +2909,8 @@ class DatabaseEloquentBuilderTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = m::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
         $connection->allows('getQueryGrammar')->returns($grammar);
         $connection->allows('getTablePrefix')->returns('');
@@ -2918,7 +2918,8 @@ class DatabaseEloquentBuilderTest extends TestCase
             return new BaseBuilder($connection, $grammar, $processor);
         });
         $connection->allows('getDatabaseName')->returns('database');
-        $resolver = m::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
 

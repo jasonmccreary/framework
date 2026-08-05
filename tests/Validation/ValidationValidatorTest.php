@@ -5329,17 +5329,13 @@ class ValidationValidatorTest extends TestCase
     public function testValidateActiveUrl($data, $outcome)
     {
         $trans = $this->getIlluminateArrayTranslator();
-        $v = m::mock(
-            new Validator($trans, $data, ['x' => 'active_url']),
-            function (MockInterface $mock) {
-                $mock
+        $v = TestDouble::for(new Validator($trans, $data, ['x' => 'active_url']));
+        $v
                     ->shouldAllowMockingProtectedMethods()
                     ->shouldReceive('getDnsRecords')
                     ->withAnyArgs()
                     ->zeroOrMoreTimes()
                     ->andReturn(['hit']);
-            }
-        );
         $this->assertEquals($outcome, $v->passes());
     }
 

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -64,7 +63,13 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $builder->allows('getModel')->returns($related);
         $related->allows('qualifyColumn');
         $builder->shouldReceive('join', 'where');
-        $builder->allows('getQuery')->returns(m::mock(stdClass::class, ['getGrammar' => m::mock(Grammar::class, ['isExpression' => false])]));
+        $grammar = TestDouble::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $stdClass = TestDouble::for(stdClass::class);
+        $stdClass->allows('getGrammar')->returns($grammar);
+
+        $builder->allows('getQuery')->returns($stdClass);
 
         return new BelongsToMany(
             $builder,
