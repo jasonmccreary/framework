@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class InteractsWithDatabaseTest extends TestCase
@@ -135,17 +135,17 @@ class InteractsWithDatabaseTest extends TestCase
 
     protected function castAsJson($value, $grammar)
     {
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$grammar.'Grammar';
         $grammar = new $grammarClass($connection);
 
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
+        $connection->allows('getQueryGrammar')->returns($grammar);
 
-        $connection->shouldReceive('raw')->andReturnUsing(function ($value) {
+        $connection->allows('raw')->resolves(function ($value) {
             return new Expression($value);
         });
 
-        $connection->shouldReceive('getPdo->quote')->andReturnUsing(function ($value) {
+        $connection->allows('getPdo->quote')->resolves(function ($value) {
             return "'".$value."'";
         });
 

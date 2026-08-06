@@ -2,21 +2,22 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\PendingBroadcast;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Events\Dispatcher;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class BroadcastedEventsTest extends TestCase
 {
     public function testShouldBroadcastSuccess()
     {
-        $d = m::mock(Dispatcher::class);
+        $d = TestDouble::for(Dispatcher::class);
 
-        $d->makePartial()->shouldAllowMockingProtectedMethods();
+        $d->passthru()->shouldAllowMockingProtectedMethods();
 
         $event = new BroadcastEvent;
 
@@ -30,10 +31,10 @@ class BroadcastedEventsTest extends TestCase
     public function testShouldBroadcastAsQueuedAndCallNormalListeners()
     {
         unset($_SERVER['__event.test']);
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
-        $broadcast->shouldReceive('queue')->once();
-        $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
+        $broadcast->expects('queue');
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $d->listen(AlwaysBroadcastEvent::class, function ($payload) {
             $_SERVER['__event.test'] = $payload;
@@ -46,9 +47,9 @@ class BroadcastedEventsTest extends TestCase
 
     public function testShouldBroadcastFail()
     {
-        $d = m::mock(Dispatcher::class);
+        $d = TestDouble::for(Dispatcher::class);
 
-        $d->makePartial()->shouldAllowMockingProtectedMethods();
+        $d->passthru()->shouldAllowMockingProtectedMethods();
 
         $event = new BroadcastFalseCondition;
 
@@ -61,10 +62,10 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithMultipleChannels()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
-        $broadcast->shouldReceive('queue')->once();
-        $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
+        $broadcast->expects('queue');
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -79,10 +80,10 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomConnectionName()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
-        $broadcast->shouldReceive('queue')->once();
-        $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
+        $broadcast->expects('queue');
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -99,10 +100,10 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomEventName()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
-        $broadcast->shouldReceive('queue')->once();
-        $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
+        $broadcast->expects('queue');
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -122,10 +123,10 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomPayload()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $broadcast = m::mock(BroadcastFactory::class);
-        $broadcast->shouldReceive('queue')->once();
-        $container->shouldReceive('make')->once()->with(BroadcastFactory::class)->andReturn($broadcast);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $broadcast = TestDouble::for(BroadcastFactory::class);
+        $broadcast->expects('queue');
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -148,25 +149,22 @@ class BroadcastedEventsTest extends TestCase
     public function testEventBroadcastsUsingNamedArguments()
     {
         $container = new Container;
-        $broadcast = m::mock(BroadcastFactory::class);
+        $broadcast = TestDouble::for(BroadcastFactory::class);
         $container->instance(BroadcastFactory::class, $broadcast);
 
         $originalContainer = Container::getInstance();
         Container::setInstance($container);
 
         try {
-            $pendingBroadcast = m::mock(PendingBroadcast::class);
+            $pendingBroadcast = TestDouble::for(PendingBroadcast::class);
 
-            $broadcast->shouldReceive('event')
-                ->once()
-                ->with(m::on(function ($event) {
+            $broadcast->expects('event')->with(Argument::satisfies(function ($event) {
                     $this->assertInstanceOf(BroadcastableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);
 
                     return true;
-                }))
-                ->andReturn($pendingBroadcast);
+                }))->returns($pendingBroadcast);
 
             $this->assertSame(
                 $pendingBroadcast,

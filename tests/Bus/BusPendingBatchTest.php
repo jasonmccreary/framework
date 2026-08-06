@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\BatchRepository;
@@ -9,7 +11,6 @@ use Illuminate\Bus\PendingBatch;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -20,8 +21,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldReceive('dispatch')->once();
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch');
 
         $container->instance(Dispatcher::class, $eventDispatcher);
 
@@ -51,9 +52,9 @@ class BusPendingBatchTest extends TestCase
         $this->assertArrayHasKey('extra-option', $pendingBatch->options);
         $this->assertSame(123, $pendingBatch->options['extra-option']);
 
-        $repository = m::mock(BatchRepository::class);
-        $repository->shouldReceive('store')->once()->with($pendingBatch)->andReturn($batch = m::mock(stdClass::class));
-        $batch->shouldReceive('add')->once()->with(m::type(Collection::class))->andReturn($batch = m::mock(Batch::class));
+        $repository = TestDouble::for(BatchRepository::class);
+        $repository->expects('store')->with($pendingBatch)->returns($batch = TestDouble::for(stdClass::class));
+        $batch->expects('add')->with(Argument::type(Collection::class))->returns($batch = TestDouble::for(Batch::class));
 
         $container->instance(BatchRepository::class, $repository);
 
@@ -71,17 +72,17 @@ class BusPendingBatchTest extends TestCase
 
         $pendingBatch = new PendingBatch($container, new Collection([$job]));
 
-        $repository = m::mock(BatchRepository::class);
+        $repository = TestDouble::for(BatchRepository::class);
 
-        $repository->shouldReceive('store')->once()->with($pendingBatch)->andReturn($batch = m::mock(stdClass::class));
+        $repository->expects('store')->with($pendingBatch)->returns($batch = TestDouble::for(stdClass::class));
 
         $batch->id = 'test-id';
 
-        $batch->shouldReceive('add')->once()->andReturnUsing(function () {
+        $batch->expects('add')->resolves(function () {
             throw new RuntimeException('Failed to add jobs...');
         });
 
-        $repository->shouldReceive('delete')->once()->with('test-id');
+        $repository->expects('delete')->with('test-id');
 
         $container->instance(BatchRepository::class, $repository);
 
@@ -92,8 +93,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldReceive('dispatch')->once();
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch');
         $container->instance(Dispatcher::class, $eventDispatcher);
 
         $job = new class
@@ -103,9 +104,9 @@ class BusPendingBatchTest extends TestCase
 
         $pendingBatch = new PendingBatch($container, new Collection([$job]));
 
-        $repository = m::mock(BatchRepository::class);
-        $repository->shouldReceive('store')->once()->andReturn($batch = m::mock(stdClass::class));
-        $batch->shouldReceive('add')->once()->andReturn($batch = m::mock(Batch::class));
+        $repository = TestDouble::for(BatchRepository::class);
+        $repository->expects('store')->returns($batch = TestDouble::for(stdClass::class));
+        $batch->expects('add')->returns($batch = TestDouble::for(Batch::class));
 
         $container->instance(BatchRepository::class, $repository);
 
@@ -118,8 +119,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldNotReceive('dispatch');
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch')->never();
         $container->instance(Dispatcher::class, $eventDispatcher);
 
         $job = new class
@@ -129,7 +130,7 @@ class BusPendingBatchTest extends TestCase
 
         $pendingBatch = new PendingBatch($container, new Collection([$job]));
 
-        $repository = m::mock(BatchRepository::class);
+        $repository = TestDouble::for(BatchRepository::class);
         $container->instance(BatchRepository::class, $repository);
 
         $result = $pendingBatch->dispatchIf(false);
@@ -141,8 +142,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldReceive('dispatch')->once();
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch');
         $container->instance(Dispatcher::class, $eventDispatcher);
 
         $job = new class
@@ -152,9 +153,9 @@ class BusPendingBatchTest extends TestCase
 
         $pendingBatch = new PendingBatch($container, new Collection([$job]));
 
-        $repository = m::mock(BatchRepository::class);
-        $repository->shouldReceive('store')->once()->andReturn($batch = m::mock(stdClass::class));
-        $batch->shouldReceive('add')->once()->andReturn($batch = m::mock(Batch::class));
+        $repository = TestDouble::for(BatchRepository::class);
+        $repository->expects('store')->returns($batch = TestDouble::for(stdClass::class));
+        $batch->expects('add')->returns($batch = TestDouble::for(Batch::class));
 
         $container->instance(BatchRepository::class, $repository);
 
@@ -167,8 +168,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldNotReceive('dispatch');
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch')->never();
         $container->instance(Dispatcher::class, $eventDispatcher);
 
         $job = new class
@@ -178,7 +179,7 @@ class BusPendingBatchTest extends TestCase
 
         $pendingBatch = new PendingBatch($container, new Collection([$job]));
 
-        $repository = m::mock(BatchRepository::class);
+        $repository = TestDouble::for(BatchRepository::class);
         $container->instance(BatchRepository::class, $repository);
 
         $result = $pendingBatch->dispatchUnless(true);
@@ -190,8 +191,8 @@ class BusPendingBatchTest extends TestCase
     {
         $container = new Container;
 
-        $eventDispatcher = m::mock(Dispatcher::class);
-        $eventDispatcher->shouldReceive('dispatch')->once();
+        $eventDispatcher = TestDouble::for(Dispatcher::class);
+        $eventDispatcher->expects('dispatch');
 
         $container->instance(Dispatcher::class, $eventDispatcher);
 
@@ -208,9 +209,9 @@ class BusPendingBatchTest extends TestCase
             $beforeCalled = true;
         })->onConnection('test-connection')->onQueue('test-queue');
 
-        $repository = m::mock(BatchRepository::class);
-        $repository->shouldReceive('store')->once()->with($pendingBatch)->andReturn($batch = m::mock(stdClass::class));
-        $batch->shouldReceive('add')->once()->with(m::type(Collection::class))->andReturn($batch = m::mock(Batch::class));
+        $repository = TestDouble::for(BatchRepository::class);
+        $repository->expects('store')->with($pendingBatch)->returns($batch = TestDouble::for(stdClass::class));
+        $batch->expects('add')->with(Argument::type(Collection::class))->returns($batch = TestDouble::for(Batch::class));
 
         $container->instance(BatchRepository::class, $repository);
 

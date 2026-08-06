@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\TestDouble;
 use Ably\AblyRest;
 use Illuminate\Broadcasting\Broadcasters\AblyBroadcaster;
 use Illuminate\Http\Request;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -22,9 +22,9 @@ class AblyBroadcasterTest extends TestCase
     {
         parent::setUp();
 
-        $this->ably = m::mock(AblyRest::class, ['abcd:efgh']);
+        $this->ably = TestDouble::for(new AblyRest('abcd:efgh'));
 
-        $this->broadcaster = m::mock(AblyBroadcaster::class, [$this->ably])->makePartial();
+        $this->broadcaster = TestDouble::for(AblyBroadcaster::class)->passthru(new AblyBroadcaster($this->ably));
     }
 
     public function testAuthCallValidAuthenticationResponseWithPrivateChannelWhenCallbackReturnTrue()
@@ -33,8 +33,7 @@ class AblyBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -74,8 +73,7 @@ class AblyBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -114,21 +112,16 @@ class AblyBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
 
-        $request->shouldReceive('input')
-            ->with('callback', false)
-            ->andReturn(false);
+        $request->allows('input')->with('callback', false)->returns(false);
 
-        $user = m::mock('User');
-        $user->shouldReceive('getAuthIdentifierForBroadcasting')
-            ->andReturn(42);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn(42);
+        $user = TestDouble::for('User');
+        $user->allows('getAuthIdentifierForBroadcasting')->returns(42);
+        $user->allows('getAuthIdentifier')->returns(42);
 
-        $request->shouldReceive('user')
-            ->andReturn($user);
+        $request->allows('user')->returns($user);
 
         return $request;
     }
@@ -139,11 +132,10 @@ class AblyBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithoutUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $request->shouldReceive('user')
-            ->andReturn(null);
+        $request->allows('user')->returns(null);
 
         return $request;
     }

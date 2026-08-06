@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
 use Illuminate\Validation\NotPwnedVerifier;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ValidationNotPwnedVerifierTest extends TestCase
@@ -22,7 +22,7 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testEmptyValues()
     {
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
         $verifier = new NotPwnedVerifier($httpFactory);
 
         foreach (['', false, 0] as $password) {
@@ -35,34 +35,20 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiResponseGoesWrong()
     {
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
 
-        $httpFactory
-            ->shouldReceive('withHeaders')
-            ->once()
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->shouldReceive('timeout')
-            ->once()
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->shouldReceive('get')
-            ->once()
-            ->andReturn($response);
+        $httpFactory->expects('get')->returns($response);
 
-        $response->shouldReceive('successful')
-            ->once()
-            ->andReturn(true);
+        $response->expects('successful')->returns(true);
 
-        $response->shouldReceive('body')
-            ->once()
-            ->andReturn('');
+        $response->expects('body')->returns('');
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -74,28 +60,16 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiGoesDown()
     {
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
-        $httpFactory
-            ->shouldReceive('withHeaders')
-            ->once()
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->shouldReceive('timeout')
-            ->once()
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->shouldReceive('get')
-            ->once()
-            ->andReturn($response);
+        $httpFactory->expects('get')->returns($response);
 
-        $response->shouldReceive('successful')
-            ->once()
-            ->andReturn(false);
+        $response->expects('successful')->returns(false);
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -116,33 +90,18 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
         $differentSuffix = '00000000000000000000000000000000000';
 
-        $httpFactory = m::mock(HttpFactory::class);
-        $response = m::mock(Response::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
+        $response = TestDouble::for(Response::class);
 
-        $httpFactory
-            ->shouldReceive('withHeaders')
-            ->once()
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->shouldReceive('timeout')
-            ->once()
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->shouldReceive('get')
-            ->once()
-            ->with('https://api.pwnedpasswords.com/range/'.$hashPrefix)
-            ->andReturn($response);
+        $httpFactory->expects('get')->with('https://api.pwnedpasswords.com/range/'.$hashPrefix)->returns($response);
 
-        $response->shouldReceive('successful')
-            ->once()
-            ->andReturn(true);
+        $response->expects('successful')->returns(true);
 
-        $response->shouldReceive('body')
-            ->once()
-            ->andReturn($differentSuffix.':5');
+        $response->expects('body')->returns($differentSuffix.':5');
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -157,30 +116,19 @@ class ValidationNotPwnedVerifierTest extends TestCase
         $container = Container::getInstance();
         $exception = new ConnectionException();
 
-        $exceptionHandler = m::mock(ExceptionHandler::class);
-        $exceptionHandler->shouldReceive('report')->once()->with($exception, []);
+        $exceptionHandler = TestDouble::for(ExceptionHandler::class);
+        $exceptionHandler->expects('report')->with($exception, []);
         $container->bind(ExceptionHandler::class, function () use ($exceptionHandler) {
             return $exceptionHandler;
         });
 
-        $httpFactory = m::mock(HttpFactory::class);
+        $httpFactory = TestDouble::for(HttpFactory::class);
 
-        $httpFactory
-            ->shouldReceive('withHeaders')
-            ->once()
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->shouldReceive('timeout')
-            ->once()
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory
-            ->shouldReceive('get')
-            ->once()
-            ->andThrow($exception);
+        $httpFactory->expects('get')->throws($exception);
 
         $verifier = new NotPwnedVerifier($httpFactory);
         $this->assertTrue($verifier->verify([

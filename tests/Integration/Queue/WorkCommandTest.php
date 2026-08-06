@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
@@ -14,7 +15,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
-use Mockery as m;
 use Orchestra\Testbench\Attributes\WithMigration;
 use RuntimeException;
 
@@ -193,13 +193,13 @@ class WorkCommandTest extends QueueTestCase
 
         Worker::$restartable = false;
 
-        $cache = m::mock(Repository::class);
-        $cache->shouldNotReceive('get')->with('illuminate:queue:restart');
-        $cache->shouldReceive('many')->andReturn([]);
+        $cache = TestDouble::for(Repository::class);
+        $cache->expects('get')->with('illuminate:queue:restart')->never();
+        $cache->allows('many')->returns([]);
 
-        $cacheManager = m::mock(CacheManager::class);
-        $cacheManager->shouldReceive('driver')->andReturn($cache);
-        $cacheManager->shouldReceive('store')->andReturn($cache);
+        $cacheManager = TestDouble::for(CacheManager::class);
+        $cacheManager->allows('driver')->returns($cache);
+        $cacheManager->allows('store')->returns($cache);
 
         $this->app->instance('cache', $cacheManager);
 
@@ -222,14 +222,14 @@ class WorkCommandTest extends QueueTestCase
 
         Worker::$pausable = false;
 
-        $cache = m::mock(Repository::class);
+        $cache = TestDouble::for(Repository::class);
 
-        $cache->shouldReceive('get')->with('illuminate:queue:restart')->andReturn(null);
-        $cache->shouldNotReceive('many');
+        $cache->allows('get')->with('illuminate:queue:restart')->returns(null);
+        $cache->expects('many')->never();
 
-        $cacheManager = m::mock(CacheManager::class);
-        $cacheManager->shouldReceive('driver')->andReturn($cache);
-        $cacheManager->shouldReceive('store')->andReturn($cache);
+        $cacheManager = TestDouble::for(CacheManager::class);
+        $cacheManager->allows('driver')->returns($cache);
+        $cacheManager->allows('store')->returns($cache);
 
         $this->app->instance('cache', $cacheManager);
 

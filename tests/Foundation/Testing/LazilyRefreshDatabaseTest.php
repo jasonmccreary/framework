@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Foundation\Testing;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
-use Mockery as m;
 use Orchestra\Testbench\Concerns\ApplicationTestingHooks;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use PHPUnit\Framework\TestCase;
@@ -62,11 +62,9 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testDatabaseIsRefreshedOnInteraction()
     {
-        $this->app->instance(ConsoleKernelContract::class, $kernel = m::spy(ConsoleKernel::class));
+        $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => false,
                 '--seed' => false,
@@ -78,10 +76,9 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testDatabaseIsNotRefreshedWithoutInteraction()
     {
-        $this->app->instance(ConsoleKernelContract::class, $kernel = m::spy(ConsoleKernel::class));
+        $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->never();
+        $kernel->expects('call')->never();
 
         $this->refreshDatabase();
 
@@ -91,11 +88,9 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testNonDefaultConnectionTriggersRefresh()
     {
-        $this->app->instance(ConsoleKernelContract::class, $kernel = m::spy(ConsoleKernel::class));
+        $this->app->instance(ConsoleKernelContract::class, $kernel = TestDouble::for(ConsoleKernel::class));
 
-        $kernel->shouldReceive('call')
-            ->once()
-            ->with('migrate:fresh', [
+        $kernel->expects('call')->with('migrate:fresh', [
                 '--drop-views' => false,
                 '--drop-types' => false,
                 '--seed' => false,

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
-use Mockery as m;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -20,8 +20,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeCallsUnderlyingApplication()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = m::mock(stdClass::class)]);
-        $mock->shouldReceive('bar')->once()->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = TestDouble::for(stdClass::class)]);
+        $mock->expects('bar')->returns('baz');
         FacadeStub::setFacadeApplication($app);
         $this->assertSame('baz', FacadeStub::bar());
     }
@@ -45,7 +45,7 @@ class SupportFacadeTest extends TestCase
         $this->assertInstanceOf(MockInterface::class, $spy = FacadeStub::spy());
 
         FacadeStub::foo();
-        $spy->shouldHaveReceived('foo');
+        $spy->received('foo');
     }
 
     public function testShouldReceiveCanBeCalledTwice()
@@ -79,8 +79,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeResolvesAgainAfterClearingSpecific()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = m::mock(stdClass::class)]);
-        $mock->shouldReceive('bar')->times(3)->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = TestDouble::for(stdClass::class)]);
+        $mock->expects('bar')->times(3)->returns('baz');
 
         // Resolve for the first time
         FacadeStub::setFacadeApplication($app);
@@ -98,8 +98,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeResolvesAgainAfterClearingAll()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = m::mock(stdClass::class)]);
-        $mock->shouldReceive('bar')->times(2)->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = TestDouble::for(stdClass::class)]);
+        $mock->expects('bar')->times(2)->returns('baz');
 
         // Resolve for the first time
         FacadeStub::setFacadeApplication($app);

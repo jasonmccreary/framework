@@ -10,12 +10,16 @@ use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
-use Mockery as m;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
 class SupportTestingQueueFakeTest extends TestCase
 {
+    use VerifiesDoubles;
+
     /**
      * @var \Illuminate\Support\Testing\Fakes\QueueFake
      */
@@ -65,10 +69,10 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = m::mock(QueueManager::class);
-        $manager->shouldReceive('push')->once()->withArgs(function ($passedJob) use ($job) {
+        $manager = TestDouble::for(QueueManager::class);
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }));
 
         $fake = new QueueFake(new Application, JobToFakeStub::class, $manager);
 
@@ -396,10 +400,10 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = m::mock(QueueManager::class);
-        $manager->shouldReceive('push')->once()->withArgs(function ($passedJob) use ($job) {
+        $manager = TestDouble::for(QueueManager::class);
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }));
 
         $fake = (new QueueFake(new Application, [], $manager))->except(JobStub::class);
 
@@ -463,10 +467,12 @@ class SupportTestingQueueFakeTest extends TestCase
         $job = new JobStub;
         $steps = [];
 
-        $manager = m::mock(QueueManager::class);
-        $manager->shouldReceive('push')->once()->withArgs(function ($passedJob, $passedData, $passedQueue) use ($job) {
-            return $passedJob === $job && $passedData === ['foo' => 'bar'] && $passedQueue === 'redis';
-        });
+        $manager = TestDouble::for(QueueManager::class);
+        $manager->expects('push')->with(
+            Argument::same($job),
+            Argument::same(['foo' => 'bar']),
+            Argument::same('redis'),
+        );
 
         $fake = (new QueueFake(new Application, [], $manager))
             ->except(JobStub::class)

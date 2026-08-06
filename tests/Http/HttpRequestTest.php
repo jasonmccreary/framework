@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\TestDouble;
 use Carbon\CarbonInterval;
 use Carbon\Unit;
 use Illuminate\Http\Request;
@@ -13,7 +14,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Tests\Database\Fixtures\Models\Money\Price;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -1425,8 +1425,8 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCallsSession()
     {
         $request = Request::create('/');
-        $session = m::mock(Store::class);
-        $session->shouldReceive('getOldInput')->once()->with('foo', 'bar')->andReturn('boom');
+        $session = TestDouble::for(Store::class);
+        $session->expects('getOldInput')->with('foo', 'bar')->returns('boom');
         $request->setLaravelSession($session);
         $this->assertSame('boom', $request->old('foo', 'bar'));
     }
@@ -1434,8 +1434,8 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCallsSessionWhenDefaultIsArray()
     {
         $request = Request::create('/');
-        $session = m::mock(Store::class);
-        $session->shouldReceive('getOldInput')->once()->with('foo', ['bar'])->andReturn(['bar']);
+        $session = TestDouble::for(Store::class);
+        $session->expects('getOldInput')->with('foo', ['bar'])->returns(['bar']);
         $request->setLaravelSession($session);
         $this->assertSame(['bar'], $request->old('foo', ['bar']));
     }
@@ -1443,10 +1443,10 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCanGetDefaultValueFromModelByKey()
     {
         $request = Request::create('/');
-        $model = m::mock(Price::class);
-        $model->shouldReceive('getAttribute')->once()->with('name')->andReturn('foobar');
-        $session = m::mock(Store::class);
-        $session->shouldReceive('getOldInput')->once()->with('name', 'foobar')->andReturn('foobar');
+        $model = TestDouble::for(Price::class);
+        $model->expects('getAttribute')->with('name')->returns('foobar');
+        $session = TestDouble::for(Store::class);
+        $session->expects('getOldInput')->with('name', 'foobar')->returns('foobar');
         $request->setLaravelSession($session);
         $this->assertSame('foobar', $request->old('name', $model));
     }
@@ -1454,8 +1454,8 @@ class HttpRequestTest extends TestCase
     public function testFlushMethodCallsSession()
     {
         $request = Request::create('/');
-        $session = m::mock(Store::class);
-        $session->shouldReceive('flashInput')->once();
+        $session = TestDouble::for(Store::class);
+        $session->expects('flashInput');
         $request->setLaravelSession($session);
         $request->flush();
     }
@@ -1729,7 +1729,7 @@ class HttpRequestTest extends TestCase
 
         $this->assertFalse($request->hasSession());
 
-        $session = m::mock(Store::class);
+        $session = TestDouble::for(Store::class);
         $request->setLaravelSession($session);
 
         $this->assertTrue($request->hasSession());
@@ -1739,13 +1739,13 @@ class HttpRequestTest extends TestCase
     {
         $request = Request::create('/');
 
-        $laravelSession = m::mock(Store::class);
+        $laravelSession = TestDouble::for(Store::class);
         $request->setLaravelSession($laravelSession);
 
         $session = $request->getSession();
         $this->assertInstanceOf(SessionInterface::class, $session);
 
-        $laravelSession->shouldReceive('start')->once()->andReturn(true);
+        $laravelSession->expects('start')->returns(true);
         $session->start();
     }
 
@@ -1908,8 +1908,8 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashCallsSessionFlashInputWithInputData()
     {
-        $session = m::mock(Store::class);
-        $session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor', 'email' => 'foo']);
+        $session = TestDouble::for(Store::class);
+        $session->expects('flashInput')->with(['name' => 'Taylor', 'email' => 'foo']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);
         $request->flash();
@@ -1917,8 +1917,8 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashOnlyCallsFlashWithProperParameters()
     {
-        $session = m::mock(Store::class);
-        $session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
+        $session = TestDouble::for(Store::class);
+        $session->expects('flashInput')->with(['name' => 'Taylor']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);
         $request->flashOnly(['name']);
@@ -1926,8 +1926,8 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashExceptCallsFlashWithProperParameters()
     {
-        $session = m::mock(Store::class);
-        $session->shouldReceive('flashInput')->once()->with(['name' => 'Taylor']);
+        $session = TestDouble::for(Store::class);
+        $session->expects('flashInput')->with(['name' => 'Taylor']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);
         $request->flashExcept(['email']);

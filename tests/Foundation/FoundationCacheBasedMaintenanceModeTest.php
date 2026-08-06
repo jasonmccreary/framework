@@ -2,58 +2,58 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Foundation\CacheBasedMaintenanceMode;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class FoundationCacheBasedMaintenanceModeTest extends TestCase
 {
     public function test_it_determines_whether_maintenance_mode_is_active()
     {
-        $cache = m::mock(Factory::class, Repository::class);
-        $cache->shouldReceive('store')->with('store-key')->andReturnSelf();
+        $cache = TestDouble::for(Factory::class, Repository::class);
+        $cache->allows('store')->with('store-key')->returns($cache);
 
         $manager = new CacheBasedMaintenanceMode($cache, 'store-key', 'key');
 
-        $cache->shouldReceive('has')->once()->with('key')->andReturnFalse();
+        $cache->expects('has')->with('key')->returns(false);
         $this->assertFalse($manager->active());
 
-        $cache->shouldReceive('has')->once()->with('key')->andReturnTrue();
+        $cache->expects('has')->with('key')->returns(true);
         $this->assertTrue($manager->active());
     }
 
     public function test_it_retrieves_payload_from_cache()
     {
-        $cache = m::mock(Factory::class, Repository::class);
-        $cache->shouldReceive('store')->with('store-key')->andReturnSelf();
+        $cache = TestDouble::for(Factory::class, Repository::class);
+        $cache->allows('store')->with('store-key')->returns($cache);
 
         $manager = new CacheBasedMaintenanceMode($cache, 'store-key', 'key');
 
-        $cache->shouldReceive('get')->once()->with('key')->andReturn(['payload']);
+        $cache->expects('get')->with('key')->returns(['payload']);
         $this->assertSame(['payload'], $manager->data());
     }
 
     public function test_it_stores_payload_in_cache()
     {
-        $cache = m::spy(Factory::class, Repository::class);
-        $cache->shouldReceive('store')->with('store-key')->andReturnSelf();
+        $cache = TestDouble::for(Factory::class, Repository::class);
+        $cache->allows('store')->with('store-key')->returns($cache);
 
         $manager = new CacheBasedMaintenanceMode($cache, 'store-key', 'key');
         $manager->activate(['payload']);
 
-        $cache->shouldHaveReceived('put')->once()->with('key', ['payload']);
+        $cache->received('put')->times(1)->with('key', ['payload']);
     }
 
     public function test_it_removes_payload_from_cache()
     {
-        $cache = m::spy(Factory::class, Repository::class);
-        $cache->shouldReceive('store')->with('store-key')->andReturnSelf();
+        $cache = TestDouble::for(Factory::class, Repository::class);
+        $cache->allows('store')->with('store-key')->returns($cache);
 
         $manager = new CacheBasedMaintenanceMode($cache, 'store-key', 'key');
         $manager->deactivate();
 
-        $cache->shouldHaveReceived('forget')->once()->with('key');
+        $cache->received('forget')->times(1)->with('key');
     }
 }

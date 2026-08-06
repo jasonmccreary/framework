@@ -2,11 +2,12 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Error;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class EventsDispatcherTest extends TestCase
@@ -249,8 +250,8 @@ class EventsDispatcherTest extends TestCase
 
     public function testContainerResolutionOfEventHandlers()
     {
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $container->shouldReceive('make')->once()->with(TestEventListener::class)->andReturn(new TestEventListener);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $container->expects('make')->with(TestEventListener::class)->returns(new TestEventListener);
         $d->listen('foo', TestEventListener::class.'@onFooEvent');
         $response = $d->dispatch('foo', ['foo', 'bar']);
 
@@ -721,23 +722,20 @@ class EventsDispatcherTest extends TestCase
     public function testEventDispatchesUsingNamedArguments()
     {
         $container = new Container;
-        $events = m::mock(Dispatcher::class);
+        $events = TestDouble::for(Dispatcher::class);
         $container->instance('events', $events);
 
         $originalContainer = Container::getInstance();
         Container::setInstance($container);
 
         try {
-            $events->shouldReceive('dispatch')
-                ->once()
-                ->with(m::on(function ($event) {
+            $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
                     $this->assertInstanceOf(DispatchableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);
 
                     return true;
-                }))
-                ->andReturn(['dispatched']);
+                }))->returns(['dispatched']);
 
             $this->assertSame(
                 ['dispatched'],

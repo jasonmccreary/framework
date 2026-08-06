@@ -8,11 +8,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Tests\Database\Fixtures\Models\User;
-use Mockery as m;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSchemaBlueprintTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function tearDown(): void
     {
         Builder::$defaultMorphKeyType = 'int';
@@ -23,8 +26,8 @@ class DatabaseSchemaBlueprintTest extends TestCase
     public function testToSqlRunsCommandsFromBlueprint()
     {
         $conn = $this->getConnection();
-        $conn->shouldReceive('statement')->once()->with('foo');
-        $conn->shouldReceive('statement')->once()->with('bar');
+        $conn->expects('statement')->with('foo');
+        $conn->expects('statement')->with('bar');
         $blueprint = $this->getMockBuilder(Blueprint::class)->onlyMethods(['toSql'])->setConstructorArgs([$conn, 'users'])->getMock();
         $blueprint->expects($this->once())->method('toSql')->willReturn(['foo', 'bar']);
 
@@ -108,8 +111,8 @@ class DatabaseSchemaBlueprintTest extends TestCase
         $getSql = function ($grammar, $mysql57 = false) {
             if ($grammar === 'MySql') {
                 $connection = $this->getConnection($grammar);
-                $mysql57 ? $connection->shouldReceive('getServerVersion')->andReturn('5.7') : $connection->shouldReceive('getServerVersion')->andReturn('8.0.13');
-                $connection->shouldReceive('isMaria')->andReturn(false);
+                $mysql57 ? $connection->allows('getServerVersion')->returns('5.7') : $connection->allows('getServerVersion')->returns('8.0.13');
+                $connection->allows('isMaria')->returns(false);
 
                 return (new Blueprint($connection, 'users', function ($table) {
                     $table->date('created')->useCurrent();
@@ -161,8 +164,8 @@ class DatabaseSchemaBlueprintTest extends TestCase
         $getSql = function ($grammar, $mysql57 = false) {
             if ($grammar === 'MySql') {
                 $connection = $this->getConnection($grammar);
-                $mysql57 ? $connection->shouldReceive('getServerVersion')->andReturn('5.7') : $connection->shouldReceive('getServerVersion')->andReturn('8.0.13');
-                $connection->shouldReceive('isMaria')->andReturn(false);
+                $mysql57 ? $connection->allows('getServerVersion')->returns('5.7') : $connection->allows('getServerVersion')->returns('8.0.13');
+                $connection->allows('isMaria')->returns(false);
 
                 return (new Blueprint($connection, 'users', function ($table) {
                     $table->year('birth_year')->useCurrent();
@@ -198,8 +201,8 @@ class DatabaseSchemaBlueprintTest extends TestCase
     {
         $getSql = function ($grammar) {
             $connection = $this->getConnection($grammar);
-            $connection->shouldReceive('getServerVersion')->andReturn('8.0.4');
-            $connection->shouldReceive('isMaria')->andReturn(false);
+            $connection->allows('getServerVersion')->returns('8.0.4');
+            $connection->allows('isMaria')->returns(false);
 
             return (new Blueprint($connection, 'users', function ($table) {
                 $table->renameColumn('foo', 'bar');
@@ -215,9 +218,9 @@ class DatabaseSchemaBlueprintTest extends TestCase
     public function testNativeRenameColumnOnMysql57()
     {
         $connection = $this->getConnection('MySql');
-        $connection->shouldReceive('isMaria')->andReturn(false);
-        $connection->shouldReceive('getServerVersion')->andReturn('5.7');
-        $connection->getSchemaBuilder()->shouldReceive('getColumns')->andReturn([
+        $connection->allows('isMaria')->returns(false);
+        $connection->allows('getServerVersion')->returns('5.7');
+        $connection->getSchemaBuilder()->allows('getColumns')->returns([
             ['name' => 'name', 'type' => 'varchar(255)', 'type_name' => 'varchar', 'nullable' => true, 'collation' => 'utf8mb4_unicode_ci', 'default' => 'foo', 'comment' => null, 'auto_increment' => false, 'generation' => null],
             ['name' => 'id', 'type' => 'bigint unsigned', 'type_name' => 'bigint', 'nullable' => false, 'collation' => null, 'default' => null, 'comment' => 'lorem ipsum', 'auto_increment' => true, 'generation' => null],
             ['name' => 'generated', 'type' => 'int', 'type_name' => 'int', 'nullable' => false, 'collation' => null, 'default' => null, 'comment' => null, 'auto_increment' => false, 'generation' => ['type' => 'stored', 'expression' => 'expression']],
@@ -239,9 +242,9 @@ class DatabaseSchemaBlueprintTest extends TestCase
     public function testNativeRenameColumnOnLegacyMariaDB()
     {
         $connection = $this->getConnection('MariaDb');
-        $connection->shouldReceive('isMaria')->andReturn(true);
-        $connection->shouldReceive('getServerVersion')->andReturn('10.1.35');
-        $connection->getSchemaBuilder()->shouldReceive('getColumns')->andReturn([
+        $connection->allows('isMaria')->returns(true);
+        $connection->allows('getServerVersion')->returns('10.1.35');
+        $connection->getSchemaBuilder()->allows('getColumns')->returns([
             ['name' => 'name', 'type' => 'varchar(255)', 'type_name' => 'varchar', 'nullable' => true, 'collation' => 'utf8mb4_unicode_ci', 'default' => 'foo', 'comment' => null, 'auto_increment' => false, 'generation' => null],
             ['name' => 'id', 'type' => 'bigint unsigned', 'type_name' => 'bigint', 'nullable' => false, 'collation' => null, 'default' => null, 'comment' => 'lorem ipsum', 'auto_increment' => true, 'generation' => null],
             ['name' => 'generated', 'type' => 'int', 'type_name' => 'int', 'nullable' => false, 'collation' => null, 'default' => null, 'comment' => null, 'auto_increment' => false, 'generation' => ['type' => 'stored', 'expression' => 'expression']],
@@ -685,24 +688,23 @@ class DatabaseSchemaBlueprintTest extends TestCase
 
     protected function getConnection(?string $grammar = null, string $prefix = '')
     {
-        $connection = m::mock(Connection::class)
-            ->shouldReceive('getTablePrefix')->andReturn($prefix)
-            ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(true)
-            ->getMock();
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('getTablePrefix')->returns($prefix);
+        $connection->allows('getConfig')->with('prefix_indexes')->returns(true);
 
         $grammar ??= 'MySql';
         $grammarClass = 'Illuminate\Database\Schema\Grammars\\'.$grammar.'Grammar';
         $builderClass = 'Illuminate\Database\Schema\\'.$grammar.'Builder';
 
-        $connection->shouldReceive('getSchemaGrammar')->andReturn(new $grammarClass($connection));
-        $connection->shouldReceive('getSchemaBuilder')->andReturn(m::mock($builderClass));
+        $connection->allows('getSchemaGrammar')->returns(new $grammarClass($connection));
+        $connection->allows('getSchemaBuilder')->returns(TestDouble::for($builderClass));
 
         if ($grammar === 'SQLite') {
-            $connection->shouldReceive('getServerVersion')->andReturn('3.35');
+            $connection->allows('getServerVersion')->returns('3.35');
         }
 
         if ($grammar === 'MySql') {
-            $connection->shouldReceive('isMaria')->andReturn(false);
+            $connection->allows('isMaria')->returns(false);
         }
 
         return $connection;

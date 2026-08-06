@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Foundation\Application;
 use Illuminate\Queue\Console\ListFailedCommand;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -52,9 +52,9 @@ class ListFailedCommandTest extends TestCase
     protected function runCommandWithFailedJobs(array $failedJobs, array $arguments = []): string
     {
         $container = new Application;
-        $container->instance('queue.failer', $failer = m::mock());
+        $container->instance('queue.failer', $failer = TestDouble::for(\stdClass::class));
 
-        $failer->shouldReceive('all')->once()->andReturn($failedJobs);
+        $failer->expects('all')->returns($failedJobs);
 
         $command = new ListFailedCommand;
         $command->setLaravel($container);

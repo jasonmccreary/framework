@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Aws\Command;
 use Aws\Exception\AwsException;
 use Aws\SesV2\SesV2Client;
@@ -10,7 +12,6 @@ use Illuminate\Container\Container;
 use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Transport\SesV2Transport;
 use Illuminate\View\Factory;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Header\MetadataHeader;
@@ -57,21 +58,16 @@ class MailSesV2TransportTest extends TestCase
         $message->getHeaders()->add(new MetadataHeader('FooTag', 'TagValue'));
         $message->getHeaders()->addTextHeader('X-SES-LIST-MANAGEMENT-OPTIONS', 'contactListName=TestList;topicName=TestTopic');
 
-        $client = m::mock(SesV2Client::class);
-        $sesResult = m::mock();
-        $sesResult->shouldReceive('get')
-            ->with('MessageId')
-            ->once()
-            ->andReturn('ses-message-id');
-        $client->shouldReceive('sendEmail')->once()
-            ->with(m::on(function ($arg) {
+        $client = TestDouble::for(SesV2Client::class);
+        $sesResult = TestDouble::for(\stdClass::class);
+        $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
+        $client->expects('sendEmail')->with(Argument::satisfies(function ($arg) {
                 return $arg['Source'] === 'myself@example.com' &&
                     $arg['Destination']['ToAddresses'] === ['me@example.com', 'you@example.com'] &&
                     $arg['ListManagementOptions'] === ['ContactListName' => 'TestList', 'TopicName' => 'TestTopic'] &&
                     $arg['EmailTags'] === [['Name' => 'FooTag', 'Value' => 'TagValue']] &&
                     str_contains($arg['Content']['Raw']['Data'], 'Reply-To: Taylor Otwell <taylor@example.com>');
-            }))
-            ->andReturn($sesResult);
+            }))->returns($sesResult);
 
         (new SesV2Transport($client))->send($message);
     }
@@ -84,9 +80,8 @@ class MailSesV2TransportTest extends TestCase
         $message->sender('myself@example.com');
         $message->to('me@example.com');
 
-        $client = m::mock(SesV2Client::class);
-        $client->shouldReceive('sendEmail')->once()
-            ->andThrow(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
+        $client = TestDouble::for(SesV2Client::class);
+        $client->expects('sendEmail')->throws(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
 
         $this->expectException(TransportException::class);
 

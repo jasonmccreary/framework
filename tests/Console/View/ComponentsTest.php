@@ -2,10 +2,11 @@
 
 namespace Illuminate\Tests\Console\View;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components;
 use Illuminate\Database\Migrations\MigrationResult;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -68,20 +69,14 @@ class ComponentsTest extends TestCase
 
     public function testConfirm()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
-        $output->shouldReceive('confirm')
-            ->with('Question?', false)
-            ->once()
-            ->andReturnTrue();
+        $output->expects('confirm')->with('Question?', false)->returns(true);
 
         $result = (new Components\Confirm($output))->render('Question?');
         $this->assertTrue($result);
 
-        $output->shouldReceive('confirm')
-            ->with('Question?', true)
-            ->once()
-            ->andReturnTrue();
+        $output->expects('confirm')->with('Question?', true)->returns(true);
 
         $result = (new Components\Confirm($output))->render('Question?', true);
         $this->assertTrue($result);
@@ -89,12 +84,9 @@ class ComponentsTest extends TestCase
 
     public function testChoice()
     {
-        $output = m::mock(OutputStyle::class);
+        $output = TestDouble::for(OutputStyle::class);
 
-        $output->shouldReceive('askQuestion')
-            ->with(m::type(ChoiceQuestion::class))
-            ->once()
-            ->andReturn('a');
+        $output->expects('askQuestion')->with(Argument::type(ChoiceQuestion::class))->returns('a');
 
         $result = (new Components\Choice($output))->render('Question?', ['a', 'b']);
         $this->assertSame('a', $result);

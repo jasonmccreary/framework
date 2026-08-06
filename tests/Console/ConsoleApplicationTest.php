@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -13,7 +15,6 @@ use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithArrayInputPrompting;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithInputPrompting;
-use Mockery as m;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
@@ -40,8 +41,8 @@ class ConsoleApplicationTest extends TestCase
     public function testAddSetsLaravelInstance()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = m::mock(Command::class);
-        $command->shouldReceive('setLaravel')->once()->with(m::type(ApplicationContract::class));
+        $command = TestDouble::for(Command::class);
+        $command->expects('setLaravel')->with(Argument::type(ApplicationContract::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -51,8 +52,8 @@ class ConsoleApplicationTest extends TestCase
     public function testLaravelNotSetOnSymfonyCommands()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = m::mock(SymfonyCommand::class);
-        $command->shouldReceive('setLaravel')->never();
+        $command = TestDouble::for(SymfonyCommand::class);
+        $command->expects('setLaravel')->never();
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -62,8 +63,8 @@ class ConsoleApplicationTest extends TestCase
     public function testResolveAddsCommandViaApplicationResolution()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = m::mock(SymfonyCommand::class);
-        $artisan->getLaravel()->shouldReceive('make')->once()->with('foo')->andReturn(m::mock(SymfonyCommand::class));
+        $command = TestDouble::for(SymfonyCommand::class);
+        $artisan->getLaravel()->expects('make')->with('foo')->returns(TestDouble::for(SymfonyCommand::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->resolve('foo');
 
@@ -134,9 +135,15 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallFullyStringCommandLine()
     {
+        $applicationContract = TestDouble::for(ApplicationContract::class);
+        $applicationContract->allows('version')->returns('6.0');
+
+        $dispatcher6 = TestDouble::for(Dispatcher::class);
+        $dispatcher6->allows('dispatch')->returns(null);
+
         $artisan = new Application(
-            m::mock(ApplicationContract::class, ['version' => '6.0']),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $applicationContract,
+            $dispatcher6,
             'testing'
         );
 
@@ -161,9 +168,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputPromptsWhenRequiredArgumentIsMissing()
     {
+        $dispatcher5 = TestDouble::for(Dispatcher::class);
+        $dispatcher5->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher5,
             'testing'
         );
 
@@ -180,9 +190,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputDoesntPromptWhenRequiredArgumentIsPassed()
     {
+        $dispatcher4 = TestDouble::for(Dispatcher::class);
+        $dispatcher4->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher4,
             'testing'
         );
 
@@ -199,9 +212,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputPromptsWhenRequiredArgumentsAreMissing()
     {
+        $dispatcher3 = TestDouble::for(Dispatcher::class);
+        $dispatcher3->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher3,
             'testing'
         );
 
@@ -218,9 +234,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCommandInputDoesntPromptWhenRequiredArgumentsArePassed()
     {
+        $dispatcher2 = TestDouble::for(Dispatcher::class);
+        $dispatcher2->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher2,
             'testing'
         );
 
@@ -237,9 +256,12 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallMethodCanCallArtisanCommandUsingCommandClassObject()
     {
+        $dispatcher = TestDouble::for(Dispatcher::class);
+        $dispatcher->allows('dispatch')->returns(null);
+
         $artisan = new Application(
             $laravel = new FoundationApplication(__DIR__),
-            m::mock(Dispatcher::class, ['dispatch' => null]),
+            $dispatcher,
             'testing'
         );
 
@@ -301,8 +323,10 @@ class ConsoleApplicationTest extends TestCase
 
     protected function getMockConsole(array $methods)
     {
-        $app = m::mock(ApplicationContract::class, ['version' => '6.0']);
-        $events = m::mock(Dispatcher::class, ['dispatch' => null]);
+        $app = TestDouble::for(ApplicationContract::class);
+        $app->allows('version')->returns('6.0');
+        $events = TestDouble::for(Dispatcher::class);
+        $events->allows('dispatch')->returns(null);
 
         return $this->getMockBuilder(Application::class)->onlyMethods($methods)->setConstructorArgs([
             $app, $events, 'test-version',

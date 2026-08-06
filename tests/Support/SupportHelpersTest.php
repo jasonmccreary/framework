@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use ArrayAccess;
 use ArrayIterator;
 use Carbon\CarbonInterval;
@@ -18,7 +19,6 @@ use Illuminate\Tests\Support\Fixtures\IntBackedEnum;
 use Illuminate\Tests\Support\Fixtures\StringBackedEnum;
 use IteratorAggregate;
 use LogicException;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -49,8 +49,8 @@ class SupportHelpersTest extends TestCase
         $str = 'A \'quote\' is <b>bold</b>';
         $this->assertSame('A &#039;quote&#039; is &lt;b&gt;bold&lt;/b&gt;', e($str));
 
-        $html = m::mock(Htmlable::class);
-        $html->shouldReceive('toHtml')->andReturn($str);
+        $html = TestDouble::for(Htmlable::class);
+        $html->allows('toHtml')->returns($str);
         $this->assertEquals($str, e($html));
     }
 
@@ -832,8 +832,8 @@ class SupportHelpersTest extends TestCase
             $object->id = 2;
         })->id);
 
-        $mock = m::mock();
-        $mock->shouldReceive('foo')->once()->andReturn('bar');
+        $mock = TestDouble::for(\stdClass::class);
+        $mock->expects('foo')->returns('bar');
         $this->assertEquals($mock, tap($mock)->foo());
     }
 

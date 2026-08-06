@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Console\Concerns\InteractsWithPooledConnections;
 use Illuminate\Database\Console\DbCommand;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 
@@ -16,39 +16,39 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
 {
     public function testInteractsWithPooledConnectionsUsesDirectVariantWhenConfigured()
     {
-        $resolver = m::mock(ConnectionResolverInterface::class);
-        $baseConnection = m::mock(Connection::class);
-        $directConnection = m::mock(Connection::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
+        $baseConnection = TestDouble::for(Connection::class);
+        $directConnection = TestDouble::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->shouldReceive('getDefaultConnection')->once()->andReturn('pgsql');
-        $resolver->shouldReceive('connection')->once()->with('pgsql')->andReturn($baseConnection);
-        $baseConnection->shouldReceive('hasDirectConnection')->once()->andReturn(true);
-        $resolver->shouldReceive('connection')->once()->with('pgsql::direct')->andReturn($directConnection);
+        $resolver->expects('getDefaultConnection')->returns('pgsql');
+        $resolver->expects('connection')->with('pgsql')->returns($baseConnection);
+        $baseConnection->expects('hasDirectConnection')->returns(true);
+        $resolver->expects('connection')->with('pgsql::direct')->returns($directConnection);
 
         $this->assertSame($directConnection, $command->resolve($resolver, null));
     }
 
     public function testInteractsWithPooledConnectionsPassesThroughWhenNoDirectVariantIsConfigured()
     {
-        $resolver = m::mock(ConnectionResolverInterface::class);
-        $connection = m::mock(Connection::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
+        $connection = TestDouble::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->shouldReceive('connection')->once()->with('sqlite')->andReturn($connection);
-        $connection->shouldReceive('hasDirectConnection')->once()->andReturn(false);
+        $resolver->expects('connection')->with('sqlite')->returns($connection);
+        $connection->expects('hasDirectConnection')->returns(false);
 
         $this->assertSame($connection, $command->resolve($resolver, 'sqlite'));
     }
 
     public function testInteractsWithPooledConnectionsPassesThroughExplicitSuffixes()
     {
-        $resolver = m::mock(ConnectionResolverInterface::class);
-        $connection = m::mock(Connection::class);
+        $resolver = TestDouble::for(ConnectionResolverInterface::class);
+        $connection = TestDouble::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->shouldReceive('connection')->once()->with('pgsql::write')->andReturn($connection);
-        $connection->shouldReceive('hasDirectConnection')->once()->andReturn(true);
+        $resolver->expects('connection')->with('pgsql::write')->returns($connection);
+        $connection->expects('hasDirectConnection')->returns(true);
 
         $this->assertSame($connection, $command->resolve($resolver, 'pgsql::write'));
     }

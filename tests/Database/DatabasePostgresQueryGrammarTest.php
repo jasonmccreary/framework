@@ -2,18 +2,18 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabasePostgresQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = m::mock(Connection::class);
-        $connection->shouldReceive('escape')->with('foo', false)->andReturn("'foo'");
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('escape')->with('foo', false)->returns("'foo'");
         $grammar = new PostgresGrammar($connection);
 
         $query = $grammar->substituteBindingsIntoRawSql(
@@ -29,7 +29,7 @@ class DatabasePostgresQueryGrammarTest extends TestCase
         PostgresGrammar::customOperators(['@@@', '@>', '']);
         PostgresGrammar::customOperators(['@@>', 1]);
 
-        $connection = m::mock(Connection::class);
+        $connection = TestDouble::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
         $operators = $grammar->getOperators();
@@ -44,11 +44,11 @@ class DatabasePostgresQueryGrammarTest extends TestCase
 
     public function testCompileTruncate()
     {
-        $connection = m::mock(Connection::class);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('getTablePrefix')->returns('');
 
         $postgres = new PostgresGrammar($connection);
-        $builder = m::mock(Builder::class);
+        $builder = TestDouble::for(Builder::class);
         $builder->from = 'users';
 
         $this->assertEquals([

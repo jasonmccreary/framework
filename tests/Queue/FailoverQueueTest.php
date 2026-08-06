@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\FailoverQueue;
 use Illuminate\Queue\QueueManager;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class FailoverQueueTest extends TestCase
@@ -20,26 +20,20 @@ class FailoverQueueTest extends TestCase
 
     public function test_push_fails_over_on_exception()
     {
-        $failover = new FailoverQueue($queue = m::mock(QueueManager::class), $events = m::mock(Dispatcher::class), [
+        $failover = new FailoverQueue($queue = TestDouble::for(QueueManager::class), $events = TestDouble::for(Dispatcher::class), [
             'redis',
             'sync',
         ]);
 
-        $queue->shouldReceive('connection')->once()->with('redis')->andReturn(
-            $redis = m::mock('stdClass'),
-        );
+        $queue->expects('connection')->with('redis')->returns($redis = TestDouble::for('stdClass'));
 
-        $queue->shouldReceive('connection')->once()->with('sync')->andReturn(
-            $sync = m::mock('stdClass'),
-        );
+        $queue->expects('connection')->with('sync')->returns($sync = TestDouble::for('stdClass'));
 
-        $events->shouldReceive('dispatch')->once();
+        $events->expects('dispatch');
 
-        $redis->shouldReceive('push')->once()->andReturnUsing(
-            fn () => throw new \Exception('error')
-        );
+        $redis->expects('push')->resolves(fn () => throw new \Exception('error'));
 
-        $sync->shouldReceive('push')->once();
+        $sync->expects('push');
 
         $failover->push('some-job');
     }

@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\MailManager;
 use Illuminate\Support\Testing\Fakes\MailFake;
-use Mockery as m;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
@@ -31,10 +31,8 @@ class SupportTestingMailFakeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mailManager = m::mock(MailManager::class, function ($mock) {
-            $mock->shouldReceive('getDefaultDriver')
-                ->andReturn('smtp');
-        });
+        $this->mailManager = TestDouble::for(MailManager::class);
+        $this->mailManager->allows('getDefaultDriver')->returns('smtp');
         $this->fake = new MailFake($this->mailManager);
         $this->mailable = new MailableStub;
     }
@@ -394,7 +392,7 @@ class SupportTestingMailFakeTest extends TestCase
 
     public function testMissingMethodsAreForwarded()
     {
-        $this->mailManager->shouldReceive('foo')->andReturn('bar');
+        $this->mailManager->allows('foo')->returns('bar');
 
         $this->assertSame('bar', $this->fake->foo());
     }

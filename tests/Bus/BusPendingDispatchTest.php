@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use stdClass;
@@ -27,7 +27,7 @@ class BusPendingDispatchTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->job = m::mock(stdClass::class);
+        $this->job = TestDouble::for(stdClass::class);
         $this->pendingDispatch = new PendingDispatchWithoutDestructor($this->job);
 
         parent::setUp();
@@ -35,56 +35,56 @@ class BusPendingDispatchTest extends TestCase
 
     public function testOnConnection()
     {
-        $this->job->shouldReceive('onConnection')->once()->with('test-connection');
+        $this->job->expects('onConnection')->with('test-connection');
         $this->pendingDispatch->onConnection('test-connection');
     }
 
     public function testOnQueue()
     {
-        $this->job->shouldReceive('onQueue')->once()->with('test-queue');
+        $this->job->expects('onQueue')->with('test-queue');
         $this->pendingDispatch->onQueue('test-queue');
     }
 
     public function testAllOnConnection()
     {
-        $this->job->shouldReceive('allOnConnection')->once()->with('test-connection');
+        $this->job->expects('allOnConnection')->with('test-connection');
         $this->pendingDispatch->allOnConnection('test-connection');
     }
 
     public function testAllOnQueue()
     {
-        $this->job->shouldReceive('allOnQueue')->once()->with('test-queue');
+        $this->job->expects('allOnQueue')->with('test-queue');
         $this->pendingDispatch->allOnQueue('test-queue');
     }
 
     public function testDelay()
     {
-        $this->job->shouldReceive('delay')->once()->with(60);
+        $this->job->expects('delay')->with(60);
         $this->pendingDispatch->delay(60);
     }
 
     public function testWithoutDelay()
     {
-        $this->job->shouldReceive('withoutDelay')->once();
+        $this->job->expects('withoutDelay');
         $this->pendingDispatch->withoutDelay();
     }
 
     public function testAfterCommit()
     {
-        $this->job->shouldReceive('afterCommit')->once();
+        $this->job->expects('afterCommit');
         $this->pendingDispatch->afterCommit();
     }
 
     public function testBeforeCommit()
     {
-        $this->job->shouldReceive('beforeCommit')->once();
+        $this->job->expects('beforeCommit');
         $this->pendingDispatch->beforeCommit();
     }
 
     public function testChain()
     {
         $chain = [new stdClass];
-        $this->job->shouldReceive('chain')->once()->with($chain);
+        $this->job->expects('chain')->with($chain);
         $this->pendingDispatch->chain($chain);
     }
 
@@ -103,35 +103,35 @@ class BusPendingDispatchTest extends TestCase
 
     public function testDynamicallyProxyMethods()
     {
-        $newJob = m::mock(stdClass::class);
-        $this->job->shouldReceive('appendToChain')->once()->with($newJob);
+        $newJob = TestDouble::for(stdClass::class);
+        $this->job->expects('appendToChain')->with($newJob);
         $this->pendingDispatch->appendToChain($newJob);
     }
 
     public function testWhenMethodOfConditionableTraitWithTrue()
     {
-        $this->job->shouldReceive('delay')->once()->with(300);
+        $this->job->expects('delay')->with(300);
 
         $this->pendingDispatch->when(true, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }
 
     public function testWhenMethodOfConditionableTraitWithFalse()
     {
-        $this->job->shouldReceive('delay')->never();
+        $this->job->expects('delay')->never();
 
         $this->pendingDispatch->when(false, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }
 
     public function testUnlessMethodOfConditionableTraitWithTrue()
     {
-        $this->job->shouldReceive('delay')->never();
+        $this->job->expects('delay')->never();
 
         $this->pendingDispatch->unless(true, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }
 
     public function testUnlessMethodOfConditionableTraitWithFalse()
     {
-        $this->job->shouldReceive('delay')->once()->with(300);
+        $this->job->expects('delay')->with(300);
 
         $this->pendingDispatch->unless(false, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }

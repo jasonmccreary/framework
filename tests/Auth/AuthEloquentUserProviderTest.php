@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Hashing\Hasher;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -14,11 +14,11 @@ class AuthEloquentUserProviderTest extends TestCase
     public function testRetrieveByIDReturnsUser()
     {
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('getAuthIdentifierName')->once()->andReturn('id');
-        $mock->shouldReceive('where')->once()->with('id', 1)->andReturn($mock);
-        $mock->shouldReceive('first')->once()->andReturn('bar');
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('getAuthIdentifierName')->returns('id');
+        $mock->expects('where')->with('id', 1)->returns($mock);
+        $mock->expects('first')->returns('bar');
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveById(1);
 
@@ -27,15 +27,15 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testRetrieveByTokenReturnsUser()
     {
-        $mockUser = m::mock(stdClass::class);
-        $mockUser->shouldReceive('getRememberToken')->once()->andReturn('a');
+        $mockUser = TestDouble::for(stdClass::class);
+        $mockUser->expects('getRememberToken')->returns('a');
 
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('getAuthIdentifierName')->once()->andReturn('id');
-        $mock->shouldReceive('where')->once()->with('id', 1)->andReturn($mock);
-        $mock->shouldReceive('first')->once()->andReturn($mockUser);
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('getAuthIdentifierName')->returns('id');
+        $mock->expects('where')->with('id', 1)->returns($mock);
+        $mock->expects('first')->returns($mockUser);
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -45,11 +45,11 @@ class AuthEloquentUserProviderTest extends TestCase
     public function testRetrieveTokenWithBadIdentifierReturnsNull()
     {
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('getAuthIdentifierName')->once()->andReturn('id');
-        $mock->shouldReceive('where')->once()->with('id', 1)->andReturn($mock);
-        $mock->shouldReceive('first')->once()->andReturn(null);
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('getAuthIdentifierName')->returns('id');
+        $mock->expects('where')->with('id', 1)->returns($mock);
+        $mock->expects('first')->returns(null);
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -66,15 +66,15 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testRetrieveByBadTokenReturnsNull()
     {
-        $mockUser = m::mock(stdClass::class);
-        $mockUser->shouldReceive('getRememberToken')->once()->andReturn(null);
+        $mockUser = TestDouble::for(stdClass::class);
+        $mockUser->expects('getRememberToken')->returns(null);
 
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('getAuthIdentifierName')->once()->andReturn('id');
-        $mock->shouldReceive('where')->once()->with('id', 1)->andReturn($mock);
-        $mock->shouldReceive('first')->once()->andReturn($mockUser);
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('getAuthIdentifierName')->returns('id');
+        $mock->expects('where')->with('id', 1)->returns($mock);
+        $mock->expects('first')->returns($mockUser);
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -84,11 +84,11 @@ class AuthEloquentUserProviderTest extends TestCase
     public function testRetrieveByCredentialsReturnsUser()
     {
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('where')->once()->with('username', 'dayle');
-        $mock->shouldReceive('whereIn')->once()->with('group', ['one', 'two']);
-        $mock->shouldReceive('first')->once()->andReturn('bar');
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('where')->with('username', 'dayle');
+        $mock->expects('whereIn')->with('group', ['one', 'two']);
+        $mock->expects('first')->returns('bar');
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveByCredentials(['username' => 'dayle', 'password' => 'foo', 'group' => ['one', 'two']]);
 
@@ -98,11 +98,11 @@ class AuthEloquentUserProviderTest extends TestCase
     public function testRetrieveByCredentialsAcceptsCallback()
     {
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('where')->once()->with('username', 'dayle');
-        $mock->shouldReceive('whereIn')->once()->with('group', ['one', 'two']);
-        $mock->shouldReceive('first')->once()->andReturn('bar');
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('where')->with('username', 'dayle');
+        $mock->expects('whereIn')->with('group', ['one', 'two']);
+        $mock->expects('first')->returns('bar');
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $user = $provider->retrieveByCredentials([function ($builder) {
             $builder->where('username', 'dayle');
@@ -125,11 +125,11 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testCredentialValidation()
     {
-        $hasher = m::mock(Hasher::class);
-        $hasher->shouldReceive('check')->once()->with('plain', 'hash')->andReturn(true);
+        $hasher = TestDouble::for(Hasher::class);
+        $hasher->expects('check')->with('plain', 'hash')->returns(true);
         $provider = new EloquentUserProvider($hasher, 'foo');
-        $user = m::mock(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword')->once()->andReturn('hash');
+        $user = TestDouble::for(Authenticatable::class);
+        $user->expects('getAuthPassword')->returns('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertTrue($result);
@@ -137,11 +137,11 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testCredentialValidationFailed()
     {
-        $hasher = m::mock(Hasher::class);
-        $hasher->shouldReceive('check')->once()->with('plain', 'hash')->andReturn(false);
+        $hasher = TestDouble::for(Hasher::class);
+        $hasher->expects('check')->with('plain', 'hash')->returns(false);
         $provider = new EloquentUserProvider($hasher, 'foo');
-        $user = m::mock(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword')->once()->andReturn('hash');
+        $user = TestDouble::for(Authenticatable::class);
+        $user->expects('getAuthPassword')->returns('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertFalse($result);
@@ -149,11 +149,11 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testCredentialValidationFailsGracefullyWithNullPassword()
     {
-        $hasher = m::mock(Hasher::class);
-        $hasher->shouldReceive('check')->never();
+        $hasher = TestDouble::for(Hasher::class);
+        $hasher->expects('check')->never();
         $provider = new EloquentUserProvider($hasher, 'foo');
-        $user = m::mock(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword')->once()->andReturn(null);
+        $user = TestDouble::for(Authenticatable::class);
+        $user->expects('getAuthPassword')->returns(null);
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertFalse($result);
@@ -161,15 +161,15 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testRehashPasswordIfRequired()
     {
-        $hasher = m::mock(Hasher::class);
-        $hasher->shouldReceive('needsRehash')->once()->with('hash')->andReturn(true);
-        $hasher->shouldReceive('make')->once()->with('plain')->andReturn('rehashed');
+        $hasher = TestDouble::for(Hasher::class);
+        $hasher->expects('needsRehash')->with('hash')->returns(true);
+        $hasher->expects('make')->with('plain')->returns('rehashed');
 
-        $user = m::mock(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword')->once()->andReturn('hash');
-        $user->shouldReceive('getAuthPasswordName')->once()->andReturn('password_attribute');
-        $user->shouldReceive('forceFill')->once()->with(['password_attribute' => 'rehashed'])->andReturnSelf();
-        $user->shouldReceive('save')->once();
+        $user = TestDouble::for(Authenticatable::class);
+        $user->expects('getAuthPassword')->returns('hash');
+        $user->expects('getAuthPasswordName')->returns('password_attribute');
+        $user->expects('forceFill')->with(['password_attribute' => 'rehashed'])->returns($user);
+        $user->expects('save');
 
         $provider = new EloquentUserProvider($hasher, 'foo');
         $provider->rehashPasswordIfRequired($user, ['password' => 'plain']);
@@ -177,15 +177,15 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testDontRehashPasswordIfNotRequired()
     {
-        $hasher = m::mock(Hasher::class);
-        $hasher->shouldReceive('needsRehash')->once()->with('hash')->andReturn(false);
-        $hasher->shouldNotReceive('make');
+        $hasher = TestDouble::for(Hasher::class);
+        $hasher->expects('needsRehash')->with('hash')->returns(false);
+        $hasher->expects('make')->never();
 
-        $user = m::mock(Authenticatable::class);
-        $user->shouldReceive('getAuthPassword')->once()->andReturn('hash');
-        $user->shouldNotReceive('getAuthPasswordName');
-        $user->shouldNotReceive('forceFill');
-        $user->shouldNotReceive('save');
+        $user = TestDouble::for(Authenticatable::class);
+        $user->expects('getAuthPassword')->returns('hash');
+        $user->expects('getAuthPasswordName')->never();
+        $user->expects('forceFill')->never();
+        $user->expects('save')->never();
 
         $provider = new EloquentUserProvider($hasher, 'foo');
         $provider->rehashPasswordIfRequired($user, ['password' => 'plain']);
@@ -193,7 +193,7 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testModelsCanBeCreated()
     {
-        $hasher = m::mock(Hasher::class);
+        $hasher = TestDouble::for(Hasher::class);
         $provider = new EloquentUserProvider($hasher, EloquentProviderUserStub::class);
         $model = $provider->createModel();
 
@@ -207,11 +207,11 @@ class AuthEloquentUserProviderTest extends TestCase
         };
 
         $provider = $this->getProviderMock();
-        $mock = m::mock(stdClass::class);
-        $mock->shouldReceive('newQuery')->once()->andReturn($mock);
-        $mock->shouldReceive('where')->once()->with('username', 'dayle');
-        $mock->shouldReceive('whereIn')->once()->with('group', ['one', 'two']);
-        $mock->shouldReceive('first')->once()->andReturn('bar');
+        $mock = TestDouble::for(stdClass::class);
+        $mock->expects('newQuery')->returns($mock);
+        $mock->expects('where')->with('username', 'dayle');
+        $mock->expects('whereIn')->with('group', ['one', 'two']);
+        $mock->expects('first')->returns('bar');
         $provider->expects($this->once())->method('createModel')->willReturn($mock);
         $provider->withQuery($callback);
         $user = $provider->retrieveByCredentials([function ($builder) {
@@ -224,7 +224,7 @@ class AuthEloquentUserProviderTest extends TestCase
 
     protected function getProviderMock()
     {
-        $hasher = m::mock(Hasher::class);
+        $hasher = TestDouble::for(Hasher::class);
 
         return $this->getMockBuilder(EloquentUserProvider::class)->onlyMethods(['createModel'])->setConstructorArgs([$hasher, 'foo'])->getMock();
     }

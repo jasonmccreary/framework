@@ -2,13 +2,14 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Cache\FileStore;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -164,16 +165,16 @@ class CacheFileStoreTest extends TestCase
 
     public function testStoreItemProperlySetsPermissions()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldIgnoreMissing();
         $store = $this->getMockBuilder(FileStore::class)->onlyMethods(['expiration'])->setConstructorArgs([$files, __DIR__, 0644])->getMock();
         $hash = sha1('foo');
         $cache_dir = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
-        $files->shouldReceive('put')->withArgs([__DIR__.'/'.$cache_dir.'/'.$hash, m::any(), m::any()])->andReturnUsing(function ($name, $value) {
+        $files->allows('put')->with(__DIR__.'/'.$cache_dir.'/'.$hash, Argument::any(), Argument::any())->resolves(function ($name, $value) {
             return strlen($value);
         });
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_dir.'/'.$hash])->andReturnValues(['0600', '0644'])->times(3);
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_dir.'/'.$hash, 0644])->andReturn([true])->once();
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_dir.'/'.$hash)->returns('0600', '0644')->times(3);
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_dir.'/'.$hash, 0644)->returns([true]);
         $result = $store->put('foo', 'foo', 10);
         $this->assertTrue($result);
         $result = $store->put('foo', 'bar', 10);
@@ -184,23 +185,23 @@ class CacheFileStoreTest extends TestCase
 
     public function testStoreItemDirectoryProperlySetsPermissions()
     {
-        $files = m::mock(Filesystem::class);
+        $files = TestDouble::for(Filesystem::class);
         $files->shouldIgnoreMissing();
         $store = $this->getMockBuilder(FileStore::class)->onlyMethods(['expiration'])->setConstructorArgs([$files, __DIR__, 0606])->getMock();
         $hash = sha1('foo');
         $cache_parent_dir = substr($hash, 0, 2);
         $cache_dir = $cache_parent_dir.'/'.substr($hash, 2, 2);
 
-        $files->shouldReceive('put')->withArgs([__DIR__.'/'.$cache_dir.'/'.$hash, m::any(), m::any()])->andReturnUsing(function ($name, $value) {
+        $files->allows('put')->with(__DIR__.'/'.$cache_dir.'/'.$hash, Argument::any(), Argument::any())->resolves(function ($name, $value) {
             return strlen($value);
         });
 
-        $files->shouldReceive('exists')->withArgs([__DIR__.'/'.$cache_dir])->andReturn(false)->once();
-        $files->shouldReceive('makeDirectory')->withArgs([__DIR__.'/'.$cache_dir, 0777, true, true])->once();
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_parent_dir])->andReturn(['0600'])->once();
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_parent_dir, 0606])->andReturn([true])->once();
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_dir])->andReturn(['0600'])->once();
-        $files->shouldReceive('chmod')->withArgs([__DIR__.'/'.$cache_dir, 0606])->andReturn([true])->once();
+        $files->expects('exists')->with(__DIR__.'/'.$cache_dir)->returns(false);
+        $files->expects('makeDirectory')->with(__DIR__.'/'.$cache_dir, 0777, true, true);
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_parent_dir)->returns(['0600']);
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_parent_dir, 0606)->returns([true]);
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_dir)->returns(['0600']);
+        $files->expects('chmod')->with(__DIR__.'/'.$cache_dir, 0606)->returns([true]);
 
         $result = $store->put('foo', 'foo', 10);
         $this->assertTrue($result);

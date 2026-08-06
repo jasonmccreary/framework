@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Cache\ApcStore;
 use Illuminate\Cache\ApcWrapper;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class CacheApcStoreTest extends TestCase
@@ -62,22 +62,13 @@ class CacheApcStoreTest extends TestCase
 
     public function testSetMultipleMethodProperlyCallsAPC()
     {
-        $apc = m::mock(ApcWrapper::class);
+        $apc = TestDouble::for(ApcWrapper::class);
 
-        $apc->shouldReceive('put')
-            ->once()
-            ->with('foo', 'bar', 60)
-            ->andReturn(true);
+        $apc->expects('put')->with('foo', 'bar', 60)->returns(true);
 
-        $apc->shouldReceive('put')
-            ->once()
-            ->with('baz', 'qux', 60)
-            ->andReturn(true);
+        $apc->expects('put')->with('baz', 'qux', 60)->returns(true);
 
-        $apc->shouldReceive('put')
-            ->once()
-            ->with('bar', 'norf', 60)
-            ->andReturn(true);
+        $apc->expects('put')->with('bar', 'norf', 60)->returns(true);
 
         $store = new ApcStore($apc);
         $result = $store->putMany([

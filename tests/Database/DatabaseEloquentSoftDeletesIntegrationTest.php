@@ -13,12 +13,14 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
-use Mockery as m;
-use Mockery\MockInterface;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentSoftDeletesIntegrationTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -228,9 +230,11 @@ class DatabaseEloquentSoftDeletesIntegrationTest extends TestCase
 
             public function newModelQuery()
             {
-                return m::spy(parent::newModelQuery(), function (MockInterface $mock) {
-                    $mock->shouldReceive('forceDelete')->andThrow(new Exception());
-                });
+                $query = parent::newModelQuery();
+                $mock = TestDouble::for($query::class)->passthru($query);
+                $mock->allows('forceDelete')->throws(new Exception());
+
+                return $mock;
             }
         };
 

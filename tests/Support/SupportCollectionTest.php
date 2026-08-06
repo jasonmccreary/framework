@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use ArrayAccess;
 use ArrayIterator;
 use ArrayObject;
@@ -18,7 +19,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use InvalidArgumentException;
 use JsonSerializable;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
@@ -699,10 +699,10 @@ class SupportCollectionTest extends TestCase
     #[DataProvider('collectionClassProvider')]
     public function testToArrayCallsToArrayOnEachItemInCollection($collection)
     {
-        $item1 = m::mock(Arrayable::class);
-        $item1->shouldReceive('toArray')->once()->andReturn('foo.array');
-        $item2 = m::mock(Arrayable::class);
-        $item2->shouldReceive('toArray')->once()->andReturn('bar.array');
+        $item1 = TestDouble::for(Arrayable::class);
+        $item1->expects('toArray')->returns('foo.array');
+        $item2 = TestDouble::for(Arrayable::class);
+        $item2->expects('toArray')->returns('bar.array');
         $c = new $collection([$item1, $item2]);
         $results = $c->toArray();
 
@@ -724,10 +724,10 @@ class SupportCollectionTest extends TestCase
     #[DataProvider('collectionClassProvider')]
     public function testJsonSerializeCallsToArrayOrJsonSerializeOnEachItemInCollection($collection)
     {
-        $item1 = m::mock(JsonSerializable::class);
-        $item1->shouldReceive('jsonSerialize')->once()->andReturn('foo.json');
-        $item2 = m::mock(Arrayable::class);
-        $item2->shouldReceive('toArray')->once()->andReturn('bar.array');
+        $item1 = TestDouble::for(JsonSerializable::class);
+        $item1->expects('jsonSerialize')->returns('foo.json');
+        $item2 = TestDouble::for(Arrayable::class);
+        $item2->expects('toArray')->returns('bar.array');
         $c = new $collection([$item1, $item2]);
         $results = $c->jsonSerialize();
 

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
 use Illuminate\Http\Request;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -21,8 +21,8 @@ class PusherBroadcasterTest extends TestCase
     {
         parent::setUp();
 
-        $this->pusher = m::mock('Pusher\Pusher');
-        $this->broadcaster = m::mock(PusherBroadcaster::class, [$this->pusher])->makePartial();
+        $this->pusher = TestDouble::for('Pusher\Pusher');
+        $this->broadcaster = TestDouble::for(PusherBroadcaster::class)->passthru(new PusherBroadcaster($this->pusher));
     }
 
     public function testAuthCallValidAuthenticationResponseWithPrivateChannelWhenCallbackReturnTrue()
@@ -31,8 +31,7 @@ class PusherBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -72,8 +71,7 @@ class PusherBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -114,9 +112,7 @@ class PusherBroadcasterTest extends TestCase
             'auth' => 'abcd:efgh',
         ];
 
-        $this->pusher->shouldReceive('socket_auth')
-            ->once()
-            ->andReturn(json_encode($data));
+        $this->pusher->expects('socket_auth')->returns(json_encode($data));
 
         $this->assertEquals(
             $data,
@@ -136,9 +132,7 @@ class PusherBroadcasterTest extends TestCase
             ],
         ];
 
-        $this->pusher->shouldReceive('presence_auth')
-            ->once()
-            ->andReturn(json_encode($data));
+        $this->pusher->expects('presence_auth')->returns(json_encode($data));
 
         $this->assertEquals(
             $data,
@@ -148,9 +142,7 @@ class PusherBroadcasterTest extends TestCase
 
     public function testUserAuthenticationForPusher()
     {
-        $this->pusher
-            ->shouldReceive('getSettings')
-            ->andReturn([
+        $this->pusher->allows('getSettings')->returns([
                 'auth_key' => '278d425bdf160c739803',
                 'secret' => '7ad3773142a6692b25b8',
             ]);
@@ -177,21 +169,16 @@ class PusherBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel, 'socket_id' => 'abcd.1234']);
 
-        $request->shouldReceive('input')
-            ->with('callback', false)
-            ->andReturn(false);
+        $request->allows('input')->with('callback', false)->returns(false);
 
-        $user = m::mock('User');
-        $user->shouldReceive('getAuthIdentifierForBroadcasting')
-            ->andReturn(42);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn(42);
+        $user = TestDouble::for('User');
+        $user->allows('getAuthIdentifierForBroadcasting')->returns(42);
+        $user->allows('getAuthIdentifier')->returns(42);
 
-        $request->shouldReceive('user')
-            ->andReturn($user);
+        $request->allows('user')->returns($user);
 
         return $request;
     }
@@ -202,11 +189,10 @@ class PusherBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithoutUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $request->shouldReceive('user')
-            ->andReturn(null);
+        $request->allows('user')->returns(null);
 
         return $request;
     }

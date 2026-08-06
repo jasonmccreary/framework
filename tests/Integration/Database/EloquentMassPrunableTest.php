@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use LogicException;
-use Mockery as m;
 
 class EloquentMassPrunableTest extends DatabaseTestCase
 {
@@ -20,7 +21,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
         parent::setUp();
 
         $this->app->singleton(Dispatcher::class, function () {
-            return m::mock(Dispatcher::class);
+            return TestDouble::for(Dispatcher::class);
         });
 
         $this->app->alias(Dispatcher::class, 'events');
@@ -55,10 +56,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
 
     public function testPrunesRecords()
     {
-        app('events')
-            ->shouldReceive('dispatch')
-            ->times(2)
-            ->with(m::type(ModelsPruned::class));
+        app('events')->expects('dispatch')->times(2)->with(Argument::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['name' => 'foo'];
@@ -74,10 +72,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
 
     public function testPrunesSoftDeletedRecords()
     {
-        app('events')
-            ->shouldReceive('dispatch')
-            ->times(3)
-            ->with(m::type(ModelsPruned::class));
+        app('events')->expects('dispatch')->times(3)->with(Argument::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['deleted_at' => Carbon::now()];

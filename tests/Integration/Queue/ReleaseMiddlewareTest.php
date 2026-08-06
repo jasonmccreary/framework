@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\Job;
@@ -9,7 +10,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\Release;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 
 class ReleaseMiddlewareTest extends TestCase
@@ -82,13 +82,13 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(false);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(false);
-        $job->shouldReceive('delete')->once();
-        $job->shouldReceive('release')->never();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(false);
+        $job->allows('isDeletedOrReleased')->returns(false);
+        $job->expects('delete');
+        $job->expects('release')->never();
 
         $instance->call($job, [
             'command' => serialize($class),
@@ -102,13 +102,13 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = m::mock(Job::class);
+        $job = TestDouble::for(Job::class);
 
-        $job->shouldReceive('hasFailed')->andReturn(false);
-        $job->shouldReceive('isReleased')->andReturn(true);
-        $job->shouldReceive('isDeletedOrReleased')->andReturn(true);
-        $job->shouldReceive('release')->once()->with($releaseAfter);
-        $job->shouldReceive('delete')->never();
+        $job->allows('hasFailed')->returns(false);
+        $job->allows('isReleased')->returns(true);
+        $job->allows('isDeletedOrReleased')->returns(true);
+        $job->expects('release')->with($releaseAfter);
+        $job->expects('delete')->never();
 
         $instance->call($job, [
             'command' => serialize($class),

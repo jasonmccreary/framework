@@ -2,17 +2,17 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSQLiteQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = m::mock(Connection::class);
-        $connection->shouldReceive('escape')->with('foo', false)->andReturn("'foo'");
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('escape')->with('foo', false)->returns("'foo'");
         $grammar = new SQLiteGrammar($connection);
 
         $query = $grammar->substituteBindingsIntoRawSql(

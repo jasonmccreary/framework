@@ -2,12 +2,13 @@
 
 namespace Illuminate\Tests\Integration\Migration;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Stringable;
-use Mockery as m;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -24,7 +25,7 @@ class MigratorTest extends TestCase
     {
         parent::setUp();
 
-        $this->output = m::mock(OutputInterface::class);
+        $this->output = TestDouble::for(OutputInterface::class);
         $this->subject = $this->app->make('migrator');
         $this->subject->setOutput($this->output);
         $this->subject->getRepository()->createRepository();
@@ -46,7 +47,7 @@ class MigratorTest extends TestCase
         $this->expectTask('2016_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2017_10_04_000000_add_age_to_people', 'SKIPPED');
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/fixtures']);
 
@@ -100,7 +101,7 @@ class MigratorTest extends TestCase
         $this->expectTask('2015_10_04_000000_modify_people_table', 'DONE');
         $this->expectTask('2014_10_12_000000_create_people_table', 'DONE');
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->rollback([__DIR__.'/fixtures']);
 
@@ -123,7 +124,7 @@ class MigratorTest extends TestCase
         $this->expectTwoColumnDetail('2016_10_04_000000_modify_people_table');
         $this->expectBulletList(['alter table "people" add column "last_name" varchar']);
 
-        $this->output->shouldReceive('writeln')->times(3);
+        $this->output->expects('writeln')->times(3);
 
         $this->subject->run([__DIR__.'/fixtures'], ['pretend' => true]);
 
@@ -203,7 +204,7 @@ class MigratorTest extends TestCase
         $this->expectInfo('Running migrations.');
         $this->expectTask('2014_10_12_000000_create_people_is_dynamic_table', 'DONE');
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2014_10_12_000000_create_people_is_dynamic_table.php'], ['pretend' => false]);
 
@@ -221,7 +222,7 @@ class MigratorTest extends TestCase
             'insert into "blogs" ("id", "name") values (2, \'John Doe Blog\')',
         ]);
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2023_10_17_000000_dynamic_content_is_shown.php'], ['pretend' => true]);
 
@@ -236,7 +237,7 @@ class MigratorTest extends TestCase
         $this->expectInfo('Running migrations.');
         $this->expectTask('2014_10_12_000000_create_people_non_dynamic_table', 'DONE');
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2014_10_12_000000_create_people_non_dynamic_table.php'], ['pretend' => false]);
 
@@ -252,7 +253,7 @@ class MigratorTest extends TestCase
             'select * from "people"',
         ]);
 
-        $this->output->shouldReceive('writeln')->once();
+        $this->output->expects('writeln');
 
         $this->subject->run([__DIR__.'/pretending/2023_10_17_000000_dynamic_content_not_shown.php'], ['pretend' => true]);
 
@@ -263,14 +264,12 @@ class MigratorTest extends TestCase
 
     protected function expectInfo($message): void
     {
-        $this->output->shouldReceive('writeln')->once()->with(m::on(
-            fn ($argument) => (new Stringable($argument))->contains($message),
-        ), m::any());
+        $this->output->expects('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($message)), Argument::any());
     }
 
     protected function expectTwoColumnDetail($first, $second = null)
     {
-        $this->output->shouldReceive('writeln')->with(m::on(function ($argument) use ($first, $second) {
+        $this->output->allows('writeln')->with(Argument::satisfies(function ($argument) use ($first, $second) {
             $result = (new Stringable($argument))->contains($first);
 
             if ($result && $second) {
@@ -278,34 +277,26 @@ class MigratorTest extends TestCase
             }
 
             return $result;
-        }), m::any());
+        }), Argument::any());
     }
 
     protected function expectBulletList($elements): void
     {
-        $this->output->shouldReceive('writeln')->once()->with(m::on(function ($argument) use ($elements) {
+        $this->output->expects('writeln')->with(Argument::satisfies(function ($argument) use ($elements) {
             return array_all($elements, fn ($element) => (new Stringable($argument))->contains("⇂ $element"));
-        }), m::any());
+        }), Argument::any());
     }
 
     protected function expectTask($description, $result): void
     {
         // Ignore dots...
-        $this->output->shouldReceive('write')->with(m::on(
-            fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>']),
-        ), m::any(), m::any());
+        $this->output->allows('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>'])), Argument::any(), Argument::any());
 
         // Ignore duration...
-        $this->output->shouldReceive('write')->with(m::on(
-            fn ($argument) => (new Stringable($argument))->contains(['ms</>']),
-        ), m::any(), m::any());
+        $this->output->allows('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['ms</>'])), Argument::any(), Argument::any());
 
-        $this->output->shouldReceive('write')->once()->with(m::on(
-            fn ($argument) => (new Stringable($argument))->contains($description),
-        ), m::any(), m::any());
+        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($description)), Argument::any(), Argument::any());
 
-        $this->output->shouldReceive('writeln')->once()->with(m::on(
-            fn ($argument) => (new Stringable($argument))->contains($result),
-        ), m::any());
+        $this->output->expects('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($result)), Argument::any());
     }
 }

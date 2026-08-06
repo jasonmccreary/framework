@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\TestDouble;
 use Carbon\CarbonInterval as Duration;
 use Illuminate\Foundation\Testing\Wormhole;
 use Illuminate\Support\Carbon;
@@ -9,7 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Sleep;
 use InvalidArgumentException;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class SupportLazyCollectionTest extends TestCase
@@ -184,7 +184,7 @@ class SupportLazyCollectionTest extends TestCase
     {
         $timeout = Carbon::now();
 
-        $mock = m::mock(LazyCollection::class.'[now]');
+        $mock = TestDouble::for(LazyCollection::class)->passthru();
 
         $timedOutWith = [];
 
@@ -193,14 +193,9 @@ class SupportLazyCollectionTest extends TestCase
             ->tap(function ($collection) use ($mock, $timeout) {
                 tap($collection)
                     ->mockery_init($mock->mockery_getContainer())
-                    ->shouldAllowMockingProtectedMethods()
-                    ->shouldReceive('now')
-                    ->times(3)
-                    ->andReturn(
-                        (clone $timeout)->sub(2, 'minute')->getTimestamp(),
+                    ->shouldAllowMockingProtectedMethods()->expects('now')->times(3)->returns((clone $timeout)->sub(2, 'minute')->getTimestamp(),
                         (clone $timeout)->sub(1, 'minute')->getTimestamp(),
-                        $timeout->getTimestamp()
-                    );
+                        $timeout->getTimestamp());
             })
             ->takeUntilTimeout($timeout, function ($value, $key) use (&$timedOutWith) {
                 $timedOutWith = [$value, $key];

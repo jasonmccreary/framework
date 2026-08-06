@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Broadcasting\Broadcasters\RedisBroadcaster;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -21,7 +21,7 @@ class RedisBroadcasterTest extends TestCase
     {
         parent::setUp();
 
-        $this->broadcaster = m::mock(RedisBroadcaster::class)->makePartial();
+        $this->broadcaster = TestDouble::for(RedisBroadcaster::class)->passthru();
         $container = Container::setInstance(new Container);
 
         $container->singleton('config', function () {
@@ -35,8 +35,7 @@ class RedisBroadcasterTest extends TestCase
             return true;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('private-test')
@@ -76,8 +75,7 @@ class RedisBroadcasterTest extends TestCase
             return $returnData;
         });
 
-        $this->broadcaster->shouldReceive('validAuthenticationResponse')
-            ->once();
+        $this->broadcaster->expects('validAuthenticationResponse');
 
         $this->broadcaster->auth(
             $this->getMockRequestWithUserForChannel('presence-test')
@@ -161,18 +159,15 @@ class RedisBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel]);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $user = m::mock('User');
-        $user->shouldReceive('getAuthIdentifierForBroadcasting')
-            ->andReturn(42);
-        $user->shouldReceive('getAuthIdentifier')
-            ->andReturn(42);
+        $user = TestDouble::for('User');
+        $user->allows('getAuthIdentifierForBroadcasting')->returns(42);
+        $user->allows('getAuthIdentifier')->returns(42);
 
-        $request->shouldReceive('user')
-            ->andReturn($user);
+        $request->allows('user')->returns($user);
 
         return $request;
     }
@@ -183,11 +178,10 @@ class RedisBroadcasterTest extends TestCase
      */
     protected function getMockRequestWithoutUserForChannel($channel)
     {
-        $request = m::mock(Request::class);
-        $request->shouldReceive('all')->andReturn(['channel_name' => $channel]);
+        $request = TestDouble::for(Request::class);
+        $request->allows('all')->returns(['channel_name' => $channel]);
 
-        $request->shouldReceive('user')
-            ->andReturn(null);
+        $request->allows('user')->returns(null);
 
         return $request;
     }

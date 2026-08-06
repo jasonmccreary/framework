@@ -4,10 +4,13 @@ namespace Illuminate\Tests\View\Blade;
 
 use Illuminate\View\Component;
 use Illuminate\View\ComponentAttributeBag;
-use Mockery as m;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 
 class BladeComponentsTest extends AbstractBladeTestCase
 {
+    use VerifiesDoubles;
+
     public function testComponentsAreCompiled()
     {
         $this->assertSame('<?php $__env->startComponent(\'foo\', ["foo" => "bar"]); ?>', $this->compiler->compileString('@component(\'foo\', ["foo" => "bar"])'));
@@ -62,9 +65,9 @@ class BladeComponentsTest extends AbstractBladeTestCase
     {
         $attributes = new ComponentAttributeBag(['foo' => 'baz', 'other' => 'ok']);
 
-        $component = m::mock(Component::class);
-        $component->shouldReceive('withName', 'test');
-        $component->shouldReceive('shouldRender')->andReturn(false);
+        $component = TestDouble::for(Component::class);
+        $component->allows('withName')->with('test');
+        $component->allows('shouldRender')->returns(false);
 
         Component::resolveComponentsUsing(fn () => $component);
 

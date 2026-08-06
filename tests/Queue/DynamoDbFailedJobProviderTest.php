@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\TestDouble;
 use Aws\DynamoDb\DynamoDbClient;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
@@ -9,7 +10,6 @@ use Exception;
 use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class DynamoDbFailedJobProviderTest extends TestCase
@@ -26,9 +26,9 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
         $exception = new Exception('Something went wrong.');
 
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
-        $dynamoDbClient->shouldReceive('putItem')->once()->with([
+        $dynamoDbClient->expects('putItem')->with([
             'TableName' => 'table',
             'Item' => [
                 'application' => ['S' => 'application'],
@@ -51,11 +51,11 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testCanRetrieveAllFailedJobs()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $time = time();
 
-        $dynamoDbClient->shouldReceive('query')->once()->with([
+        $dynamoDbClient->expects('query')->with([
             'TableName' => 'table',
             'Select' => 'ALL_ATTRIBUTES',
             'KeyConditionExpression' => 'application = :application',
@@ -63,7 +63,7 @@ class DynamoDbFailedJobProviderTest extends TestCase
                 ':application' => ['S' => 'application'],
             ],
             'ScanIndexForward' => false,
-        ])->andReturn([
+        ])->returns([
             'Items' => [
                 [
                     'application' => ['S' => 'application'],
@@ -96,17 +96,17 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testASingleJobCanBeFound()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
         $time = time();
 
-        $dynamoDbClient->shouldReceive('getItem')->once()->with([
+        $dynamoDbClient->expects('getItem')->with([
             'TableName' => 'table',
             'Key' => [
                 'application' => ['S' => 'application'],
                 'uuid' => ['S' => 'id'],
             ],
-        ])->andReturn([
+        ])->returns([
             'Item' => [
                 'application' => ['S' => 'application'],
                 'uuid' => ['S' => 'uuid'],
@@ -137,15 +137,15 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testNullIsReturnedIfJobNotFound()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
-        $dynamoDbClient->shouldReceive('getItem')->once()->with([
+        $dynamoDbClient->expects('getItem')->with([
             'TableName' => 'table',
             'Key' => [
                 'application' => ['S' => 'application'],
                 'uuid' => ['S' => 'id'],
             ],
-        ])->andReturn([]);
+        ])->returns([]);
 
         $provider = new DynamoDbFailedJobProvider($dynamoDbClient, 'application', 'table');
 
@@ -156,15 +156,15 @@ class DynamoDbFailedJobProviderTest extends TestCase
 
     public function testJobsCanBeDeleted()
     {
-        $dynamoDbClient = m::mock(DynamoDbClient::class);
+        $dynamoDbClient = TestDouble::for(DynamoDbClient::class);
 
-        $dynamoDbClient->shouldReceive('deleteItem')->once()->with([
+        $dynamoDbClient->expects('deleteItem')->with([
             'TableName' => 'table',
             'Key' => [
                 'application' => ['S' => 'application'],
                 'uuid' => ['S' => 'id'],
             ],
-        ])->andReturn([]);
+        ])->returns([]);
 
         $provider = new DynamoDbFailedJobProvider($dynamoDbClient, 'application', 'table');
 

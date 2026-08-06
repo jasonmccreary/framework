@@ -2,13 +2,14 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\RegisterFacades;
 use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Support\ServiceProvider;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -20,13 +21,13 @@ class FoundationApplicationTest extends TestCase
     {
         $app = new Application;
 
-        $app['config'] = $config = m::mock(stdClass::class);
-        $config->shouldReceive('get')->once()->with('app.locale')->andReturn('bar');
-        $config->shouldReceive('set')->once()->with('app.locale', 'foo');
-        $app['translator'] = $trans = m::mock(stdClass::class);
-        $trans->shouldReceive('setLocale')->once()->with('foo');
-        $app['events'] = $events = m::mock(stdClass::class);
-        $events->shouldReceive('dispatch')->once()->with(m::on(function (LocaleUpdated $event) {
+        $app['config'] = $config = TestDouble::for(stdClass::class);
+        $config->expects('get')->with('app.locale')->returns('bar');
+        $config->expects('set')->with('app.locale', 'foo');
+        $app['translator'] = $trans = TestDouble::for(stdClass::class);
+        $trans->expects('setLocale')->with('foo');
+        $app['events'] = $events = TestDouble::for(stdClass::class);
+        $events->expects('dispatch')->with(Argument::satisfies(function (LocaleUpdated $event) {
             return $event->locale === 'foo' && $event->previousLocale === 'bar';
         }));
 
@@ -35,9 +36,9 @@ class FoundationApplicationTest extends TestCase
 
     public function testServiceProvidersAreCorrectlyRegistered()
     {
-        $provider = m::mock(ApplicationBasicServiceProviderStub::class);
+        $provider = TestDouble::for(ApplicationBasicServiceProviderStub::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 
@@ -88,9 +89,9 @@ class FoundationApplicationTest extends TestCase
 
     public function testServiceProvidersAreCorrectlyRegisteredWhenRegisterMethodIsNotFilled()
     {
-        $provider = m::mock(ServiceProvider::class);
+        $provider = TestDouble::for(ServiceProvider::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 
@@ -99,9 +100,9 @@ class FoundationApplicationTest extends TestCase
 
     public function testServiceProvidersCouldBeLoaded()
     {
-        $provider = m::mock(ServiceProvider::class);
+        $provider = TestDouble::for(ServiceProvider::class);
         $class = get_class($provider);
-        $provider->shouldReceive('register')->once();
+        $provider->expects('register');
         $app = new Application;
         $app->register($provider);
 

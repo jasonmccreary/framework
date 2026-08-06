@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Console\Scheduling;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Support\Carbon;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class FrequencyTest extends TestCase
@@ -16,7 +16,7 @@ class FrequencyTest extends TestCase
     protected function setUp(): void
     {
         $this->event = new Event(
-            m::mock(EventMutex::class),
+            TestDouble::for(EventMutex::class),
             'php foo'
         );
     }

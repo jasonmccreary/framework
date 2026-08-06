@@ -2,12 +2,13 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
 use Laravel\Prompts\Prompt;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -108,13 +109,13 @@ class ConfiguresPromptsTest extends TestCase
 
     protected function runCommand($command, $expectations)
     {
-        $command->setLaravel($application = m::mock(Application::class));
+        $command->setLaravel($application = TestDouble::for(Application::class));
 
-        $application->shouldReceive('make')->withArgs(fn ($abstract) => $abstract === OutputStyle::class)->andReturn($outputStyle = m::mock(OutputStyle::class));
-        $application->shouldReceive('make')->withArgs(fn ($abstract) => $abstract === Factory::class)->andReturn($factory = m::mock(Factory::class));
-        $application->shouldReceive('runningUnitTests')->andReturn(false);
-        $application->shouldReceive('call')->with([$command, 'handle'])->andReturnUsing(fn ($callback) => call_user_func($callback));
-        $outputStyle->shouldReceive('newLinesWritten')->andReturn(1);
+        $application->allows('make')->with(Argument::satisfies(fn ($abstract) => $abstract === OutputStyle::class))->returns($outputStyle = TestDouble::for(OutputStyle::class));
+        $application->allows('make')->with(Argument::satisfies(fn ($abstract) => $abstract === Factory::class))->returns($factory = TestDouble::for(Factory::class));
+        $application->allows('runningUnitTests')->returns(false);
+        $application->allows('call')->with([$command, 'handle'])->resolves(fn ($callback) => call_user_func($callback));
+        $outputStyle->allows('newLinesWritten')->returns(1);
 
         $expectations($factory);
 

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class EventsSubscriberTest extends TestCase
@@ -13,10 +13,10 @@ class EventsSubscriberTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        $d = new Dispatcher($container = m::mock(Container::class));
-        $subs = m::mock(ExampleSubscriber::class);
-        $subs->shouldReceive('subscribe')->once()->with($d);
-        $container->shouldReceive('make')->once()->with(ExampleSubscriber::class)->andReturn($subs);
+        $d = new Dispatcher($container = TestDouble::for(Container::class));
+        $subs = TestDouble::for(ExampleSubscriber::class);
+        $subs->expects('subscribe')->with($d);
+        $container->expects('make')->with(ExampleSubscriber::class)->returns($subs);
 
         $d->subscribe(ExampleSubscriber::class);
     }
@@ -26,8 +26,8 @@ class EventsSubscriberTest extends TestCase
         $this->expectNotToPerformAssertions();
 
         $d = new Dispatcher;
-        $subs = m::mock(ExampleSubscriber::class);
-        $subs->shouldReceive('subscribe')->once()->with($d);
+        $subs = TestDouble::for(ExampleSubscriber::class);
+        $subs->expects('subscribe')->with($d);
 
         $d->subscribe($subs);
     }

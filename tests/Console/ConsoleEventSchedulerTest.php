@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\CacheEventMutex;
@@ -10,7 +11,6 @@ use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\Scheduling\SchedulingMutex;
 use Illuminate\Container\Container;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 class ConsoleEventSchedulerTest extends TestCase
@@ -26,17 +26,17 @@ class ConsoleEventSchedulerTest extends TestCase
 
         $container = Container::getInstance();
 
-        $container->instance(EventMutex::class, m::mock(CacheEventMutex::class));
+        $container->instance(EventMutex::class, TestDouble::for(CacheEventMutex::class));
 
-        $container->instance(SchedulingMutex::class, m::mock(CacheSchedulingMutex::class));
+        $container->instance(SchedulingMutex::class, TestDouble::for(CacheSchedulingMutex::class));
 
-        $container->instance(Schedule::class, $this->schedule = new Schedule(m::mock(EventMutex::class)));
+        $container->instance(Schedule::class, $this->schedule = new Schedule(TestDouble::for(EventMutex::class)));
     }
 
     public function testMutexCanReceiveCustomStore()
     {
-        Container::getInstance()->make(EventMutex::class)->shouldReceive('useStore')->once()->with('test');
-        Container::getInstance()->make(SchedulingMutex::class)->shouldReceive('useStore')->once()->with('test');
+        Container::getInstance()->make(EventMutex::class)->expects('useStore')->with('test');
+        Container::getInstance()->make(SchedulingMutex::class)->expects('useStore')->with('test');
 
         $this->schedule->useCache('test');
     }

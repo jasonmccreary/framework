@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\TestDouble;
 use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Foundation\Application;
-use Mockery as m;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -40,7 +40,7 @@ class CommandMutexTest extends TestCase
             }
         };
 
-        $this->commandMutex = m::mock(CommandMutex::class);
+        $this->commandMutex = TestDouble::for(CommandMutex::class);
 
         $app = new Application;
         $app->instance(CommandMutex::class, $this->commandMutex);
@@ -56,12 +56,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunIsolatedCommandIfNotBlocked()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(true)
-            ->once();
-        $this->commandMutex->shouldReceive('forget')
-            ->andReturn(true)
-            ->once();
+        $this->commandMutex->expects('create')->returns(true);
+        $this->commandMutex->expects('forget')->returns(true);
 
         $this->runCommand();
 
@@ -70,9 +66,7 @@ class CommandMutexTest extends TestCase
 
     public function testCannotRunIsolatedCommandIfBlocked()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(false)
-            ->once();
+        $this->commandMutex->expects('create')->returns(false);
 
         $this->runCommand();
 
@@ -81,12 +75,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunCommandAgainAfterOtherCommandFinished()
     {
-        $this->commandMutex->shouldReceive('create')
-            ->andReturn(true)
-            ->twice();
-        $this->commandMutex->shouldReceive('forget')
-            ->andReturn(true)
-            ->twice();
+        $this->commandMutex->expects('create')->returns(true)->times(2);
+        $this->commandMutex->expects('forget')->returns(true)->times(2);
 
         $this->runCommand();
         $this->runCommand();
@@ -96,7 +86,7 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunCommandAgainNonAutomated()
     {
-        $this->commandMutex->shouldNotHaveBeenCalled();
+        $this->commandMutex->unused();
 
         $this->runCommand(false);
 

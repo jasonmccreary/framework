@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
 use Closure;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
-use Mockery as m;
 use Mockery\LegacyMockInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -50,7 +50,7 @@ class CacheSpyMemoTest extends TestCase
 
         Cache::memo()->remember('key', 60, fn () => 'bar');
 
-        $cache->shouldHaveReceived('memo')->once();
+        $cache->received('memo')->times(1);
     }
 
     public function test_cache_spy_tracks_remember_on_memoized_cache_as_described_in_issue()
@@ -62,7 +62,7 @@ class CacheSpyMemoTest extends TestCase
 
         $this->assertSame('bar', $value);
 
-        $memoizedCache->shouldHaveReceived('remember')->once()->with('key', 60, m::type(Closure::class));
+        $memoizedCache->received('remember')->times(1)->with('key', 60, Argument::type(Closure::class));
     }
 
     public function test_cache_spy_tracks_remember_calls_on_memoized_cache()
@@ -72,7 +72,7 @@ class CacheSpyMemoTest extends TestCase
         $memoizedCache = Cache::memo();
         $memoizedCache->remember('key', 60, fn () => 'bar');
 
-        $memoizedCache->shouldHaveReceived('remember')->once()->with('key', 60, m::type(Closure::class));
+        $memoizedCache->received('remember')->times(1)->with('key', 60, Argument::type(Closure::class));
     }
 
     public function test_cache_spy_memo_returns_spied_repository()
@@ -85,6 +85,6 @@ class CacheSpyMemoTest extends TestCase
 
         $memoizedCache->remember('key', 60, fn () => 'bar');
 
-        $memoizedCache->shouldHaveReceived('remember')->once();
+        $memoizedCache->received('remember')->times(1);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\RedisManager;
-use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;
@@ -555,9 +556,9 @@ class RedisConnectionTest extends TestCase
     public function testItDispatchesQueryEvent()
     {
         foreach ($this->connections() as $redis) {
-            $redis->setEventDispatcher($events = m::mock(Dispatcher::class));
+            $redis->setEventDispatcher($events = TestDouble::for(Dispatcher::class));
 
-            $events->shouldReceive('dispatch')->once()->with(m::on(function ($event) {
+            $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
                 $this->assertSame('get', $event->command);
                 $this->assertEquals(['foobar'], $event->parameters);
                 $this->assertSame('default', $event->connectionName);

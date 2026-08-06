@@ -4,11 +4,14 @@ namespace Illuminate\Tests\Integration\Events;
 
 use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Support\Facades\Event;
-use Mockery as m;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\TestCase;
 
 class ListenerTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function tearDown(): void
     {
         ListenerTestListener::$ran = false;
@@ -20,8 +23,8 @@ class ListenerTest extends TestCase
     public function testClassListenerRunsNormallyIfNoTransactions()
     {
         $this->app->singleton('db.transactions', function () {
-            $transactionManager = m::mock(DatabaseTransactionsManager::class);
-            $transactionManager->shouldNotReceive('addCallback')->once()->andReturn(null);
+            $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
+            $transactionManager->expects('addCallback')->never();
 
             return $transactionManager;
         });
@@ -36,8 +39,8 @@ class ListenerTest extends TestCase
     public function testClassListenerDoesntRunInsideTransaction()
     {
         $this->app->singleton('db.transactions', function () {
-            $transactionManager = m::mock(DatabaseTransactionsManager::class);
-            $transactionManager->shouldReceive('addCallback')->once()->andReturn(null);
+            $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
+            $transactionManager->expects('addCallback')->returns(null);
 
             return $transactionManager;
         });
