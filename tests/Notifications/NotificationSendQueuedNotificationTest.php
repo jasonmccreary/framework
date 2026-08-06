@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Database\ModelIdentifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\AnonymousNotifiable;
@@ -11,20 +10,25 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Support\Collection;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class NotificationSendQueuedNotificationTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testNotificationsCanBeSent()
     {
         $notification = new TestNotification;
         $job = new SendQueuedNotifications('notifiables', $notification);
         $manager = TestDouble::for(ChannelManager::class);
-        $manager->shouldReceive('sendNow')->once()->withArgs(function ($notifiables, $notification, $channels) {
-            return $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']
-                && $notification instanceof TestNotification
-                && $channels === null;
-        });
+        $manager->expects('sendNow')->with(
+            Argument::satisfies(fn ($notifiables) => $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']),
+            Argument::type(TestNotification::class),
+            Argument::same(null),
+        );
         $job->handle($manager);
     }
 

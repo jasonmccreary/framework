@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
@@ -12,11 +11,15 @@ use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Illuminate\Database\Schema\Grammars\SQLiteGrammar;
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Tests\Database\Fixtures\Enums\Foo;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class DatabaseSQLiteSchemaGrammarTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testBasicCreateTable()
     {
         $blueprint = new Blueprint($this->getConnection(), 'users');
@@ -1071,14 +1074,13 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testRenamingAndChangingColumnsWork()
     {
-        $builder = TestDouble::for(SQLiteBuilder::class)->passthru()
-            ->shouldReceive('getColumns')->andReturn([
-                ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
-                ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
-            ])
-            ->shouldReceive('getIndexes')->andReturn([])
-            ->shouldReceive('getForeignKeys')->andReturn([])
-            ->getMock();
+        $builder = TestDouble::for(SQLiteBuilder::class)->passthru(new SQLiteBuilder(TestDouble::for(Connection::class)));
+        $builder->allows('getColumns')->returns([
+            ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
+            ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
+        ]);
+        $builder->allows('getIndexes')->returns([]);
+        $builder->allows('getForeignKeys')->returns([]);
 
         $connection = $this->getConnection(builder: $builder);
         $connection->allows('scalar')->with('pragma foreign_keys')->returns(false);
@@ -1098,14 +1100,13 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function testRenamingAndChangingColumnsWorkWithSchema()
     {
-        $builder = TestDouble::for(SQLiteBuilder::class)->passthru()
-            ->shouldReceive('getColumns')->andReturn([
-                ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
-                ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
-            ])
-            ->shouldReceive('getIndexes')->andReturn([])
-            ->shouldReceive('getForeignKeys')->andReturn([])
-            ->getMock();
+        $builder = TestDouble::for(SQLiteBuilder::class)->passthru(new SQLiteBuilder(TestDouble::for(Connection::class)));
+        $builder->allows('getColumns')->returns([
+            ['name' => 'name', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
+            ['name' => 'age', 'type_name' => 'varchar', 'type' => 'varchar', 'collation' => null, 'nullable' => false, 'default' => null, 'auto_increment' => false, 'comment' => null, 'generation' => null],
+        ]);
+        $builder->allows('getIndexes')->returns([]);
+        $builder->allows('getForeignKeys')->returns([]);
 
         $connection = $this->getConnection(builder: $builder);
         $connection->allows('scalar')->with('pragma foreign_keys')->returns(false);
@@ -1137,6 +1138,7 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
         $connection->allows('getSchemaGrammar')->returns($grammar);
         $connection->allows('getSchemaBuilder')->returns($builder);
         $connection->allows('getServerVersion')->returns('3.35');
+
         return $connection;
     }
 
@@ -1147,10 +1149,11 @@ class DatabaseSQLiteSchemaGrammarTest extends TestCase
 
     public function getBuilder()
     {
-        return TestDouble::for(SQLiteBuilder::class)->passthru()
-            ->shouldReceive('getColumns')->andReturn([])
-            ->shouldReceive('getIndexes')->andReturn([])
-            ->shouldReceive('getForeignKeys')->andReturn([])
-            ->getMock();
+        $builder = TestDouble::for(SQLiteBuilder::class)->passthru(new SQLiteBuilder(TestDouble::for(Connection::class)));
+        $builder->allows('getColumns')->returns([]);
+        $builder->allows('getIndexes')->returns([]);
+        $builder->allows('getForeignKeys')->returns([]);
+
+        return $builder;
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
@@ -17,10 +15,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\TestCase;
 
 class SendingMailNotificationsTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public $mailFactory;
     public $mailer;
     public $markdown;
@@ -139,34 +142,48 @@ class SendingMailNotificationsTest extends TestCase
         NotifiableUser $user,
         callable $callbackExpectationClosure
     ) {
-        $this->mailer->shouldReceive('send')->once()->withArgs(function (...$args) use ($notification, $user, $callbackExpectationClosure) {
-            $viewArray = $args[0];
+        $this->mailer->expects('send')->with(
+            Argument::satisfies(function ($viewArray) use (&$args) {
+                $args[0] = $viewArray;
 
-            if (! Argument::satisfies(fn ($closure) => $closure([]) === 'htmlContent')->match($viewArray['html'])) {
-                return false;
-            }
+                return true;
+            }),
+            Argument::satisfies(function ($data) use (&$args) {
+                $args[1] = $data;
 
-            if (! Argument::satisfies(fn ($closure) => $closure([]) === 'textContent')->match($viewArray['text'])) {
-                return false;
-            }
+                return true;
+            }),
+            Argument::satisfies(function ($callback) use ($notification, $user, $callbackExpectationClosure, &$args) {
+                $args[2] = $callback;
 
-            $data = $args[1];
+                $viewArray = $args[0];
 
-            $expected = array_merge($notification->toMail($user)->toArray(), [
-                '__laravel_notification_id' => $notification->id,
-                '__laravel_notification' => get_class($notification),
-                '__laravel_notification_queued' => false,
-            ]);
+                if (! Argument::satisfies(fn ($closure) => $closure([]) === 'htmlContent')->matches($viewArray['html'])) {
+                    return false;
+                }
 
-            if (array_keys($data) !== array_keys($expected)) {
-                return false;
-            }
-            if (array_values($data) !== array_values($expected)) {
-                return false;
-            }
+                if (! Argument::satisfies(fn ($closure) => $closure([]) === 'textContent')->matches($viewArray['text'])) {
+                    return false;
+                }
 
-            return Argument::satisfies($callbackExpectationClosure)->match($args[2]);
-        });
+                $data = $args[1];
+
+                $expected = array_merge($notification->toMail($user)->toArray(), [
+                    '__laravel_notification_id' => $notification->id,
+                    '__laravel_notification' => get_class($notification),
+                    '__laravel_notification_queued' => false,
+                ]);
+
+                if (array_keys($data) !== array_keys($expected)) {
+                    return false;
+                }
+                if (array_values($data) !== array_values($expected)) {
+                    return false;
+                }
+
+                return Argument::satisfies($callbackExpectationClosure)->matches($args[2]);
+            }),
+        );
     }
 
     public function testMailIsSentToNamedAddress()

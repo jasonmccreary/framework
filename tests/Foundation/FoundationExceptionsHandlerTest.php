@@ -29,6 +29,7 @@ use Illuminate\Testing\Assert;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use OutOfRangeException;
@@ -45,6 +46,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FoundationExceptionsHandlerTest extends TestCase
 {
+    use VerifiesDoubles;
+
     use InteractsWithExceptionHandling;
 
     protected $config;
@@ -532,7 +535,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     private function executeScenarioWhereErrorViewThrowsWhileRenderingAndDebugIs($debug)
     {
         $this->viewFactory->expects('exists')->with('errors::404')->returns(true);
-        $this->viewFactory->shouldReceive('make')->once()->withAnyArgs()->andThrow(new Exception('Rendering this view throws an exception'));
+        $this->viewFactory->expects('make')->throws(new Exception('Rendering this view throws an exception'));
 
         $this->config->allows('get')->with('app.debug', null)->returns($debug);
 

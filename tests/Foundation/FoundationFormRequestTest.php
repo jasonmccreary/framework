@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
@@ -20,10 +19,14 @@ use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator as TranslatorConcrete;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class FoundationFormRequestTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected $mocks = [];
 
     protected function tearDown(): void
@@ -97,7 +100,8 @@ class FoundationFormRequestTest extends TestCase
 
         $request = $this->createRequest(['no' => 'name']);
 
-        $this->mocks['redirect']->allows('withInput->withErrors');
+        $this->mocks['redirect']->allows('withInput')->returns($this->mocks['redirect']);
+        $this->mocks['redirect']->allows('withErrors');
 
         $request->validateResolved();
     }
@@ -630,9 +634,9 @@ class FoundationFormRequestTest extends TestCase
      */
     protected function createValidationFactory($container)
     {
-        $translator = TestDouble::for(Translator::class)->shouldReceive('get')
-            ->zeroOrMoreTimes()->andReturn('error')->shouldReceive('choice')
-            ->zeroOrMoreTimes()->andReturn('error')->getMock();
+        $translator = TestDouble::for(Translator::class);
+        $translator->allows('get')->returns('error');
+        $translator->allows('choice')->returns('error');
 
         return new ValidationFactory($translator, $container);
     }

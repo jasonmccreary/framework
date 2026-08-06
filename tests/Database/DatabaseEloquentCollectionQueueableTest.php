@@ -5,11 +5,14 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentCollectionQueueableTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testSerializesPivotsEntitiesId()
     {
         $spy = TestDouble::for(Pivot::class);

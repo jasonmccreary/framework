@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Aws\Result;
 use Aws\Sqs\Exception\SqsException;
 use Aws\Sqs\SqsClient;
@@ -23,12 +21,17 @@ use Illuminate\Support\Str;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJob;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithDeduplication;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithMessageGroup;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Laravel\SerializableClosure\SerializableClosure;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class QueueSqsQueueTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected $sqs;
     protected $account;
     protected $queueName;
@@ -664,7 +667,7 @@ class QueueSqsQueueTest extends TestCase
         $queue = $this->getMockBuilder(SqsQueue::class)->onlyMethods(['getQueue'])->setConstructorArgs([$this->sqs, $this->fifoQueueName, $this->account])->getMock();
         $queue->setContainer($container = $this->createSpyContainer());
         $queue->expects($this->once())->method('getQueue')->with(null)->willReturn($this->fifoQueueUrl);
-        $this->sqs->shouldReceive('sendMessage')->once()->withArgs(function ($args) {
+        $this->sqs->expects('sendMessage')->with(Argument::satisfies(function ($args) {
             $this->assertIsArray($args);
             $this->assertEqualsCanonicalizing(['QueueUrl', 'MessageBody', 'MessageGroupId', 'MessageDeduplicationId'], array_keys($args));
             $this->assertEquals($this->fifoQueueUrl, $args['QueueUrl']);
@@ -677,7 +680,7 @@ class QueueSqsQueueTest extends TestCase
             $this->assertInstanceOf(SerializableClosure::class, $command->deduplicator);
 
             return true;
-        })->andReturn($this->mockedSendMessageResponseModel);
+        }))->returns($this->mockedSendMessageResponseModel);
 
         $dispatcher = new Dispatcher($container, fn () => $queue);
         app()->instance(DispatcherContract::class, $dispatcher);

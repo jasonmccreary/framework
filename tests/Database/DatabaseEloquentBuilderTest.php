@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Closure;
 use Illuminate\Database\Connection;
@@ -22,12 +20,17 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class DatabaseEloquentBuilderTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testFindMethod()
     {
         $builder = TestDouble::for(Builder::class)->passthru(new Builder($this->getMockQueryBuilder()));
@@ -2695,9 +2698,9 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->setModel($model);
 
         $query->expects('upsert')->with([
-                ['email' => 'foo', 'name' => 'bar', 'updated_at' => $now, 'created_at' => $now],
-                ['name' => 'bar2', 'email' => 'foo2', 'updated_at' => $now, 'created_at' => $now],
-            ], ['email'], ['email', 'name', 'updated_at'])->returns(2);
+            ['email' => 'foo', 'name' => 'bar', 'updated_at' => $now, 'created_at' => $now],
+            ['name' => 'bar2', 'email' => 'foo2', 'updated_at' => $now, 'created_at' => $now],
+        ], ['email'], ['email', 'name', 'updated_at'])->returns(2);
 
         $result = $builder->upsert([['email' => 'foo', 'name' => 'bar'], ['name' => 'bar2', 'email' => 'foo2']], ['email']);
 
@@ -2936,9 +2939,10 @@ class DatabaseEloquentBuilderTest extends TestCase
         $query = TestDouble::for(BaseBuilder::class);
         $query->allows('from')->with('foo_table');
         $query->from = 'foo_table';
-        $query->shouldReceive('incrementEach')->once()->withArgs(function ($columns, $extra) {
-            return $columns === ['votes' => 5] && array_key_exists('foo_table.updated_at', $extra);
-        })->andReturn(1);
+        $query->expects('incrementEach')->with(
+            Argument::same(['votes' => 5]),
+            Argument::satisfies(fn ($extra) => array_key_exists('foo_table.updated_at', $extra)),
+        )->returns(1);
 
         $builder = new Builder($query);
         $model = $this->getMockModel();
@@ -2959,9 +2963,10 @@ class DatabaseEloquentBuilderTest extends TestCase
         $query = TestDouble::for(BaseBuilder::class);
         $query->allows('from')->with('foo_table');
         $query->from = 'foo_table';
-        $query->shouldReceive('decrementEach')->once()->withArgs(function ($columns, $extra) {
-            return $columns === ['votes' => 3] && array_key_exists('foo_table.updated_at', $extra);
-        })->andReturn(1);
+        $query->expects('decrementEach')->with(
+            Argument::same(['votes' => 3]),
+            Argument::satisfies(fn ($extra) => array_key_exists('foo_table.updated_at', $extra)),
+        )->returns(1);
 
         $builder = new Builder($query);
         $model = $this->getMockModel();

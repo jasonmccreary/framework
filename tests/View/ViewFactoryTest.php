@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Closure;
 use ErrorException;
 use Illuminate\Container\Container;
@@ -22,12 +20,17 @@ use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 use stdClass;
 
 class ViewFactoryTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testMakeCreatesNewViewInstanceWithProperPathAndEngine()
     {
         unset($_SERVER['__test.view']);
@@ -444,7 +447,7 @@ class ViewFactoryTest extends TestCase
         $dispatcher = TestDouble::for(DispatcherContract::class);
         $factory->setDispatcher($dispatcher);
 
-        $dispatcher->shouldReceive('listen', Argument::any())->once();
+        $dispatcher->expects('listen');
 
         $view->expects('name')->returns('name');
 

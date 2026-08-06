@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +17,8 @@ use stdClass;
 
 class DatabaseEloquentHasManyTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testMakeMethodDoesNotSaveNewModel()
     {
         $relation = $this->getRelation();

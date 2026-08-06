@@ -32,6 +32,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
 use InvalidArgumentException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use Mockery\MockInterface;
@@ -43,6 +44,8 @@ include_once 'Enums.php';
 
 class DatabaseQueryBuilderTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected $called;
 
     public function testBasicSelect()
@@ -4735,16 +4738,16 @@ class DatabaseQueryBuilderTest extends TestCase
     public function testUpsertMethod()
     {
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(false)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) on duplicate key update `email` = values(`email`), `name` = values(`name`)', ['foo', 'bar', 'foo2', 'bar2'])->andReturn(2);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(false);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) on duplicate key update `email` = values(`email`), `name` = values(`name`)', ['foo', 'bar', 'foo2', 'bar2'])->returns(2);
         $result = $builder->from('users')->upsert([['email' => 'foo', 'name' => 'bar'], ['name' => 'bar2', 'email' => 'foo2']], 'email');
         $this->assertEquals(2, $result);
 
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(true)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) as laravel_upsert_alias on duplicate key update `email` = `laravel_upsert_alias`.`email`, `name` = `laravel_upsert_alias`.`name`', ['foo', 'bar', 'foo2', 'bar2'])->andReturn(2);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(true);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) as laravel_upsert_alias on duplicate key update `email` = `laravel_upsert_alias`.`email`, `name` = `laravel_upsert_alias`.`name`', ['foo', 'bar', 'foo2', 'bar2'])->returns(2);
         $result = $builder->from('users')->upsert([['email' => 'foo', 'name' => 'bar'], ['name' => 'bar2', 'email' => 'foo2']], 'email');
         $this->assertEquals(2, $result);
 
@@ -4767,16 +4770,16 @@ class DatabaseQueryBuilderTest extends TestCase
     public function testUpsertMethodWithUpdateColumns()
     {
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(false)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) on duplicate key update `name` = values(`name`)', ['foo', 'bar', 'foo2', 'bar2'])->andReturn(2);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(false);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) on duplicate key update `name` = values(`name`)', ['foo', 'bar', 'foo2', 'bar2'])->returns(2);
         $result = $builder->from('users')->upsert([['email' => 'foo', 'name' => 'bar'], ['name' => 'bar2', 'email' => 'foo2']], 'email', ['name']);
         $this->assertEquals(2, $result);
 
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(true)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) as laravel_upsert_alias on duplicate key update `name` = `laravel_upsert_alias`.`name`', ['foo', 'bar', 'foo2', 'bar2'])->andReturn(2);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(true);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`, `name`) values (?, ?), (?, ?) as laravel_upsert_alias on duplicate key update `name` = `laravel_upsert_alias`.`name`', ['foo', 'bar', 'foo2', 'bar2'])->returns(2);
         $result = $builder->from('users')->upsert([['email' => 'foo', 'name' => 'bar'], ['name' => 'bar2', 'email' => 'foo2']], 'email', ['name']);
         $this->assertEquals(2, $result);
 
@@ -5246,18 +5249,18 @@ class DatabaseQueryBuilderTest extends TestCase
     public function testPreservedAreAppliedByUpsert()
     {
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(false)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`) values (?) on duplicate key update `email` = values(`email`)', ['foo']);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(false);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`) values (?) on duplicate key update `email` = values(`email`)', ['foo']);
         $builder->beforeQuery(function ($builder) {
             $builder->from('users');
         });
         $builder->upsert(['email' => 'foo'], 'id');
 
         $builder = $this->getMySqlBuilder();
-        $builder->getConnection()
-            ->shouldReceive('getConfig')->with('use_upsert_alias')->andReturn(true)
-            ->shouldReceive('affectingStatement')->once()->with('insert into `users` (`email`) values (?) as laravel_upsert_alias on duplicate key update `email` = `laravel_upsert_alias`.`email`', ['foo']);
+        $connection = $builder->getConnection();
+            $connection->allows('getConfig')->with('use_upsert_alias')->returns(true);
+            $connection->expects('affectingStatement')->with('insert into `users` (`email`) values (?) as laravel_upsert_alias on duplicate key update `email` = `laravel_upsert_alias`.`email`', ['foo']);
         $builder->beforeQuery(function ($builder) {
             $builder->from('users');
         });

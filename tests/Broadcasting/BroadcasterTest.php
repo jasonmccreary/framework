@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
 use Illuminate\Container\Container;
@@ -11,12 +9,17 @@ use Illuminate\Contracts\Routing\BindingRegistrar;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteBinding;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BroadcasterTest extends TestCase
 {
+    use VerifiesDoubles;
+
     /**
      * @var \Illuminate\Tests\Broadcasting\FakeBroadcaster
      */
@@ -238,11 +241,10 @@ class BroadcasterTest extends TestCase
 
         $request = TestDouble::for(Request::class);
         $request->expects('user')->with('myguard1')->returns(null);
-        $request->shouldReceive('user')
-            ->twice()
+        $request->expects('user')
+            ->times(2)
             ->with('myguard2')
-            ->andReturn(new DummyUser)
-            ->ordered('user');
+            ->returns(new DummyUser);
 
         $this->assertInstanceOf(
             DummyUser::class,

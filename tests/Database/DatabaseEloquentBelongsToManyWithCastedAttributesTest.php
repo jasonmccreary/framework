@@ -2,39 +2,32 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Grammars\Grammar;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testModelsAreProperlyMatchedToParents()
     {
         $relation = $this->getRelation();
-        $model1 = TestDouble::for(Model::class);
-        $model1->shouldReceive('hasAttribute')->passthru();
+        $model1 = TestDouble::for(Model::class)->passthru(new class extends Model
+        {
+        });
         $model1->allows('getAttribute')->with('parent_key')->returns(1);
-        $model1->shouldReceive('getAttribute')->with('foo')->passthru();
-        $model1->allows('hasGetMutator')->returns(false);
-        $model1->allows('hasAttributeMutator')->returns(false);
-        $model1->allows('hasRelationAutoloadCallback')->returns(false);
-        $model1->allows('getCasts')->returns([]);
-        $model1->shouldReceive('getRelationValue', 'relationLoaded', 'relationResolver', 'setRelation', 'isRelation')->passthru();
 
-        $model2 = TestDouble::for(Model::class);
-        $model2->shouldReceive('hasAttribute')->passthru();
+        $model2 = TestDouble::for(Model::class)->passthru(new class extends Model
+        {
+        });
         $model2->allows('getAttribute')->with('parent_key')->returns(2);
-        $model2->shouldReceive('getAttribute')->with('foo')->passthru();
-        $model2->allows('hasGetMutator')->returns(false);
-        $model2->allows('hasAttributeMutator')->returns(false);
-        $model2->allows('hasRelationAutoloadCallback')->returns(false);
-        $model2->allows('getCasts')->returns([]);
-        $model2->shouldReceive('getRelationValue', 'relationLoaded', 'relationResolver', 'setRelation', 'isRelation')->passthru();
 
         $result1 = (object) [
             'pivot' => (object) [
@@ -57,12 +50,13 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
     protected function getRelation()
     {
         $builder = TestDouble::for(Builder::class);
-        $related = TestDouble::for(Model::class);
-        $related->shouldReceive('newCollection')->passthru();
-        $related->shouldReceive('resolveCollectionFromAttribute')->passthru();
+        $related = TestDouble::for(Model::class)->passthru(new class extends Model
+        {
+        });
         $builder->allows('getModel')->returns($related);
         $related->allows('qualifyColumn');
-        $builder->shouldReceive('join', 'where');
+        $builder->allows('join');
+        $builder->allows('where');
         $grammar = TestDouble::for(Grammar::class);
         $grammar->allows('isExpression')->returns(false);
 

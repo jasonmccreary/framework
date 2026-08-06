@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -38,6 +39,8 @@ use stdClass;
 
 class BusBatchTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         $db = new DB;
@@ -726,8 +729,19 @@ class BusBatchTest extends TestCase
 
         $batch = (new DatabaseBatchRepository($factory, $connection, 'job_batches'));
 
-        $factory->shouldReceive('make')
-            ->withSomeOfArgs($batch, '', '', '', '', '', '', $options);
+        $factory->allows('make')->with(
+            Argument::same($batch),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+            Argument::same($options),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+        );
 
         $batch->find(1);
     }

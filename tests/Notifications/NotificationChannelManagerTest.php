@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Container\Container;
@@ -21,11 +19,16 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueRoutes;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Laravel\SerializableClosure\SerializableClosure;
 use PHPUnit\Framework\TestCase;
 
 class NotificationChannelManagerTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function tearDown(): void
     {
         Container::setInstance(null);
@@ -270,12 +273,12 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertEquals($mockedMessageGroupId, $job->messageGroup);
 
             return true;
-        });
+        }));
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -300,12 +303,12 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertEquals($mockedMessageGroupId, $job->messageGroup);
 
             return true;
-        });
+        }));
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -328,12 +331,12 @@ class NotificationChannelManagerTest extends TestCase
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupSet) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) use ($mockedMessageGroupSet) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertEquals($mockedMessageGroupSet[$job->channels[0]], $job->messageGroup);
 
             return true;
-        });
+        }));
         Container::setInstance($container);
         $manager = TestDouble::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -354,12 +357,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance('queue.routes', $queueRoutes = TestDouble::for(\stdClass::class));
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupSet) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) use ($mockedMessageGroupSet) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertEquals($mockedMessageGroupSet[$job->channels[0]], $job->messageGroup);
 
             return true;
-        });
+        }));
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
@@ -379,13 +382,13 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance('queue.routes', $queueRoutes = TestDouble::for(\stdClass::class));
-        $bus->shouldReceive('dispatch')->once()->withArgs(function ($job) use ($mockedDeduplicator) {
+        $bus->expects('dispatch')->with(Argument::satisfies(function ($job) use ($mockedDeduplicator) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertInstanceOf(SerializableClosure::class, $job->deduplicator);
             $this->assertEquals($mockedDeduplicator, $job->deduplicator->getClosure());
 
             return true;
-        });
+        }));
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
@@ -408,13 +411,13 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance('queue.routes', $queueRoutes = TestDouble::for(\stdClass::class));
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedDeduplicatorSet) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) use ($mockedDeduplicatorSet) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertInstanceOf(SerializableClosure::class, $job->deduplicator);
             $this->assertEquals($mockedDeduplicatorSet[$job->channels[0]], $job->deduplicator->getClosure());
 
             return true;
-        });
+        }));
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
@@ -432,12 +435,12 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance('queue.routes', $queueRoutes = TestDouble::for(\stdClass::class));
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertEquals($job->notification->deduplicatorResults[$job->channels[0]], call_user_func($job->deduplicator, '', null));
 
             return true;
-        });
+        }));
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);
@@ -455,13 +458,13 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Dispatcher::class, $events = TestDouble::for(\stdClass::class));
         $container->instance(Bus::class, $bus = TestDouble::for(\stdClass::class));
         $container->instance('queue.routes', $queueRoutes = TestDouble::for(\stdClass::class));
-        $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) {
+        $bus->expects('dispatch')->times(2)->with(Argument::satisfies(function ($job) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
             $this->assertInstanceOf(SerializableClosure::class, $job->deduplicator);
             $this->assertEquals($job->notification->deduplicationId(...), $job->deduplicator->getClosure());
 
             return true;
-        });
+        }));
         $queueRoutes->allows('getQueue')->returns(null);
         $queueRoutes->allows('getConnection')->returns(null);
         Container::setInstance($container);

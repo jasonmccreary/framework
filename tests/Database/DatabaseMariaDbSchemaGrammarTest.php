@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,10 +9,14 @@ use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
 use Illuminate\Tests\Database\Fixtures\Enums\Foo;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbSchemaGrammarTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testBasicCreateTable()
     {
         $conn = $this->getConnection();
@@ -1554,16 +1557,16 @@ class DatabaseMariaDbSchemaGrammarTest extends TestCase
         ?MariaDbBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = TestDouble::for(Connection::class)
-            ->shouldReceive('getTablePrefix')->andReturn($prefix)
-            ->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(null)
-            ->getMock();
+        $connection = TestDouble::for(Connection::class);
+        $connection->allows('getTablePrefix')->returns($prefix);
+        $connection->allows('getConfig')->with('prefix_indexes')->returns(null);
 
         $grammar ??= $this->getGrammar($connection);
         $builder ??= $this->getBuilder();
 
         $connection->allows('getSchemaGrammar')->returns($grammar);
         $connection->allows('getSchemaBuilder')->returns($builder);
+
         return $connection;
     }
 

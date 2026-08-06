@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\TestDouble;
 use Countable;
 use DateTime;
 use DateTimeImmutable;
@@ -31,6 +30,8 @@ use Illuminate\Validation\ValidationData;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
@@ -41,6 +42,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ValidationValidatorTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testNestedErrorMessagesAreRetrievedFromLocalArray()
     {
         $trans = $this->getIlluminateArrayTranslator();
@@ -1116,7 +1119,8 @@ class ValidationValidatorTest extends TestCase
 
         $v = new Validator($trans, ['name' => ''], ['name' => 'required']);
 
-        $exception = new class($v) extends ValidationException {
+        $exception = new class($v) extends ValidationException
+        {
         };
         $v->setException($exception);
 
@@ -4608,9 +4612,7 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users,email_addr,NULL,id_col,foo,bar']);
         $mock = TestDouble::for(DatabasePresenceVerifierInterface::class);
         $mock->expects('setConnection')->with(null);
-        $mock->shouldReceive('getCount')->once()->withArgs(function () {
-            return func_get_args() === ['users', 'email_addr', 'foo', null, 'id_col', ['foo' => 'bar']];
-        })->andReturn(2);
+        $mock->expects('getCount')->with('users', 'email_addr', 'foo', null, 'id_col', ['foo' => 'bar'])->returns(2);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
     }
@@ -5327,13 +5329,13 @@ class ValidationValidatorTest extends TestCase
     public function testValidateActiveUrl($data, $outcome)
     {
         $trans = $this->getIlluminateArrayTranslator();
-        $v = TestDouble::for(new Validator($trans, $data, ['x' => 'active_url']));
-        $v
-                    ->shouldAllowMockingProtectedMethods()
-                    ->shouldReceive('getDnsRecords')
-                    ->withAnyArgs()
-                    ->zeroOrMoreTimes()
-                    ->andReturn(['hit']);
+        $v = new class($trans, $data, ['x' => 'active_url']) extends Validator
+        {
+            protected function getDnsRecords($hostname, $type)
+            {
+                return ['hit'];
+            }
+        };
         $this->assertEquals($outcome, $v->passes());
     }
 

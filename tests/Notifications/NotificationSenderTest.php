@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
@@ -16,6 +14,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\NotificationSender;
 use Illuminate\Queue\Attributes\Queue;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\HttpTransportException;
 use Symfony\Component\Mailer\Exception\TransportException;
@@ -23,6 +24,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class NotificationSenderTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function test_it_can_send_queued_notifications_with_a_string_via()
     {
         $notifiable = TestDouble::for(Notifiable::class);
@@ -225,9 +228,12 @@ class NotificationSenderTest extends TestCase
         $notifiable = new AnonymousNotifiable;
         $manager = TestDouble::for(ChannelManager::class);
         $manager->allows('driver')->returns($driver = TestDouble::for(\stdClass::class));
-        $driver->shouldReceive('send')->once()->withArgs(function ($notifiable, $notification) {
-            return $notification->channelData === 'default';
-        });
+        $driver->expects('send')->with(
+            Argument::any(),
+            Argument::satisfies(function ($notification) {
+                return $notification->channelData === 'default';
+            }),
+        );
         $bus = TestDouble::for(BusDispatcher::class);
 
         $events = TestDouble::for(EventDispatcher::class);

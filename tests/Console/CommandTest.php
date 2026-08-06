@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Console\Application;
 use Illuminate\Console\Attributes\Aliases;
 use Illuminate\Console\Attributes\Help;
@@ -15,6 +13,9 @@ use Illuminate\Console\CommandInput;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
 use Illuminate\Support\Carbon;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,6 +26,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class CommandTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testCallingClassCommandResolveCommandViaApplicationResolution()
     {
         $command = new class extends Command
@@ -191,9 +194,7 @@ class CommandTest extends TestCase
     public function testTheOutputSetterOverwrite()
     {
         $output = TestDouble::for(OutputStyle::class);
-        $output->shouldReceive('writeln')->once()->withArgs(function (...$args) {
-            return $args[0] === '<info>foo</info>';
-        });
+        $output->expects('writeln')->with(Argument::same('<info>foo</info>'), Argument::any());
 
         $command = new Command;
         $command->setOutput($output);

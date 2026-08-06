@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use ArrayIterator;
 use BadMethodCallException;
 use DateInterval;
@@ -25,12 +23,17 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class CacheRepositoryTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -295,7 +298,8 @@ class CacheRepositoryTest extends TestCase
     public function testAddWithDatetimeInPastOrZeroSecondsReturnsImmediately()
     {
         $repo = $this->getRepository();
-        $repo->getStore()->shouldReceive('add', 'get', 'put')->never();
+        $repo->getStore()->expects('get')->never();
+        $repo->getStore()->expects('put')->never();
         $result = $repo->add('foo', 'bar', Carbon::now()->subMinutes(10));
         $this->assertFalse($result);
         $result = $repo->add('foo', 'bar', Carbon::now());

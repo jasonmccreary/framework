@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
-use JMac\Testing\TestDouble;
 use Closure;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Contracts\Broadcasting\Broadcaster;
@@ -15,9 +14,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 
 class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 {
+    use VerifiesDoubles;
+
     protected function afterRefreshingDatabase()
     {
         Schema::create('test_eloquent_broadcasting_users', function (Blueprint $table) {
@@ -195,15 +199,18 @@ class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
     private function assertHandldedBroadcastableEvent(BroadcastableModelEventOccurred $event, Closure $closure)
     {
         $broadcaster = TestDouble::for(Broadcaster::class);
-        $broadcaster->shouldReceive('broadcast')->once()
-            ->withArgs(function (array $channels, string $eventName, array $payload) use ($closure) {
-                return $closure($channels, $eventName, $payload);
-            });
+        $broadcaster->expects('broadcast')->with(
+            Argument::capture($channels),
+            Argument::capture($eventName),
+            Argument::capture($payload),
+        );
 
         $manager = TestDouble::for(BroadcastingFactory::class);
         $manager->expects('connection')->with(null)->returns($broadcaster);
 
         (new BroadcastEvent($event))->handle($manager);
+
+        $this->assertTrue($closure($channels, $eventName, $payload));
 
         return true;
     }

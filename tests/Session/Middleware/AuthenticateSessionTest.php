@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Session\Middleware;
 
-use JMac\Testing\TestDouble;
 use BadMethodCallException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
@@ -10,10 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Store;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticateSessionTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function test_handle_without_session()
     {
         $request = new Request;
@@ -345,7 +348,7 @@ class AuthenticateSessionTest extends TestCase
         $authFactory->allows('getDefaultDriver')->returns('web');
         $authFactory->allows('user')->returns($user);
         // For legacy guards without hashPasswordForCookie method, we use fallback to raw hash
-        $authFactory->shouldReceive('hashPasswordForCookie')->andThrowExceptions([new BadMethodCallException]);
+        $authFactory->expects('hashPasswordForCookie')->throws(new BadMethodCallException);
 
         $middleware = new AuthenticateSession($authFactory);
         $response = $middleware->handle($request, fn () => 'next-9');

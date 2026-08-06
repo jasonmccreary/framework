@@ -2,13 +2,16 @@
 
 namespace Illuminate\Tests\Integration\Events;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Support\Facades\Event;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\TestCase;
 
 class ListenerTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function tearDown(): void
     {
         ListenerTestListener::$ran = false;
@@ -21,7 +24,7 @@ class ListenerTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = TestDouble::for(DatabaseTransactionsManager::class);
-            $transactionManager->shouldNotReceive('addCallback')->once()->andReturn(null);
+            $transactionManager->expects('addCallback')->never();
 
             return $transactionManager;
         });

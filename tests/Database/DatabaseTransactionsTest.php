@@ -2,15 +2,18 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\TestDouble;
 use Exception;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\DatabaseTransactionsManager;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
 class DatabaseTransactionsTest extends TestCase
 {
+    use VerifiesDoubles;
+
     /**
      * Setup the database schema.
      *
@@ -191,7 +194,7 @@ class DatabaseTransactionsTest extends TestCase
         $transactionManager = TestDouble::for(new DatabaseTransactionsManager);
         $transactionManager->expects('begin')->with('default', 1);
         $transactionManager->expects('rollback')->with('default', 0);
-        $transactionManager->shouldNotReceive('commit', 1, 0);
+        $transactionManager->expects('commit')->never();
 
         $this->connection()->setTransactionManager($transactionManager);
 

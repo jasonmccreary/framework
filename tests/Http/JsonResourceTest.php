@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Http;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
@@ -12,7 +11,8 @@ class JsonResourceTest extends TestCase
 {
     public function testJsonResourceNullAttributes()
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
         $model->setAttribute('relation_sum_column', null);
@@ -32,16 +32,17 @@ class JsonResourceTest extends TestCase
 
     public function testJsonResourceToJsonSucceedsWithPriorErrors(): void
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
-        $jsonResource2 = TestDouble::for(JsonResource::class);
-        $jsonResource2->allows('resource')->returns($model);
-
-        $resource = $jsonResource2
-            ->makePartial()
-            ->shouldReceive('jsonSerialize')->andReturn(['foo' => 'bar'])
-            ->getMock();
+        $resource = new class($model) extends JsonResource
+        {
+            public function jsonSerialize(): array
+            {
+                return ['foo' => 'bar'];
+            }
+        };
 
         // Simulate a JSON error
         json_decode('{');
@@ -52,16 +53,17 @@ class JsonResourceTest extends TestCase
 
     public function testJsonResourceToPrettyPrint(): void
     {
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
         };
 
-        $jsonResource = TestDouble::for(JsonResource::class);
-        $jsonResource->allows('resource')->returns($model);
-
-        $resource = $jsonResource
-            ->makePartial()
-            ->shouldReceive('jsonSerialize')->andReturn(['foo' => 'bar', 'bar' => 'foo', 'number' => 123])
-            ->getMock();
+        $resource = new class($model) extends JsonResource
+        {
+            public function jsonSerialize(): array
+            {
+                return ['foo' => 'bar', 'bar' => 'foo', 'number' => 123];
+            }
+        };
 
         $results = $resource->toPrettyJson();
         $expected = $resource->toJson(JSON_PRETTY_PRINT);

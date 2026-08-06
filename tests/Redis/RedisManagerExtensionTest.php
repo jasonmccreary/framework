@@ -2,14 +2,18 @@
 
 namespace Illuminate\Tests\Redis;
 
-use JMac\Testing\TestDouble;
 use Illuminate\Contracts\Redis\Connector;
 use Illuminate\Foundation\Application;
 use Illuminate\Redis\RedisManager;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use PHPUnit\Framework\TestCase;
 
 class RedisManagerExtensionTest extends TestCase
 {
+    use VerifiesDoubles;
+
     /**
      * @var \Illuminate\Redis\RedisManager
      */
@@ -73,13 +77,16 @@ class RedisManagerExtensionTest extends TestCase
             ],
         ]);
         $redis->extend('my_custom_driver', function () use ($config) {
-            return TestDouble::for(Connector::class)
-                ->shouldReceive('connectToCluster')
-                ->once()
-                ->withArgs(function ($configArg) use ($config) {
+            $connector = TestDouble::for(Connector::class);
+            $connector->expects('connectToCluster')->with(
+                Argument::satisfies(function ($configArg) use ($config) {
                     return $config === $configArg;
-                })
-                ->getMock();
+                }),
+                Argument::any(),
+                Argument::any(),
+            );
+
+            return $connector;
         });
 
         $redis->resolve($name);

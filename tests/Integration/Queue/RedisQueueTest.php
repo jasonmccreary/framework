@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
@@ -15,6 +13,9 @@ use Illuminate\Queue\RedisQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
@@ -22,7 +23,7 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 #[RequiresPhpExtension('redis')]
 class RedisQueueTest extends TestCase
 {
-    use InteractsWithRedis, InteractsWithTime;
+    use InteractsWithRedis, InteractsWithTime, VerifiesDoubles;
 
     /**
      * @var \Illuminate\Queue\RedisQueue
@@ -505,17 +506,33 @@ class RedisQueueTest extends TestCase
     public function testPushJobQueueingAndJobQueuedEvents($driver)
     {
         $events = TestDouble::for(Dispatcher::class);
-        $events->shouldReceive('dispatch')->withArgs(function (JobQueueing $jobQueuing) {
-            $this->assertInstanceOf(RedisQueueIntegrationTestJob::class, $jobQueuing->job);
+        $events->expects('dispatch')->with(
+            Argument::satisfies(function ($jobQueuing) {
+                if (! $jobQueuing instanceof JobQueueing) {
+                    return false;
+                }
 
-            return true;
-        })->andReturnNull()->once();
-        $events->shouldReceive('dispatch')->withArgs(function (JobQueued $jobQueued) {
-            $this->assertInstanceOf(RedisQueueIntegrationTestJob::class, $jobQueued->job);
-            $this->assertIsString($jobQueued->id);
+                $this->assertInstanceOf(RedisQueueIntegrationTestJob::class, $jobQueuing->job);
 
-            return true;
-        })->andReturnNull()->once();
+                return true;
+            }),
+            Argument::any(),
+            Argument::any(),
+        )->returns(null);
+        $events->expects('dispatch')->with(
+            Argument::satisfies(function ($jobQueued) {
+                if (! $jobQueued instanceof JobQueued) {
+                    return false;
+                }
+
+                $this->assertInstanceOf(RedisQueueIntegrationTestJob::class, $jobQueued->job);
+                $this->assertIsString($jobQueued->id);
+
+                return true;
+            }),
+            Argument::any(),
+            Argument::any(),
+        )->returns(null);
 
         $container = TestDouble::for(Container::class);
         $container->expects('bound')->with('events')->returns(true)->times(2);
