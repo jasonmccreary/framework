@@ -35,7 +35,6 @@ use InvalidArgumentException;
 use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
 use JMac\Testing\TestDouble;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -7846,7 +7845,7 @@ SQL;
     }
 
     /**
-     * @return MockInterface|\Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getMockQueryBuilder()
     {

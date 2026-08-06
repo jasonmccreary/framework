@@ -31,7 +31,7 @@ class RedisQueueTest extends TestCase
     private $queue;
 
     /**
-     * @var \Mockery\MockInterface|\Mockery\LegacyMockInterface
+     * @var \Illuminate\Container\Container
      */
     private $container;
 

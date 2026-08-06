@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\TestDouble;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -57,8 +55,9 @@ use Illuminate\Support\Uri;
 use Illuminate\Tests\Database\stubs\TestCast;
 use Illuminate\Tests\Database\stubs\TestValueObject;
 use InvalidArgumentException;
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\TestDouble;
 use LogicException;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
