@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Bus;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
@@ -32,6 +30,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -708,10 +708,10 @@ class BusBatchTest extends TestCase
 
         $repository->store($pendingBatch);
 
-        $builder->shouldHaveReceived('insert')
-            ->withArgs(function ($argument) use ($pendingBatch) {
+        $builder->received('insert')
+            ->with(Argument::satisfies(function ($argument) use ($pendingBatch) {
                 return unserialize(base64_decode($argument['options'])) === $pendingBatch->options;
-            });
+            }));
 
         $builder->received('first');
     }
