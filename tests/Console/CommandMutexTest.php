@@ -85,7 +85,7 @@ class CommandMutexTest extends TestCase
     {
         $this->runCommand(false);
 
-        $this->commandMutex->shouldNotHaveReceived('create');
+        $this->commandMutex->received('create')->never();
         $this->assertEquals(1, $this->command->ran);
     }
 

@@ -5087,7 +5087,7 @@ class DatabaseQueryBuilderTest extends TestCase
         $builder->expects('exists')->returns(true);
 
         $this->assertTrue($builder->updateOrInsert(['email' => 'foo']));
-        $builder->shouldNotHaveReceived('update');
+        $builder->received('update')->never();
     }
 
     public function testDeleteMethod()

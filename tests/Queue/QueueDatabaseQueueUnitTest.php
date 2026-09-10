@@ -56,7 +56,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue->push($job, ['data']);
 
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }
@@ -103,7 +103,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue->later(10, 'foo', ['data']);
 
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }
@@ -132,7 +132,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue->push($job, ['data']);
 
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
 
         Str::createUuidsNormally();
     }
@@ -157,7 +157,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue->push(new ChildJobWithPropertiesOverridingParentAttributes, ['data']);
 
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
     }
 
     public function testPushStillUsesAttributesDeclaredOnSameClassOverDefaultProperties()
@@ -180,7 +180,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $queue->push(new JobWithAttributesAndDefaultProperties, ['data']);
 
-        $container->shouldHaveReceived('bound')->with('events')->twice();
+        $container->received('bound')->with('events')->times(2);
     }
 
     public function testFailureToCreatePayloadFromObject()
