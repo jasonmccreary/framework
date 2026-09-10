@@ -2,14 +2,13 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Aws\Sqs\SqsClient;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Queue\Jobs\SqsJob;
 use Illuminate\Queue\SqsQueue;
-use Mockery;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -50,7 +49,6 @@ class QueueSqsJobTest extends TestCase
         // Get a mock of the SqsClient
         $this->mockedSqsClient = Double::for(SqsClient::class)->passthru();
 
-        // Use Mockery to mock the IoC Container
         $this->mockedContainer = Double::for(Container::class);
 
         $this->mockedJob = 'foo';

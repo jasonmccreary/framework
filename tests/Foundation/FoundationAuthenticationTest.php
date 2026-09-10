@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Double;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 
 class FoundationAuthenticationTest extends TestCase
@@ -16,7 +16,7 @@ class FoundationAuthenticationTest extends TestCase
     use InteractsWithAuthentication;
 
     /**
-     * @var \Mockery
+     * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
 
@@ -29,7 +29,7 @@ class FoundationAuthenticationTest extends TestCase
     ];
 
     /**
-     * @return \Illuminate\Contracts\Auth\Guard|\Mockery\LegacyMockInterface|\Mockery\MockInterface
+     * @return \Illuminate\Contracts\Auth\Guard
      */
     protected function mockGuard()
     {

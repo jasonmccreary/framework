@@ -2,11 +2,10 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Redis\Factory;
 use Illuminate\Redis\Connections\PhpRedisConnection;
-use Mockery;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
@@ -33,11 +32,11 @@ class CacheRedisStoreTest extends TestCase
         $redis = $this->getRedis();
         $redis->getRedis()->expects('connection')->with('default')->returns($redis->getRedis());
         $redis->getRedis()->expects('mget')->with(['prefix:foo', 'prefix:fizz', 'prefix:norf', 'prefix:null'])->returns([
-                serialize('bar'),
-                serialize('buzz'),
-                serialize('quz'),
-                null,
-            ]);
+            serialize('bar'),
+            serialize('buzz'),
+            serialize('quz'),
+            null,
+        ]);
 
         $results = $redis->many(['foo', 'fizz', 'norf', 'null']);
 
@@ -67,7 +66,6 @@ class CacheRedisStoreTest extends TestCase
     public function testSetMultipleMethodProperlyCallsRedis()
     {
         $redis = $this->getRedis();
-        /** @var Mockery\MockInterface $connection */
         $connection = $redis->getRedis();
         $connection->expects('connection')->with('default')->returns($redis->getRedis());
         $connection->expects('multi');

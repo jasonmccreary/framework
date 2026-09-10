@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Aws\Result;
 use Aws\Sqs\Exception\SqsException;
 use Aws\Sqs\SqsClient;
@@ -24,8 +22,9 @@ use Illuminate\Tests\Queue\Fixtures\FakeSqsJob;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithDeduplication;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithDelayAttribute;
 use Illuminate\Tests\Queue\Fixtures\FakeSqsJobWithMessageGroup;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -54,7 +53,6 @@ class QueueSqsQueueTest extends TestCase
 
     protected function setUp(): void
     {
-        // Use Mockery to mock the SqsClient
         $this->sqs = Double::for(SqsClient::class);
 
         $this->account = '1234567891011';

@@ -2,20 +2,20 @@
 
 namespace Illuminate\Tests\Integration\Migration;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Stringable;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigratorTest extends TestCase
 {
     /**
-     * @var \Mockery\Mock
+     * @var \Symfony\Component\Console\Output\OutputInterface
      */
     private $output;
 

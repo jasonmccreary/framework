@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use BadMethodCallException;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Console\ClearCommand;
@@ -10,6 +9,7 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -22,17 +22,17 @@ class ClearCommandTest extends TestCase
     private $command;
 
     /**
-     * @var \Illuminate\Cache\CacheManager|\Mockery\MockInterface
+     * @var \Illuminate\Cache\CacheManager
      */
     private $cacheManager;
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem|\Mockery\MockInterface
+     * @var \Illuminate\Filesystem\Filesystem
      */
     private $files;
 
     /**
-     * @var \Illuminate\Contracts\Cache\Repository|\Mockery\MockInterface
+     * @var \Illuminate\Contracts\Cache\Repository
      */
     private $cacheRepository;
 

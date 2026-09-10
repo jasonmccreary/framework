@@ -37,7 +37,6 @@ use Illuminate\Tests\Database\Fixtures\Enums\StringStatus;
 use InvalidArgumentException;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -8016,7 +8015,7 @@ SQL;
     }
 
     /**
-     * @return MockInterface|\Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getMockQueryBuilder()
     {
