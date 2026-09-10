@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Database\ModelIdentifier;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\ChannelManager;
@@ -11,6 +10,8 @@ use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\Attributes\FailOnTimeout;
 use Illuminate\Support\Collection;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 
 class NotificationSendQueuedNotificationTest extends TestCase
@@ -20,11 +21,11 @@ class NotificationSendQueuedNotificationTest extends TestCase
         $notification = new TestNotification;
         $job = new SendQueuedNotifications('notifiables', $notification);
         $manager = Double::for(ChannelManager::class);
-        $manager->expects('sendNow')->withArgs(function ($notifiables, $notification, $channels) {
-            return $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']
-                && $notification instanceof TestNotification
-                && $channels === null;
-        });
+        $manager->expects('sendNow')->with(
+            Argument::satisfies(fn ($notifiables) => $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']),
+            Argument::type(TestNotification::class),
+            null,
+        );
         $job->handle($manager);
     }
 

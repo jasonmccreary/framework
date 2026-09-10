@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
-use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Concerns\TestDatabases;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -18,11 +18,12 @@ class TestDatabasesTest extends TestCase
         Container::setInstance($container = new Container);
 
         $container->singleton('config', function () {
-            return Double::for(Config::class)
-                ->expects('get')
+            $config = Double::for(Config::class);
+            $config->expects('get')
                 ->with('database.default', null)
-                ->andReturn('mysql')
-                ->getMock();
+                ->returns('mysql');
+
+            return $config;
         });
 
         $_SERVER['LARAVEL_PARALLEL_TESTING'] = 1;
@@ -32,7 +33,7 @@ class TestDatabasesTest extends TestCase
     {
         DB::expects('purge');
 
-        config()->expects('get')->with('database.connections.mysql.url', false)->returns(false);
+        config()->expects('get')->with('database.connections.mysql.url', null)->returns(false);
 
         config()->expects('set')
             ->with('database.connections.mysql.database', 'my_database_test_1');
@@ -45,7 +46,7 @@ class TestDatabasesTest extends TestCase
     {
         DB::expects('purge');
 
-        config()->expects('get')->with('database.connections.mysql.url', false)->returns($url);
+        config()->expects('get')->with('database.connections.mysql.url', null)->returns($url);
 
         config()->expects('set')
             ->with('database.connections.mysql.url', $testUrl);

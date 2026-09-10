@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Cache\Repository;
-use Mockery\MockInterface;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 
 class CacheCommandMutexTest extends TestCase
@@ -121,7 +121,7 @@ class CacheCommandMutexTest extends TestCase
         $this->cacheRepository->expects('getStore')->returns(null);
     }
 
-    private function mockUsingLockProvider(): MockInterface
+    private function mockUsingLockProvider(): LockProvider
     {
         $lock = Double::for(LockProvider::class);
         $this->cacheFactory->expects('store')->returns($this->cacheRepository);
@@ -130,11 +130,12 @@ class CacheCommandMutexTest extends TestCase
         return $lock;
     }
 
-    private function acquireLockExpectations(MockInterface $lock, bool $acquiresSuccessfully): void
+    private function acquireLockExpectations(LockProvider $lock, bool $acquiresSuccessfully): void
     {
-        $lock->expects('lock')->with(Argument::type('string'), Argument::type('int'))->returns($lock);
+        $acquiredLock = Double::for(Lock::class);
+        $lock->expects('lock')->with(Argument::type('string'), Argument::type('int'))->returns($acquiredLock);
 
-        $lock->expects('get')->returns($acquiresSuccessfully);
+        $acquiredLock->expects('get')->returns($acquiresSuccessfully);
     }
 
     public function testCommandMutexNameWithoutIsolatedMutexNameMethod()
@@ -142,12 +143,12 @@ class CacheCommandMutexTest extends TestCase
         $this->mockUsingCacheStore();
 
         $this->cacheRepository->expects('add')
-            ->withArgs(function ($key) {
+            ->with(Argument::satisfies(function ($key) {
                 $this->assertSame('framework'.DIRECTORY_SEPARATOR.'command-command-name', $key);
 
                 return true;
-            })
-            ->andReturn(true);
+            }), Argument::any(), Argument::any())
+            ->returns(true);
 
         $this->mutex->create($this->command);
     }
@@ -167,12 +168,12 @@ class CacheCommandMutexTest extends TestCase
         $this->mockUsingCacheStore();
 
         $this->cacheRepository->expects('add')
-            ->withArgs(function ($key) {
+            ->with(Argument::satisfies(function ($key) {
                 $this->assertSame('framework'.DIRECTORY_SEPARATOR.'command-command-name-isolated', $key);
 
                 return true;
-            })
-            ->andReturn(true);
+            }), Argument::any(), Argument::any())
+            ->returns(true);
 
         $this->mutex->create($command);
     }

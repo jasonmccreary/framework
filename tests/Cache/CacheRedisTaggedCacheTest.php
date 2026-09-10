@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\RedisTagSet;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -18,14 +18,14 @@ class CacheRedisTaggedCacheTest extends TestCase
 
         $store->expects($storeMethod)
             ->with($itemKey, ...$storeArguments)
-            ->once()
-            ->globally()->ordered()
-            ->andReturn($result);
+            ->times(1)
+            ->ordered()
+            ->returns($result);
 
         $tags->expects('addEntry')
             ->with($itemKey, ...$tagArguments)
-            ->once()
-            ->globally()->ordered();
+            ->times(1)
+            ->ordered();
 
         $this->assertSame($result, $cache->{$method}('key', ...$arguments));
     }

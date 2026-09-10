@@ -2,9 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
-use Illuminate\Console\Application;
 use Illuminate\Console\Attributes\Aliases;
 use Illuminate\Console\Attributes\Help;
 use Illuminate\Console\Attributes\Hidden;
@@ -14,7 +11,10 @@ use Illuminate\Console\Command;
 use Illuminate\Console\CommandInput;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Carbon;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -191,9 +191,9 @@ class CommandTest extends TestCase
     public function testTheOutputSetterOverwrite()
     {
         $output = Double::for(OutputStyle::class);
-        $output->expects('writeln')->withArgs(function (...$args) {
-            return $args[0] === '<info>foo</info>';
-        });
+        $output->expects('writeln')->with(Argument::satisfies(function ($message) {
+            return $message === '<info>foo</info>';
+        }), Argument::any());
 
         $command = new Command;
         $command->setOutput($output);

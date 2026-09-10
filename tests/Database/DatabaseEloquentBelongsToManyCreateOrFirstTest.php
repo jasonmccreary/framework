@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Closure;
 use Exception;
 use Illuminate\Database\Connection;
@@ -15,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -73,12 +74,12 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         $source->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
         $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+            'id' => 456,
+            'attr' => 'foo',
+            'val' => 'bar',
+            'created_at' => '2023-01-01 00:00:00',
+            'updated_at' => '2023-01-01 00:00:00',
+        ]]);
 
         $source->getConnection()->expects('insert')->with('insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
             [456, 123])->returns(true);
@@ -111,14 +112,14 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 [123, 'foo'],
                 true,
                 [])->returns([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-                'pivot_source_id' => 123,
-                'pivot_related_id' => 456,
-            ]]);
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                    'pivot_source_id' => 123,
+                    'pivot_related_id' => 456,
+                ]]);
 
         $result = $source->related()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -153,12 +154,12 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         $source->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
         $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+            'id' => 456,
+            'attr' => 'foo',
+            'val' => 'bar',
+            'created_at' => '2023-01-01 00:00:00',
+            'updated_at' => '2023-01-01 00:00:00',
+        ]]);
 
         $sql = 'insert into "pivot_table" ("related_id", "source_id") values (?, ?)';
         $bindings = [456, 123];
@@ -169,14 +170,14 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 [123, 'foo'],
                 false,
                 [])->returns([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-                'pivot_source_id' => 123,
-                'pivot_related_id' => 456,
-            ]]);
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                    'pivot_source_id' => 123,
+                    'pivot_related_id' => 456,
+                ]]);
 
         $result = $source->related()->createOrFirst(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -214,12 +215,12 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 ['foo'],
                 true,
                 [])->returns([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                ]]);
 
         $source->getConnection()->expects('insert')->with('insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
                 [456, 123])->returns(true);
@@ -242,8 +243,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Double::for(BelongsToMany::class)->passthru();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -302,8 +304,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Double::for(BelongsToMany::class)->passthru();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -341,8 +344,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Double::for(BelongsToMany::class)->passthru();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -385,8 +389,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Double::for(BelongsToMany::class)->passthru();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -399,13 +404,13 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
-                    ->withArgs(function ($attributes, $values, $joining, $touch) {
-                        return $attributes === ['attr' => 'foo']
-                            && $values instanceof Closure
-                            && $joining === []
-                            && $touch === true;
-                    })
-                    ->andReturn($instance);
+                    ->with(
+                        ['attr' => 'foo'],
+                        Argument::satisfies(fn ($values) => $values instanceof Closure),
+                        [],
+                        true,
+                    )
+                    ->returns($instance);
 
                 return $relation;
             }
@@ -435,8 +440,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Double::for(BelongsToMany::class)->passthru();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -449,13 +455,13 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
-                    ->withArgs(function ($attributes, $values, $joining, $touch) {
-                        return $attributes === ['attr' => 'foo']
-                            && $values instanceof Closure
-                            && $joining === []
-                            && $touch === true;
-                    })
-                    ->andReturn($instance);
+                    ->with(
+                        ['attr' => 'foo'],
+                        Argument::satisfies(fn ($values) => $values instanceof Closure),
+                        [],
+                        true,
+                    )
+                    ->returns($instance);
 
                 return $relation;
             }

@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 
 class InteractsWithDatabaseTest extends TestCase
@@ -145,9 +145,11 @@ class InteractsWithDatabaseTest extends TestCase
             return new Expression($value);
         });
 
-        $connection->shouldReceive('getPdo->quote')->andReturnUsing(function ($value) {
+        $pdo = Double::for(\PDO::class);
+        $pdo->allows('quote')->resolves(function ($value) {
             return "'".$value."'";
         });
+        $connection->allows('getPdo')->returns($pdo);
 
         DB::shouldReceive('connection')->with(null)->andReturn($connection);
 

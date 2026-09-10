@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
@@ -16,7 +14,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
-use Mockery;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\TestCase;
 
 class SendingMailNotificationsTest extends TestCase
@@ -139,16 +138,11 @@ class SendingMailNotificationsTest extends TestCase
         NotifiableUser $user,
         callable $callbackExpectationClosure
     ) {
-        $this->mailer->expects('send')->withArgs(function (...$args) use ($notification, $user, $callbackExpectationClosure) {
+        $this->mailer->expects('send')->resolves(function (...$args) use ($notification, $user, $callbackExpectationClosure) {
             $viewArray = $args[0];
 
-            if (! Mockery::on(fn ($closure) => $closure([]) === 'htmlContent')->match($viewArray['html'])) {
-                return false;
-            }
-
-            if (! Mockery::on(fn ($closure) => $closure([]) === 'textContent')->match($viewArray['text'])) {
-                return false;
-            }
+            $this->assertSame('htmlContent', $viewArray['html']([]));
+            $this->assertSame('textContent', $viewArray['text']([]));
 
             $data = $args[1];
 
@@ -158,14 +152,10 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]);
 
-            if (array_keys($data) !== array_keys($expected)) {
-                return false;
-            }
-            if (array_values($data) !== array_values($expected)) {
-                return false;
-            }
+            $this->assertSame(array_keys($expected), array_keys($data));
+            $this->assertSame(array_values($expected), array_values($data));
 
-            return Mockery::on($callbackExpectationClosure)->match($args[2]);
+            $this->assertTrue($callbackExpectationClosure($args[2]));
         });
     }
 

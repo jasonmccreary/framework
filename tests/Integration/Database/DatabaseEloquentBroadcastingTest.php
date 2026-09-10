@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
-use JMac\Testing\Double;
 use Closure;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Contracts\Broadcasting\Broadcaster;
@@ -15,6 +14,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use JMac\Testing\Double;
 
 class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 {
@@ -196,8 +196,8 @@ class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
     {
         $broadcaster = Double::for(Broadcaster::class);
         $broadcaster->expects('broadcast')
-            ->withArgs(function (array $channels, string $eventName, array $payload) use ($closure) {
-                return $closure($channels, $eventName, $payload);
+            ->resolves(function (array $channels, string $eventName, array $payload) use ($closure) {
+                $this->assertTrue($closure($channels, $eventName, $payload));
             });
 
         $manager = Double::for(BroadcastingFactory::class);
