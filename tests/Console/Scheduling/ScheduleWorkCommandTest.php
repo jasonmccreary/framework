@@ -9,7 +9,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
 use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use ReflectionProperty;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -18,8 +17,6 @@ use Symfony\Component\Process\Process;
 
 class ScheduleWorkCommandTest extends TestCase
 {
-    use VerifiesDoubles;
-
     /**
      * The signal availability resolver in place before the test ran.
      *
