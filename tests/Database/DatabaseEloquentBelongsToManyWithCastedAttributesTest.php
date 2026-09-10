@@ -25,7 +25,11 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $model1->shouldReceive('hasAttributeMutator')->andReturn(false);
         $model1->shouldReceive('hasRelationAutoloadCallback')->andReturn(false);
         $model1->shouldReceive('getCasts')->andReturn([]);
-        $model1->shouldReceive('getRelationValue', 'relationLoaded', 'relationResolver', 'setRelation', 'isRelation')->passthru();
+        $model1->shouldReceive('getRelationValue')->passthru();
+        $model1->shouldReceive('relationLoaded')->passthru();
+        $model1->shouldReceive('relationResolver')->passthru();
+        $model1->shouldReceive('setRelation')->passthru();
+        $model1->shouldReceive('isRelation')->passthru();
 
         $model2 = Double::for(Model::class);
         $model2->shouldReceive('hasAttribute')->passthru();
@@ -35,7 +39,11 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $model2->shouldReceive('hasAttributeMutator')->andReturn(false);
         $model2->shouldReceive('hasRelationAutoloadCallback')->andReturn(false);
         $model2->shouldReceive('getCasts')->andReturn([]);
-        $model2->shouldReceive('getRelationValue', 'relationLoaded', 'relationResolver', 'setRelation', 'isRelation')->passthru();
+        $model2->shouldReceive('getRelationValue')->passthru();
+        $model2->shouldReceive('relationLoaded')->passthru();
+        $model2->shouldReceive('relationResolver')->passthru();
+        $model2->shouldReceive('setRelation')->passthru();
+        $model2->shouldReceive('isRelation')->passthru();
 
         $result1 = (object) [
             'pivot' => (object) [
@@ -63,7 +71,8 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $related->shouldReceive('resolveCollectionFromAttribute')->passthru();
         $builder->shouldReceive('getModel')->andReturn($related);
         $related->shouldReceive('qualifyColumn');
-        $builder->shouldReceive('join', 'where');
+        $builder->shouldReceive('join');
+        $builder->shouldReceive('where');
         $builder->shouldReceive('getQuery')->andReturn(
             Mockery::mock(QueryBuilder::class, ['getGrammar' => Mockery::mock(Grammar::class, ['isExpression' => false])])
         );
