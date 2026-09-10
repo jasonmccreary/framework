@@ -4,13 +4,13 @@ namespace Illuminate\Tests\Validation;
 
 use Exception;
 use Generator;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rules\ProhibitedIf;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class ValidationProhibitedIfTest extends TestCase

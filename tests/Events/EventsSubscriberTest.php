@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Events;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class EventsSubscriberTest extends TestCase
 {

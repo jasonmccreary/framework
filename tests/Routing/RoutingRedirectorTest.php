@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Routing;
 
-use JMac\Testing\Double;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
 class RoutingRedirectorTest extends TestCase

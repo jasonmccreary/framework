@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation\Testing\Traits;
 
 use Illuminate\Foundation\Testing\Traits\CanConfigureMigrationCommands;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionMethod;
 
 class CanConfigureMigrationCommandsTest extends TestCase

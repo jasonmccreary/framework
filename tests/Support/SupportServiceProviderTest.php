@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\Translator;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class SupportServiceProviderTest extends TestCase
 {

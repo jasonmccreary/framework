@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabasePostgresQueryGrammarTest extends TestCase
 {

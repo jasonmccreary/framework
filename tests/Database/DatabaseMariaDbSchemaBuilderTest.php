@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseMariaDbSchemaBuilderTest extends TestCase
 {

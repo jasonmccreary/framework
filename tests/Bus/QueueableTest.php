@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Bus;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class QueueableTest extends TestCase
 {

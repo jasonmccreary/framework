@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -28,7 +26,9 @@ use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Queue\WorkerStopReason;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use RuntimeException;
 
 class QueueWorkerTest extends TestCase

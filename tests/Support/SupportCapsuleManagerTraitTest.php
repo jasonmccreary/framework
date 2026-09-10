@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Traits\CapsuleManagerTrait;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class SupportCapsuleManagerTraitTest extends TestCase
 {

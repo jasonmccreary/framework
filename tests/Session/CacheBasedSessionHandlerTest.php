@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Session;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Session\CacheBasedSessionHandler;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class CacheBasedSessionHandlerTest extends TestCase
 {

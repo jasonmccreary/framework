@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Redis;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Redis\Connections\PhpRedisClusterConnection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\Connections\PredisClusterConnection;
 use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\Limiters\ConcurrencyLimiter;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class ConcurrencyLimiterTest extends TestCase
 {

@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Support\Timebox;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class SupportTimeboxTest extends TestCase
 {

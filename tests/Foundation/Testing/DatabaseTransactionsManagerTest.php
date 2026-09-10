@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation\Testing;
 
 use Illuminate\Foundation\Testing\DatabaseTransactionsManager;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseTransactionsManagerTest extends TestCase
 {

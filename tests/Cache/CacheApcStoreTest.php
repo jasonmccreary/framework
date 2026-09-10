@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\ApcStore;
 use Illuminate\Cache\ApcWrapper;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class CacheApcStoreTest extends TestCase
 {

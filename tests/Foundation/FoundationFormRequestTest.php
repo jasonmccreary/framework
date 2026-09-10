@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
@@ -16,11 +15,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator as TranslatorConcrete;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 class FoundationFormRequestTest extends TestCase
 {

@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Session;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Session\EncryptedStore;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use ReflectionClass;
 use SessionHandlerInterface;
 

@@ -7,9 +7,9 @@ use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Sleep;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class SleepTest extends TestCase

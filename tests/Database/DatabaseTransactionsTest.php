@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Database;
 use Exception;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\DatabaseTransactionsManager;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use Throwable;
 
 class DatabaseTransactionsTest extends TestCase

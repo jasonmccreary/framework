@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Closure;
 use Exception;
 use Illuminate\Database\Connection;
@@ -14,9 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
 {

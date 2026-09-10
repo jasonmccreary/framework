@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Cache;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\RedisTagSet;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class CacheRedisTaggedCacheTest extends TestCase
 {

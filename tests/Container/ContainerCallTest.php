@@ -6,7 +6,7 @@ use Closure;
 use Error;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 use stdClass;
 

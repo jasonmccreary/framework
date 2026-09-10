@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Foundation\Cloud;
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Cloud\JsonFormatter;
 use Illuminate\Http\Request;
+use Illuminate\Tests\TestCase;
 use Monolog\Level;
 use Monolog\LogRecord;
-use PHPUnit\Framework\TestCase;
 
 class JsonFormatterTest extends TestCase
 {

@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Error;
 use ErrorException;
 use Illuminate\Config\Repository as Config;
@@ -11,8 +9,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Env;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Monolog\Handler\NullHandler;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
 

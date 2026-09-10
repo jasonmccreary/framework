@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Container;
 
 use Illuminate\Container\Container;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use stdClass;
 
 class ResolvingCallbackTest extends TestCase

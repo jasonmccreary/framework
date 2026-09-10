@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Routing;
 
-use JMac\Testing\Double;
 use BadMethodCallException;
 use FooController;
 use Illuminate\Container\Container;
@@ -14,8 +13,9 @@ use Illuminate\Tests\Routing\Fixtures\CategoryBackedEnum;
 use Illuminate\Tests\Routing\Fixtures\IntegerEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteDomainEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteNameEnum;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use Stringable;
 
 include_once 'Fixtures/Enums.php';

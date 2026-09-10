@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\FailoverStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\CanFlushLocks;
 use Illuminate\Contracts\Events\Dispatcher;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class CacheFailoverStoreTest extends TestCase
 {

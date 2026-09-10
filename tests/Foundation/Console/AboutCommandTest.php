@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Foundation\Console;
 
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class AboutCommandTest extends TestCase
 {

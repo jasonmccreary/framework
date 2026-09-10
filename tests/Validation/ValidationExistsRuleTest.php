@@ -4,12 +4,12 @@ namespace Illuminate\Tests\Validation;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationExistsRuleTest extends TestCase
 {

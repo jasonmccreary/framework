@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -11,7 +10,8 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseMigratorIntegrationTest extends TestCase
 {

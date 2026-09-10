@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Mail\Events\MessageSending;
@@ -12,8 +10,10 @@ use Illuminate\Mail\Mailer;
 use Illuminate\Mail\Message;
 use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\HtmlString;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Symfony\Component\Mime\Address;
 
 class MailMailerTest extends TestCase

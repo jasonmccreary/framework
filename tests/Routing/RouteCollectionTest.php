@@ -10,8 +10,8 @@ use Illuminate\Routing\CompiledRouteCollection;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\Router;
+use Illuminate\Tests\TestCase;
 use LogicException;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

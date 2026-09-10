@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Events;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Broadcasting\PendingBroadcast;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Tests\Events\Fixtures\ExampleEvent;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class BroadcastedEventsTest extends TestCase
 {

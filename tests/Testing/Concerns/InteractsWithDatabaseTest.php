@@ -7,8 +7,8 @@ use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 
 class InteractsWithDatabaseTest extends TestCase
 {

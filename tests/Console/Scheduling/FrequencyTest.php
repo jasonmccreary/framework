@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Console\Scheduling;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Console\Fixtures\FakeEventMutex;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FrequencyTest extends TestCase
 {

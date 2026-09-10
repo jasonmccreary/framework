@@ -6,7 +6,7 @@ use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Http\Testing\File;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class AttachableTest extends TestCase
 {

@@ -6,7 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportFacadesHttpTest extends TestCase
 {

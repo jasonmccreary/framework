@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Cache\FileStore;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use RuntimeException;
 
 class CacheFileStoreTest extends TestCase

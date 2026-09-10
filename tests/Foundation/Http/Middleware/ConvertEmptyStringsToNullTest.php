@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Foundation\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class ConvertEmptyStringsToNullTest extends TestCase

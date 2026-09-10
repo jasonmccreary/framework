@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use DateTime;
 use ErrorException;
 use Exception;
@@ -21,10 +19,12 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Builder;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PDO;
 use PDOException;
 use PDOStatement;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class DatabaseConnectionTest extends TestCase

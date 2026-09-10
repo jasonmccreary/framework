@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Queue\Jobs\RedisJob;
 use Illuminate\Queue\RedisQueue;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class QueueRedisJobTest extends TestCase

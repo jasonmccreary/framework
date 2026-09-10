@@ -8,13 +8,13 @@ use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class ValidationPasswordRuleTest extends TestCase
 {

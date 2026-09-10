@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation;
 
 use Illuminate\Foundation\ArrayMaintenanceMode;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationArrayMaintenanceModeTest extends TestCase
 {

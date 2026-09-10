@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 use Illuminate\Http\Resources\JsonApi\RelationResolver;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class RelationResolverTest extends TestCase
 {

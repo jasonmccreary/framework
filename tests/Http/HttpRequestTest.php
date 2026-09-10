@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Http;
 
-use JMac\Testing\Double;
 use Carbon\CarbonInterval;
 use Carbon\Unit;
 use Illuminate\Http\Request;
@@ -16,9 +15,10 @@ use Illuminate\Tests\Database\Fixtures\Models\Money\Price;
 use Illuminate\Tests\Http\Fixtures\TestEnum;
 use Illuminate\Tests\Http\Fixtures\TestEnumBacked;
 use Illuminate\Tests\Http\Fixtures\TestIntegerEnumBacked;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;

@@ -12,10 +12,10 @@ use Illuminate\Redis\Connections\PhpRedisClusterConnection;
 use Illuminate\Redis\Connections\PredisClusterConnection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 class QueueRedisQueueTest extends TestCase
 {

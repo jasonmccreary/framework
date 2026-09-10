@@ -34,10 +34,10 @@ use Illuminate\Tests\Database\Fixtures\Enums\Bar;
 use Illuminate\Tests\Database\Fixtures\Enums\IntegerStatus;
 use Illuminate\Tests\Database\Fixtures\Enums\NonBackedStatus;
 use Illuminate\Tests\Database\Fixtures\Enums\StringStatus;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 

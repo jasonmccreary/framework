@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Double;
 use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Foundation\Application;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 

@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\View\Concerns;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Concerns\ManagesStacks;
-use PHPUnit\Framework\TestCase;
 
 class ManagesStacksTest extends TestCase
 {

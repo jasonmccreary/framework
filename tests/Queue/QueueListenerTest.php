@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Illuminate\Queue\Listener;
 use Illuminate\Queue\ListenerOptions;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Process\Process;
 
 use function Illuminate\Support\artisan_binary;

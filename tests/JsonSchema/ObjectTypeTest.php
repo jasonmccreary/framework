@@ -4,7 +4,7 @@ namespace Illuminate\Tests\JsonSchema;
 
 use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\JsonSchemaTypeFactory;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class ObjectTypeTest extends TestCase
 {

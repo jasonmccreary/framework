@@ -12,8 +12,8 @@ use Illuminate\JsonSchema\Types\NumberType;
 use Illuminate\JsonSchema\Types\ObjectType;
 use Illuminate\JsonSchema\Types\StringType;
 use Illuminate\JsonSchema\Types\UnionType;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class DeserializerTest extends TestCase
 {

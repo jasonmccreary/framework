@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
-use JMac\Testing\Double;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class LoadEnvironmentVariablesTest extends TestCase
 {

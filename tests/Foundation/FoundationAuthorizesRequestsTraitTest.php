@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationAuthorizesRequestsTraitTest extends TestCase
 {

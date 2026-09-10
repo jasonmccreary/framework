@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Validation;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\ExcludeUnless;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationExcludeUnlessRuleTest extends TestCase
 {

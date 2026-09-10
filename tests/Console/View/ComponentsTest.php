@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Console\View;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components;
 use Illuminate\Database\Migrations\MigrationResult;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 

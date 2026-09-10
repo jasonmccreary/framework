@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as Query;
 use Illuminate\Tests\Database\DynamicRelationModel2 as Related;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseEloquentDynamicRelationsTest extends TestCase
 {

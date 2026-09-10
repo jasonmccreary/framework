@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Testing\Concerns;
 use ErrorException;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDeprecationHandling;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class InteractsWithDeprecationHandlingTest extends TestCase
 {

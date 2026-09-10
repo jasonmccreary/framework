@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Closure;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -13,8 +11,10 @@ use Illuminate\Database\Events\ModelPruningStarting;
 use Illuminate\Database\Events\ModelsPruned;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 

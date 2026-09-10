@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Http\Middleware;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Session\Session;
@@ -11,7 +10,8 @@ use Illuminate\Http\Exceptions\OriginMismatchException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class PreventRequestForgeryTest extends TestCase
 {

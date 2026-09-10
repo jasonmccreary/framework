@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Auth;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Auth\Passwords\DatabaseTokenRepository;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class AuthDatabaseTokenRepositoryTest extends TestCase
 {

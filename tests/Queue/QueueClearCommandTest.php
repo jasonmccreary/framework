@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Queue\ClearableQueue;
 use Illuminate\Foundation\Application;
 use Illuminate\Queue\Console\ClearCommand;
 use Illuminate\Queue\QueueManager;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 

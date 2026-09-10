@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Filesystem;
 
-use JMac\Testing\Double;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -14,7 +13,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Image\Image;
 use Illuminate\Support\Carbon;
 use Illuminate\Testing\Assert;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -25,7 +26,6 @@ use League\Flysystem\UnableToWriteFile;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FilesystemAdapterTest extends TestCase

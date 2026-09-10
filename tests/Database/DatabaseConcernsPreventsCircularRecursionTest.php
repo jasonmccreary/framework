@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Concerns\PreventsCircularRecursion;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseConcernsPreventsCircularRecursionTest extends TestCase
 {

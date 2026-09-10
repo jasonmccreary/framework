@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Broadcasting;
 
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
 use Illuminate\Broadcasting\Broadcasters\UsePusherChannelConventions;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class UsePusherChannelsNamesTest extends TestCase
 {

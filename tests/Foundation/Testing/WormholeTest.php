@@ -6,7 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\Wormhole;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class WormholeTest extends TestCase
 {

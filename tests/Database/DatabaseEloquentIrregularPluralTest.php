@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseEloquentIrregularPluralTest extends TestCase
 {

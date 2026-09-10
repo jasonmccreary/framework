@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Pagination;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\UrlWindow;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class UrlWindowTest extends TestCase
 {

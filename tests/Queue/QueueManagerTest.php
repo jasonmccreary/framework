@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Illuminate\Queue\QueueManager;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class QueueManagerTest extends TestCase

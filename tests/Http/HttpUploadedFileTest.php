@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Http;
 
 use Illuminate\Http\UploadedFile;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 class HttpUploadedFileTest extends TestCase

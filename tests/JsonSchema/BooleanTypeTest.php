@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\JsonSchema;
 
 use Illuminate\JsonSchema\JsonSchema;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class BooleanTypeTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class JsonResourceTest extends TestCase
 {

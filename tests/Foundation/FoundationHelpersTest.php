@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Broadcasting\FakePendingBroadcast;
 use Illuminate\Container\Container;
@@ -15,7 +14,8 @@ use Illuminate\Foundation\Mix;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class FoundationHelpersTest extends TestCase

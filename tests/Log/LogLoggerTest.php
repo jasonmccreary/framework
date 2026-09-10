@@ -2,16 +2,16 @@
 
 namespace Illuminate\Tests\Log;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Log\Logger;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger as Monolog;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class LogLoggerTest extends TestCase

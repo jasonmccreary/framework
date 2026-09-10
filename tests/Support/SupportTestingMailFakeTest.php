@@ -8,9 +8,9 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\MailManager;
 use Illuminate\Support\Testing\Fakes\MailFake;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingMailFakeTest extends TestCase
 {

@@ -14,8 +14,8 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentSoftDeletesIntegrationTest extends TestCase
 {

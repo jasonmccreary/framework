@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Console\Concerns;
 
-use JMac\Testing\Double;
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;

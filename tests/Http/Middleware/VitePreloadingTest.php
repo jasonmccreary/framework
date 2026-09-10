@@ -8,7 +8,7 @@ use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Facade;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class VitePreloadingTest extends TestCase

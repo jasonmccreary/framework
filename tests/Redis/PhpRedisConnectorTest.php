@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Redis;
 use ErrorException;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\Connectors\PhpRedisConnector;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 use RedisException;
 use ReflectionProperty;
 

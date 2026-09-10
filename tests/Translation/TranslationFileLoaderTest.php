@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Translation;
 
-use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\FileLoader;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 class TranslationFileLoaderTest extends TestCase
 {

@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Foundation\Testing;
 use Illuminate\Foundation\Testing\Attributes\SetUp;
 use Illuminate\Foundation\Testing\Attributes\TearDown;
 use Illuminate\Foundation\Testing\TestCase as FoundationTestCase;
+use Illuminate\Tests\TestCase;
 use Orchestra\Testbench\Concerns\CreatesApplication;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 trait TestTrait

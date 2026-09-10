@@ -12,8 +12,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Testing\Fakes\NotificationFake;
 use Illuminate\Tests\Notifications\Fixtures\NotificationStub;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingNotificationFakeTest extends TestCase
 {

@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar;
 use Illuminate\Database\Schema\SqlServerBuilder;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class SqlServerBuilderTest extends TestCase
 {

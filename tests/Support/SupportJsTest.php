@@ -8,8 +8,8 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Js;
 use Illuminate\Tests\Support\Fixtures\IntBackedEnum;
 use Illuminate\Tests\Support\Fixtures\StringBackedEnum;
+use Illuminate\Tests\TestCase;
 use JsonSerializable;
-use PHPUnit\Framework\TestCase;
 
 class SupportJsTest extends TestCase
 {

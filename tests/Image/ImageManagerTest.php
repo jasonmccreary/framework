@@ -17,9 +17,9 @@ use Illuminate\Image\Image;
 use Illuminate\Image\ImageException;
 use Illuminate\Image\ImageManager;
 use Illuminate\Image\ImagePipeline;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 
 class ImageManagerTest extends TestCase
 {

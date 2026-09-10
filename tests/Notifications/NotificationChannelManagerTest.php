@@ -21,10 +21,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueRoutes;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
 use Laravel\SerializableClosure\SerializableClosure;
-use PHPUnit\Framework\TestCase;
 
 class NotificationChannelManagerTest extends TestCase
 {

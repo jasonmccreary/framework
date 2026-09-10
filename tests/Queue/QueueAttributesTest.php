@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Queue;
 
 use Illuminate\Queue\Attributes\Connection;
 use Illuminate\Queue\Attributes\Queue;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class QueueAttributesTest extends TestCase
 {

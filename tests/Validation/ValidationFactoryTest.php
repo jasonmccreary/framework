@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Translation\Translator as TranslatorInterface;
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\PresenceVerifierInterface;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use ReflectionProperty;
 
 class ValidationFactoryTest extends TestCase

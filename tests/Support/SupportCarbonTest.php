@@ -7,7 +7,7 @@ use Carbon\Carbon as BaseCarbon;
 use Carbon\CarbonImmutable as BaseCarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportCarbonTest extends TestCase
 {

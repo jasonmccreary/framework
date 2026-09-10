@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDOException;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseQueryExceptionTest extends TestCase
 {

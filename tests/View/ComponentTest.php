@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Double;
 use Closure;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
@@ -11,11 +10,12 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\Factory as FactoryContract;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\HtmlString;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Component;
 use Illuminate\View\ComponentSlot;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 class ComponentTest extends TestCase
 {

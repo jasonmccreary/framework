@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Models\Integration\Post;
 use Illuminate\Tests\Database\Fixtures\Models\Integration\User;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseEloquentIntegrationTest extends TestCase
 {

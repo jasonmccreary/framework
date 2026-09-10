@@ -6,13 +6,13 @@ use Illuminate\Container\Container;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationImageFileRuleTest extends TestCase
 {

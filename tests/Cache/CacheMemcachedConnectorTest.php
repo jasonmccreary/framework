@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\MemcachedConnector;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Memcached;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 class CacheMemcachedConnectorTest extends TestCase
 {

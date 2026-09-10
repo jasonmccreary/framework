@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseManagerTest extends TestCase
 {

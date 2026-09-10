@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Foundation\Exceptions\Renderer;
 
-use JMac\Testing\Double;
 use Illuminate\Foundation\Exceptions\Renderer\Frame;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 class FrameTest extends TestCase

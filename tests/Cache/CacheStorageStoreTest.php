@@ -6,7 +6,7 @@ use Illuminate\Cache\Repository;
 use Illuminate\Cache\StorageStore;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class CacheStorageStoreTest extends TestCase
 {

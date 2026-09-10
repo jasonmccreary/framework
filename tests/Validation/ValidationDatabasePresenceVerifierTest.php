@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Closure;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\DatabasePresenceVerifier;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class ValidationDatabasePresenceVerifierTest extends TestCase
 {

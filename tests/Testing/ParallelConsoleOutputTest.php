@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Testing;
 
 use Illuminate\Testing\ParallelConsoleOutput;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 class ParallelConsoleOutputTest extends TestCase

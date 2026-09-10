@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Mail\Attachment;
 use Illuminate\Notifications\Messages\MailMessage;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class NotificationMailMessageTest extends TestCase
 {

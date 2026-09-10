@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Queue\Failed\DatabaseFailedJobProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 
 class DatabaseFailedJobProviderTest extends TestCase

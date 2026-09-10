@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,8 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use LogicException;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function Orchestra\Testbench\phpunit_version_compare;

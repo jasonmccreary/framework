@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Casts\AsVector;
@@ -11,9 +10,10 @@ use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\MariaDbGrammar;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Support\Collection;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentAsVectorCastTest extends TestCase
 {

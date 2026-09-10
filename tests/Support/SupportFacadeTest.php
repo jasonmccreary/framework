@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class SupportFacadeTest extends TestCase

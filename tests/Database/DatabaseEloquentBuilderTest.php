@@ -20,10 +20,10 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
 use PDO;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class DatabaseEloquentBuilderTest extends TestCase

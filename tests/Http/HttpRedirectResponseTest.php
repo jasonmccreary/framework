@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Http;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use BadMethodCallException;
 use Illuminate\Contracts\Support\MessageProvider;
 use Illuminate\Http\RedirectResponse;
@@ -11,7 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class HttpRedirectResponseTest extends TestCase

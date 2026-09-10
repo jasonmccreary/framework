@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\View;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Component;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\ComponentSlot;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 class ViewComponentTest extends TestCase

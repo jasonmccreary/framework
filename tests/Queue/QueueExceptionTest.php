@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Queue;
 use Illuminate\Queue\Jobs\RedisJob;
 use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\TimeoutExceededException;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class QueueExceptionTest extends TestCase
 {

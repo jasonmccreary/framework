@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Redis;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\RedisManager;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Redis;
 
 class RedisConnectorTest extends TestCase

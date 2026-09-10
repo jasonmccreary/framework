@@ -5,10 +5,10 @@ namespace Illuminate\Tests\Http;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use JsonSerializable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class HttpJsonResponseTest extends TestCase

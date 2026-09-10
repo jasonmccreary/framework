@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Foundation\CacheBasedMaintenanceMode;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class FoundationCacheBasedMaintenanceModeTest extends TestCase
 {

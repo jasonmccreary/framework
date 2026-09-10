@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\MessageBag;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportMessageBagTest extends TestCase
 {

@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Queue;
 use Illuminate\Foundation\Application;
 use Illuminate\Queue\Console\ListFailedCommand;
 use Illuminate\Queue\Failed\FailedJobProviderInterface;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 

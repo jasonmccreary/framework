@@ -3,12 +3,12 @@
 namespace Illuminate\Tests\Validation;
 
 use Exception;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class ValidationRequiredIfTest extends TestCase
 {

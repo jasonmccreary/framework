@@ -9,8 +9,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseTruncationTest extends TestCase
 {

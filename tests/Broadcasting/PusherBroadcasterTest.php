@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
-use JMac\Testing\Double;
 use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PusherBroadcasterTest extends TestCase

@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -15,10 +13,12 @@ use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithArrayInputPrompting;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithInputPrompting;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\CommandNotFoundException;

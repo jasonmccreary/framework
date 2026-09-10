@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\JsonSchema;
 
 use Illuminate\JsonSchema\Types\StringType;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class StringTypeTest extends TestCase
 {

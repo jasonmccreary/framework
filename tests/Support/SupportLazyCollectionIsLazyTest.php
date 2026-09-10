@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ItemNotFoundException;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\MultipleItemsFoundException;
 use Illuminate\Support\Sleep;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class SupportLazyCollectionIsLazyTest extends TestCase

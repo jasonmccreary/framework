@@ -13,6 +13,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\LazyCollection;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\Engines\EngineResolver;
@@ -23,7 +24,6 @@ use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 
 class ViewFactoryTest extends TestCase

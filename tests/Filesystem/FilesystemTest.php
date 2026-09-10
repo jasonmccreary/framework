@@ -2,16 +2,16 @@
 
 namespace Illuminate\Tests\Filesystem;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Testing\Assert;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\AfterClass;
 use PHPUnit\Framework\Attributes\BeforeClass;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
 use function Orchestra\Testbench\terminate;

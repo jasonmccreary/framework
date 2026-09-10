@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Pipeline;
 use Illuminate\Container\Container;
 use Illuminate\Pipeline\Hub;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class HubTest extends TestCase
 {

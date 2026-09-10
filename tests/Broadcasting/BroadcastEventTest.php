@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Broadcasting\InteractsWithBroadcasting;
 use Illuminate\Contracts\Broadcasting\Broadcaster;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Throwable;
 
 class BroadcastEventTest extends TestCase

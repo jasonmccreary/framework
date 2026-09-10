@@ -3,9 +3,9 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\BinaryCodec;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Uid\Ulid;
 

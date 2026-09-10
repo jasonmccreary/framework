@@ -6,8 +6,8 @@ use Illuminate\Http\Exceptions\MalformedUrlException;
 use Illuminate\Http\Middleware\ValidatePathEncoding;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class ValidatePathEncodingTest extends TestCase

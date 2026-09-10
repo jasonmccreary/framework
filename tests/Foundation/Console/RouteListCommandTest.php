@@ -6,7 +6,7 @@ use Illuminate\Console\Application;
 use Illuminate\Foundation\Console\RouteListCommand;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class RouteListCommandTest extends TestCase
 {

@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
-use JMac\Testing\Double;
 use Ably\AblyRest;
 use Illuminate\Broadcasting\Broadcasters\AblyBroadcaster;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AblyBroadcasterTest extends TestCase

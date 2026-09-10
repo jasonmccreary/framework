@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Bus;
 
-use JMac\Testing\Double;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\BatchRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Testing\Fakes\BatchFake;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class BusBatchableTest extends TestCase
 {

@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Routing;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\RouteAction;
+use Illuminate\Tests\TestCase;
 use Laravel\SerializableClosure\SerializableClosure;
-use PHPUnit\Framework\TestCase;
 
 class RouteActionTest extends TestCase
 {

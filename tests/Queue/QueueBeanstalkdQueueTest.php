@@ -8,6 +8,7 @@ use Illuminate\Queue\BeanstalkdQueue;
 use Illuminate\Queue\Jobs\BeanstalkdJob;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
 use Pheanstalk\Contract\JobIdInterface;
@@ -18,7 +19,6 @@ use Pheanstalk\Pheanstalk;
 use Pheanstalk\Values\Job;
 use Pheanstalk\Values\TubeList;
 use Pheanstalk\Values\TubeName;
-use PHPUnit\Framework\TestCase;
 
 class QueueBeanstalkdQueueTest extends TestCase
 {

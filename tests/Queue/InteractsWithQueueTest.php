@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Queue;
 use Exception;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 
 class InteractsWithQueueTest extends TestCase
 {

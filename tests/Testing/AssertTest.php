@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Testing;
 
 use Illuminate\Testing\Assert;
 use Illuminate\Testing\Exceptions\InvalidArgumentException;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class AssertTest extends TestCase

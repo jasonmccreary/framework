@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Matching\Argument;
 use Closure;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Matching\Argument;
 use Mockery\LegacyMockInterface;
-use PHPUnit\Framework\TestCase;
 
 class CacheSpyMemoTest extends TestCase
 {

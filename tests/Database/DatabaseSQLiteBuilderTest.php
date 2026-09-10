@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseSQLiteBuilderTest extends TestCase
 {

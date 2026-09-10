@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Http;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
@@ -45,13 +43,15 @@ use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use JsonSerializable;
 use OutOfBoundsException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;

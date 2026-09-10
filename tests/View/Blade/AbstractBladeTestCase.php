@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\View\Blade;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Component;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 abstract class AbstractBladeTestCase extends TestCase
 {

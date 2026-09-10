@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Testing;
 
-use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\View\View;
@@ -25,11 +24,12 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Testing\TestResponse;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use JsonSerializable;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;

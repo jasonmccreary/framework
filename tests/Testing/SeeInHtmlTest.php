@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Testing;
 
 use Illuminate\Testing\Constraints\SeeInHtml;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class SeeInHtmlTest extends TestCase
 {

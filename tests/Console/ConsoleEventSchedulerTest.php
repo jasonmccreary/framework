@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use JMac\Testing\Double;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\CacheEventMutex;
@@ -11,7 +10,8 @@ use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\Scheduling\SchedulingMutex;
 use Illuminate\Container\Container;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class ConsoleEventSchedulerTest extends TestCase
 {

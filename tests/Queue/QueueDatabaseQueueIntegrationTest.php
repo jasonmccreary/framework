@@ -13,7 +13,7 @@ use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Queue\Queue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class QueueDatabaseQueueIntegrationTest extends TestCase
 {

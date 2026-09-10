@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 use SortDirection;
 
 class DatabaseEloquentMorphToManyTest extends TestCase

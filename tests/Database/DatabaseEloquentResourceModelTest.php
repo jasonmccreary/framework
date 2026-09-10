@@ -6,8 +6,8 @@ use Illuminate\Tests\Database\Fixtures\Models\EloquentResourceTestResourceModel;
 use Illuminate\Tests\Database\Fixtures\Models\EloquentResourceTestResourceModelWithGuessableResource;
 use Illuminate\Tests\Database\Fixtures\Models\EloquentResourceTestResourceModelWithUseResourceAttribute;
 use Illuminate\Tests\Database\Fixtures\Resources\EloquentResourceTestJsonResource;
+use Illuminate\Tests\TestCase;
 use LogicException;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentResourceModelTest extends TestCase
 {

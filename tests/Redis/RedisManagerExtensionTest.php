@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Redis;
 use Illuminate\Contracts\Redis\Connector;
 use Illuminate\Foundation\Application;
 use Illuminate\Redis\RedisManager;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 
 class RedisManagerExtensionTest extends TestCase
 {

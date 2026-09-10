@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
 

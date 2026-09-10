@@ -3,9 +3,9 @@
 namespace Illuminate\Tests\Database;
 
 use Illuminate\Database\LostConnectionDetector;
+use Illuminate\Tests\TestCase;
 use PDOException;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseConnectionLostTest extends TestCase
 {

@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Foundation\Console;
 
 use Illuminate\Foundation\Console\ServeCommand;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class ServeCommandLogParserTest extends TestCase
 {

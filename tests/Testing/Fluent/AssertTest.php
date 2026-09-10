@@ -4,10 +4,10 @@ namespace Illuminate\Tests\Testing\Fluent;
 
 use Illuminate\Support\Collection;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Illuminate\Tests\TestCase;
 use Illuminate\Tests\Testing\Fixtures\ArrayableStubObject;
 use Illuminate\Tests\Testing\Fixtures\BackedEnum;
 use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use TypeError;
 

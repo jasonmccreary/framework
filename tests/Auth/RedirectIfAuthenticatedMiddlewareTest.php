@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Auth;
 
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class RedirectIfAuthenticatedMiddlewareTest extends TestCase
 {

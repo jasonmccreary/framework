@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Number;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 class SupportNumberTest extends TestCase
 {

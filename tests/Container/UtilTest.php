@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Container;
 
 use Illuminate\Container\Util;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionParameter;
 use stdClass;
 

@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Session;
 
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use SessionHandlerInterface;
 
 class ArraySessionHandlerTest extends TestCase

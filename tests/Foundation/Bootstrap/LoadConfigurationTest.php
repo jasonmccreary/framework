@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionClass;
 
 class LoadConfigurationTest extends TestCase

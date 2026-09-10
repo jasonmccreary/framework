@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Session;
 
-use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 use function Illuminate\Filesystem\join_paths;
 

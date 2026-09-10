@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\ParallelTesting as ParallelTestingFacade;
 use Illuminate\Testing\Concerns\TestCaches;
 use Illuminate\Testing\ParallelTesting;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use ReflectionProperty;
 

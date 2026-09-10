@@ -7,8 +7,8 @@ use Illuminate\Database\Connection;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Tests\TestCase;
 use PDO;
-use PHPUnit\Framework\TestCase;
 
 class QueryDurationThresholdTest extends TestCase
 {

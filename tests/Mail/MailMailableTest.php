@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Contracts\View\Factory;
@@ -12,8 +11,9 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Mail\Mailer;
 use Illuminate\Mail\Transport\ArrayTransport;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\TestCase;
 
 class MailMailableTest extends TestCase
 {

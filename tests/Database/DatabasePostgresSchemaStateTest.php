@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Database;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\PostgresSchemaState;
+use Illuminate\Tests\TestCase;
 use PDO;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 class DatabasePostgresSchemaStateTest extends TestCase

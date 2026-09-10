@@ -2,17 +2,17 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Connectors\Connector;
 use Illuminate\Database\Connectors\MySqlConnector;
 use Illuminate\Database\Connectors\PostgresConnector;
 use Illuminate\Database\Connectors\SQLiteConnector;
 use Illuminate\Database\Connectors\SqlServerConnector;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseConnectorTest extends TestCase
 {

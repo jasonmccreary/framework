@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\Console\Scheduling;
 
-use JMac\Testing\Double;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Container\Container;
 use Illuminate\Support\ProcessUtils;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 
 use function Illuminate\Support\php_binary;
 

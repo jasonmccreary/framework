@@ -12,9 +12,9 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Events\Dispatcher as Event;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class CacheManagerTest extends TestCase

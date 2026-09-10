@@ -6,7 +6,7 @@ use Illuminate\Database\ClassMorphViolationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseEloquentStrictMorphsTest extends TestCase
 {

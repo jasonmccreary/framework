@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Events;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Error;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Tests\Events\Fixtures\ExampleEvent;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class EventsDispatcherTest extends TestCase
 {

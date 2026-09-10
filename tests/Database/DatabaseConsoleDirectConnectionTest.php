@@ -2,14 +2,14 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Console\Concerns\InteractsWithPooledConnections;
 use Illuminate\Database\Console\DbCommand;
 use Illuminate\Foundation\Application;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Console\Input\ArrayInput;
 
 class DatabaseConsoleDirectConnectionTest extends TestCase

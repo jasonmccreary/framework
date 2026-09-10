@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Cache;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Redis\Factory;
 use Illuminate\Redis\Connections\PhpRedisConnection;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 class CacheRedisStoreTest extends TestCase
 {

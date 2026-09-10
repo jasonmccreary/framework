@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Double;
 use Illuminate\Bus\Queueable;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,8 +15,9 @@ use Illuminate\Queue\Attributes\Connection;
 use Illuminate\Queue\Attributes\Delay;
 use Illuminate\Queue\Attributes\Queue as QueueAttribute;
 use Illuminate\Support\Testing\Fakes\QueueFake;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Laravel\SerializableClosure\SerializableClosure;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
 class MailableQueuedTest extends TestCase

@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\ConfigurationUrlParser;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class ConfigurationUrlParserTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseEloquentBelongsToManyOrFailTest extends TestCase
 {

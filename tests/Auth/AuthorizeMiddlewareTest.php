@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Auth;
 
-use JMac\Testing\Double;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\Middleware\Authorize;
@@ -17,7 +16,8 @@ use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContrac
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Router;
 use Illuminate\Tests\Auth\Fixtures\AbilitiesEnum;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 include_once 'Fixtures/Enums.php';

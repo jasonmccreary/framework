@@ -6,9 +6,9 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Concerns\TestDatabases;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 class TestDatabasesTest extends TestCase

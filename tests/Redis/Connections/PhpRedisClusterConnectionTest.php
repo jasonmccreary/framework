@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Redis\Connections;
 
-use JMac\Testing\Double;
 use Illuminate\Redis\Connections\PhpRedisClusterConnection;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 #[RequiresPhpExtension('redis')]
 class PhpRedisClusterConnectionTest extends TestCase

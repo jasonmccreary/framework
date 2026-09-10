@@ -10,7 +10,7 @@ use Illuminate\Cache\Limiters\LimiterTimeoutException;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Cache\Store;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Throwable;
 
 class ConcurrencyLimiterTest extends TestCase

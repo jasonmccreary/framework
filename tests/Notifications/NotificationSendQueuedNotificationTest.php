@@ -10,9 +10,9 @@ use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\Attributes\FailOnTimeout;
 use Illuminate\Support\Collection;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 
 class NotificationSendQueuedNotificationTest extends TestCase
 {

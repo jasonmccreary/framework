@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use ArrayAccess;
 use BadMethodCallException;
 use Closure;
@@ -12,9 +10,11 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Contracts\View\Engine;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class ViewTest extends TestCase
 {

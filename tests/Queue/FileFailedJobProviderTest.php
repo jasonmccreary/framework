@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Queue\Failed\FileFailedJobProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FileFailedJobProviderTest extends TestCase
 {

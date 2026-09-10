@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Process\Process;
 
 use function Illuminate\Support\php_binary;

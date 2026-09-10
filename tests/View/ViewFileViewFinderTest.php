@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\FileViewFinder;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class ViewFileViewFinderTest extends TestCase
 {

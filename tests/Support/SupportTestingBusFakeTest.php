@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
@@ -12,9 +11,10 @@ use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Illuminate\Support\Testing\Fakes\BatchRepositoryFake;
 use Illuminate\Support\Testing\Fakes\BusFake;
 use Illuminate\Support\Testing\Fakes\PendingBatchFake;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingBusFakeTest extends TestCase
 {

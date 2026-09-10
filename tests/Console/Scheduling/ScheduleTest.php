@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Console\Scheduling;
 
-use JMac\Testing\Double;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\Scheduling\SchedulingMutex;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Tests\Queue\Fixtures\JobToTestWithSchedule;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Schedule::class)]
 final class ScheduleTest extends TestCase

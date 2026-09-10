@@ -2,12 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Schema\SqliteSchemaState;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
 class DatabaseSqliteSchemaStateTest extends TestCase

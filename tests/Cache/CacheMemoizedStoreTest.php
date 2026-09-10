@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use BadMethodCallException;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\MemoizedStore;
@@ -10,7 +9,8 @@ use Illuminate\Cache\NullStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class CacheMemoizedStoreTest extends TestCase
 {

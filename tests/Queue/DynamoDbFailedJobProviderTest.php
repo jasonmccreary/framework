@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Double;
 use Aws\DynamoDb\DynamoDbClient;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
@@ -10,7 +9,8 @@ use Exception;
 use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DynamoDbFailedJobProviderTest extends TestCase
 {

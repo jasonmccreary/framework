@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Http\Middleware;
 
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class TrustProxiesTest extends TestCase
 {

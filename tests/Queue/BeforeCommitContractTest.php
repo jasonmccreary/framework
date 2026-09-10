@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class BeforeCommitContractTest extends TestCase
 {

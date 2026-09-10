@@ -12,8 +12,8 @@ use Illuminate\Queue\Events\QueueResumed;
 use Illuminate\Queue\Events\QueuesPaused;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class QueuePauseResumeTest extends TestCase

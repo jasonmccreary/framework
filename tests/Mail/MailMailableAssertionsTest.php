@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Mail;
 
 use Illuminate\Mail\Mailable;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\TestCase;
 
 class MailMailableAssertionsTest extends TestCase
 {

@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Container;
 
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class ContextualBindingTest extends TestCase
 {

@@ -6,13 +6,13 @@ use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\Tests\JsonSchema\Fixtures\Enums\IntBackedEnum;
 use Illuminate\Tests\JsonSchema\Fixtures\Enums\StringBackedEnum;
 use Illuminate\Tests\JsonSchema\Fixtures\Enums\UnitEnum;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use Opis\JsonSchema\Resolvers\SchemaResolver;
 use Opis\JsonSchema\SchemaLoader;
 use Opis\JsonSchema\Validator;
 use Opis\Uri\Uri;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Stringable;
 

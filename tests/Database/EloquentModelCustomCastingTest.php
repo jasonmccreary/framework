@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\TestCase;
 
 #[Group('integration')]
 class EloquentModelCustomCastingTest extends TestCase

@@ -2,15 +2,15 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Double;
 use ErrorException;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\ViewException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ViewCompilerEngineTest extends TestCase

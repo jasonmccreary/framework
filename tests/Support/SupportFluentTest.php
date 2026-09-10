@@ -9,9 +9,9 @@ use Illuminate\Support\Fluent;
 use Illuminate\Tests\Support\Fixtures\TestBackedEnum;
 use Illuminate\Tests\Support\Fixtures\TestEnum;
 use Illuminate\Tests\Support\Fixtures\TestStringBackedEnum;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use IteratorAggregate;
-use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 
 include_once 'Fixtures/Enums.php';

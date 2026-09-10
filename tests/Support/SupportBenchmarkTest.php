@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Benchmark;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportBenchmarkTest extends TestCase
 {

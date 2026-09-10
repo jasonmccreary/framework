@@ -8,9 +8,9 @@ use Illuminate\Cache\Console\ClearCommand;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 

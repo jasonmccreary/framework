@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Traits\Tappable;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportTappableTest extends TestCase
 {

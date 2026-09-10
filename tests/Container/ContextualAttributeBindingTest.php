@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Container;
 
-use JMac\Testing\Double;
 use Attribute;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Cache\CacheManager;
@@ -33,7 +32,8 @@ use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Log\LogManager;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Psr\Log\LoggerInterface;
 use ReflectionParameter;
 

@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation\Configuration;
 
-use JMac\Testing\Double;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
@@ -20,7 +19,8 @@ use Illuminate\Http\Middleware\TrustHosts;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 

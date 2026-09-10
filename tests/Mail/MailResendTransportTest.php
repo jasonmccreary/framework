@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Double;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Transport\ResendTransport;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Resend\Contracts\Client;
 use Resend\Email as ResendEmail;
 use Resend\Service\Email as EmailService;

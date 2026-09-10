@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
 use Illuminate\Database\Seeder;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class TestSeeder extends Seeder

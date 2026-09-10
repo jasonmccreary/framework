@@ -11,10 +11,10 @@ use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingQueueFakeTest extends TestCase
 {

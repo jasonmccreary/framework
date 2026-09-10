@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Http;
 
 use Illuminate\Http\Testing\MimeType;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 class HttpMimeTypeTest extends TestCase

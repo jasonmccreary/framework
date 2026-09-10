@@ -5,11 +5,11 @@ namespace Illuminate\Tests\Validation;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\InvokableValidationRule;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationInvokableRuleTest extends TestCase
 {

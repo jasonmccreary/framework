@@ -8,9 +8,9 @@ use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
+use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
 use JMac\Testing\Matching\Argument;
-use PHPUnit\Framework\TestCase;
 
 class NotificationDatabaseChannelTest extends TestCase
 {

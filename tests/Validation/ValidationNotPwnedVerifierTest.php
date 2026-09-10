@@ -2,16 +2,16 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\Double;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\NotPwnedVerifier;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class ValidationNotPwnedVerifierTest extends TestCase
 {

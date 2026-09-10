@@ -8,7 +8,7 @@ use Illuminate\Support\NodePackageManagers\Bun;
 use Illuminate\Support\NodePackageManagers\Npm;
 use Illuminate\Support\NodePackageManagers\Pnpm;
 use Illuminate\Support\NodePackageManagers\Yarn;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportNodePackageManagerTest extends TestCase
 {

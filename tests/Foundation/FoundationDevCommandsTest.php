@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
@@ -12,8 +11,9 @@ use Illuminate\Foundation\DevCommandMode;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class FoundationDevCommandsTest extends TestCase

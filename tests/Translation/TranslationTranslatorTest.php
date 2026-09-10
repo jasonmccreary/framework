@@ -2,17 +2,17 @@
 
 namespace Illuminate\Tests\Translation;
 
-use JMac\Testing\Double;
 use Illuminate\Contracts\Translation\Loader;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Tests\TestCase;
 use Illuminate\Tests\Translation\Fixtures\Enums\Bar;
 use Illuminate\Tests\Translation\Fixtures\Enums\Baz;
 use Illuminate\Tests\Translation\Fixtures\Enums\Foo;
 use Illuminate\Translation\MessageSelector;
 use Illuminate\Translation\Translator;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 class TranslationTranslatorTest extends TestCase
 {
