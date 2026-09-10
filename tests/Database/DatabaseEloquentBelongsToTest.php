@@ -2,13 +2,12 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Tests\Database\Fixtures\Enums\Bar;
-use Mockery;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToTest extends TestCase
@@ -198,7 +197,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenIncrementing()
     {
         $relation = $this->getRelation();
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', Mockery::mustBe([]));
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -206,7 +205,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenIncrementingAndNonIntKeyType()
     {
         $relation = $this->getRelation(null, 'string');
-        $relation->getQuery()->expects('whereIn')->with('relation.id', Mockery::mustBe([]));
+        $relation->getQuery()->expects('whereIn')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }
@@ -214,7 +213,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testDefaultEagerConstraintsWhenNotIncrementing()
     {
         $relation = $this->getRelation();
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', Mockery::mustBe([]));
+        $relation->getQuery()->expects('whereIntegerInRaw')->with('relation.id', []);
         $models = [new MissingEloquentBelongsToModelStub, new MissingEloquentBelongsToModelStub];
         $relation->addEagerConstraints($models);
     }

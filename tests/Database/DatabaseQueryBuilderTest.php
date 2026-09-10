@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Database;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use BadMethodCallException;
 use Closure;
 use DateInterval;
@@ -37,7 +35,8 @@ use Illuminate\Tests\Database\Fixtures\Enums\IntegerStatus;
 use Illuminate\Tests\Database\Fixtures\Enums\NonBackedStatus;
 use Illuminate\Tests\Database\Fixtures\Enums\StringStatus;
 use InvalidArgumentException;
-use Mockery;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -5058,7 +5057,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             Double::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(Mockery::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(false);
         $builder->expects('insert')->with(['email' => 'foo', 'name' => 'bar'])->returns(true);
 
@@ -5069,7 +5068,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             Double::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(Mockery::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(true);
         $builder->expects('update')->with(['name' => 'bar'])->returns(1);
 
@@ -5083,7 +5082,7 @@ class DatabaseQueryBuilderTest extends TestCase
             new Grammar($connection),
             Double::for(Processor::class)));
 
-        $builder->expects('where')->with(['email' => 'foo'])->returns(Mockery::self());
+        $builder->expects('where')->with(['email' => 'foo'])->returns($builder);
         $builder->expects('exists')->returns(true);
 
         $this->assertTrue($builder->updateOrInsert(['email' => 'foo']));

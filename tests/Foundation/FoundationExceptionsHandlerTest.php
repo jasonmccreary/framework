@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Foundation;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Closure;
 use Exception;
 use Illuminate\Cache\ArrayStore;
@@ -31,7 +29,8 @@ use Illuminate\Testing\Assert;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
-use Mockery;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use OutOfRangeException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
@@ -97,7 +96,7 @@ class FoundationExceptionsHandlerTest extends TestCase
     {
         $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
-        $logger->expects('error')->with('Exception message', Mockery::subset(['foo' => 'bar']));
+        $logger->expects('error')->with('Exception message', Argument::satisfies(fn ($actual) => is_array($actual) && $actual === array_replace_recursive($actual, ['foo' => 'bar'])));
 
         $this->handler->report(new ContextProvidingException('Exception message'));
     }
