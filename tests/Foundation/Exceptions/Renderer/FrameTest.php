@@ -4,7 +4,6 @@ namespace Illuminate\Tests\Foundation\Exceptions\Renderer;
 
 use JMac\Testing\Double;
 use Illuminate\Foundation\Exceptions\Renderer\Frame;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
 use PHPUnit\Framework\TestCase;

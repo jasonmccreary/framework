@@ -15,7 +15,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
-use Mockery;
 
 class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 {

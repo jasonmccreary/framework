@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentMorphTest extends TestCase

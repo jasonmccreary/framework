@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbBuilderTest extends TestCase

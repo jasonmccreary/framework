@@ -11,7 +11,6 @@ use Illuminate\Bus\PendingBatch;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;

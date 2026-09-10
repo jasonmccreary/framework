@@ -23,7 +23,6 @@ use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 use stdClass;

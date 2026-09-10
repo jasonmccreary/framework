@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Cache;
 use JMac\Testing\Double;
 use Illuminate\Cache\MemcachedConnector;
 use Memcached;
-use Mockery;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 

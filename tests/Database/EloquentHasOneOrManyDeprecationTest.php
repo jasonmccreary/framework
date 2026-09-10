@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class EloquentHasOneOrManyDeprecationTest extends TestCase

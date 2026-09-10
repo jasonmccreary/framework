@@ -11,7 +11,6 @@ use Illuminate\Http\Exceptions\OriginMismatchException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class PreventRequestForgeryTest extends TestCase

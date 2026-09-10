@@ -5,7 +5,6 @@ namespace Illuminate\Tests\View\Blade;
 use JMac\Testing\Double;
 use Illuminate\View\Component;
 use Illuminate\View\ComponentAttributeBag;
-use Mockery;
 
 class BladeComponentsTest extends AbstractBladeTestCase
 {

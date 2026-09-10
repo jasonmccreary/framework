@@ -9,7 +9,6 @@ use Illuminate\Console\Scheduling\ScheduleWorkCommand;
 use Illuminate\Console\Signals;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
-use Mockery;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;

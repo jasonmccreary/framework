@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Pagination;
 use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\AbstractPaginator;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class PaginatorLoadMorphTest extends TestCase

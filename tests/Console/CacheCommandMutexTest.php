@@ -9,7 +9,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Cache\Repository;
-use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 

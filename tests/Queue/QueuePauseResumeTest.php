@@ -12,7 +12,6 @@ use Illuminate\Queue\Events\QueueResumed;
 use Illuminate\Queue\Events\QueuesPaused;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

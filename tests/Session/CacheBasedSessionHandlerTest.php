@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Session;
 use JMac\Testing\Double;
 use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Session\CacheBasedSessionHandler;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class CacheBasedSessionHandlerTest extends TestCase

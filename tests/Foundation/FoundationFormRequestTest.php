@@ -20,7 +20,6 @@ use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator as TranslatorConcrete;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\ValidationException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class FoundationFormRequestTest extends TestCase

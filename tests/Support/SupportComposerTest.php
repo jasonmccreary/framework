@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Support;
 use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 

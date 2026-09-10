@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentRelationTest extends TestCase

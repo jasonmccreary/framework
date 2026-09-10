@@ -9,7 +9,6 @@ use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSQLiteBuilderTest extends TestCase

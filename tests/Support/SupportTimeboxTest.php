@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Support;
 use JMac\Testing\Double;
 use Exception;
 use Illuminate\Support\Timebox;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class SupportTimeboxTest extends TestCase

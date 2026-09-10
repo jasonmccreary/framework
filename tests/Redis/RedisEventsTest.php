@@ -9,7 +9,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Redis\Events\CommandFailed;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Redis;
 

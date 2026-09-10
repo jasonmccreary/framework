@@ -9,7 +9,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\Attributes\Delay;
 use Illuminate\Queue\FailoverQueue;
 use Illuminate\Queue\QueueManager;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class FailoverQueueTest extends TestCase

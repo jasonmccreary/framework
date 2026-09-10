@@ -9,7 +9,6 @@ use Illuminate\Foundation\Exceptions\Renderer\Listener;
 use Illuminate\Foundation\Exceptions\Renderer\Renderer;
 use Illuminate\Foundation\Providers\FoundationServiceProvider;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithConfig;
 use Orchestra\Testbench\TestCase;
 use RuntimeException;

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase

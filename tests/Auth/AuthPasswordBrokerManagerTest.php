@@ -7,7 +7,6 @@ use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class AuthPasswordBrokerManagerTest extends TestCase

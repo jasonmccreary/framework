@@ -28,7 +28,6 @@ use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Queue\WorkerStopReason;
 use Illuminate\Support\Carbon;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

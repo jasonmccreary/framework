@@ -13,7 +13,6 @@ use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
-use Mockery;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 

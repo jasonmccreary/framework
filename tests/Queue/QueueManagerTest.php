@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Illuminate\Queue\QueueManager;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

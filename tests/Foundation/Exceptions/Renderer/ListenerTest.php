@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Foundation\Exceptions\Renderer;
 use JMac\Testing\Double;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Exceptions\Renderer\Listener;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ListenerTest extends TestCase

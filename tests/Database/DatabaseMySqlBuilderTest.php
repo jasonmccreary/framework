@@ -9,7 +9,6 @@ use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as MySqlGrammarSchema;
 use Illuminate\Database\Schema\MySqlBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMySqlBuilderTest extends TestCase

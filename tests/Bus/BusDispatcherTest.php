@@ -12,7 +12,6 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueRoutes;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

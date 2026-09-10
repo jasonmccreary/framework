@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Support\Carbon;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 use function Illuminate\Filesystem\join_paths;

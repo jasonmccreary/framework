@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithMigration;
 use RuntimeException;
 

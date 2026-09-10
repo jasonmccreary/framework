@@ -47,7 +47,6 @@ use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
 use InvalidArgumentException;
 use JsonSerializable;
-use Mockery;
 use OutOfBoundsException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\DataProvider;

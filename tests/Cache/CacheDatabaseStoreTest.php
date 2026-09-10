@@ -10,7 +10,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\SQLiteConnection;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

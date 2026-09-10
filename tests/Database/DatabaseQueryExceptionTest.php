@@ -7,7 +7,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Mockery;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 

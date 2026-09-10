@@ -10,7 +10,6 @@ use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class AuthDatabaseTokenRepositoryTest extends TestCase

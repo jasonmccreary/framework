@@ -17,7 +17,6 @@ use Illuminate\Tests\Http\Fixtures\TestEnum;
 use Illuminate\Tests\Http\Fixtures\TestEnumBacked;
 use Illuminate\Tests\Http\Fixtures\TestIntegerEnumBacked;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

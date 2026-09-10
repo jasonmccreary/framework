@@ -12,7 +12,6 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Tests\Console\Fixtures\FakeEventMutex;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class EventPingTest extends TestCase

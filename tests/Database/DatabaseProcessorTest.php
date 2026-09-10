@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Processors\Processor;
-use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
 

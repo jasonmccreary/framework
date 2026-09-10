@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Foundation\Bootstrap;
 use JMac\Testing\Double;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class LoadEnvironmentVariablesTest extends TestCase

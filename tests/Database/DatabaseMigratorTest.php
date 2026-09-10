@@ -8,7 +8,6 @@ use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 

@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Exception;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\InteractsWithQueue;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class InteractsWithQueueTest extends TestCase

@@ -9,7 +9,6 @@ use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Console\Concerns\InteractsWithPooledConnections;
 use Illuminate\Database\Console\DbCommand;
 use Illuminate\Foundation\Application;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 

@@ -8,7 +8,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Processors\Processor;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMySqlQueryGrammarTest extends TestCase

@@ -9,7 +9,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class FoundationProviderRepositoryTest extends TestCase

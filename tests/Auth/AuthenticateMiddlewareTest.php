@@ -13,7 +13,6 @@ use Illuminate\Config\Repository;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Database;
 use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSqlServerQueryGrammarTest extends TestCase

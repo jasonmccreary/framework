@@ -9,7 +9,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

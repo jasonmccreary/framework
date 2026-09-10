@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Sleep;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class SupportLazyCollectionTest extends TestCase

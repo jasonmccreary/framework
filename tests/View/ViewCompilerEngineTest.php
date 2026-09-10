@@ -10,7 +10,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\ViewException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

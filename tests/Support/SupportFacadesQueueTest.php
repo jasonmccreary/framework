@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\Factory as QueueContract;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Testing\Fakes\QueueFake;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class SupportFacadesQueueTest extends TestCase

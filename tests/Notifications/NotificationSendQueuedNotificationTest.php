@@ -11,7 +11,6 @@ use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\Attributes\FailOnTimeout;
 use Illuminate\Support\Collection;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class NotificationSendQueuedNotificationTest extends TestCase

@@ -7,7 +7,6 @@ use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Component;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractBladeTestCase extends TestCase

@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Models\Money\Price;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\RedisTagSet;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

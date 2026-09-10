@@ -27,7 +27,6 @@ use Illuminate\Tests\Support\Fixtures\TestStringBackedEnum;
 use Illuminate\Tests\Support\Fixtures\TestTraversableAndJsonSerializableObject;
 use InvalidArgumentException;
 use JsonSerializable;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;

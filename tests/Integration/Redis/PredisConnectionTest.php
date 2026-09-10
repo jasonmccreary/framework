@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithConfig;
 use Orchestra\Testbench\TestCase;
 use Predis\Client;

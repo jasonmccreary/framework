@@ -11,7 +11,6 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMigratorIntegrationTest extends TestCase

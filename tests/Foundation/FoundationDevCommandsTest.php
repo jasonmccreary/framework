@@ -12,7 +12,6 @@ use Illuminate\Foundation\DevCommandMode;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
-use Mockery;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;

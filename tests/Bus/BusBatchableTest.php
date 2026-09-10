@@ -7,7 +7,6 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Bus\BatchRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Testing\Fakes\BatchFake;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class BusBatchableTest extends TestCase

@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Hashing\Hasher;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

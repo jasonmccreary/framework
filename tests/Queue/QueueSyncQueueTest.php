@@ -15,7 +15,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Queue\SyncQueue;
 use LogicException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class QueueSyncQueueTest extends TestCase

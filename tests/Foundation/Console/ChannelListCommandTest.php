@@ -8,7 +8,6 @@ use Illuminate\Contracts\Broadcasting\Broadcaster as BroadcasterContract;
 use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Foundation\Console\ChannelListCommand;
 use Illuminate\Support\Collection;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ChannelListCommandTest extends TestCase

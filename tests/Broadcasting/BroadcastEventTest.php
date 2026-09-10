@@ -8,7 +8,6 @@ use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Broadcasting\InteractsWithBroadcasting;
 use Illuminate\Contracts\Broadcasting\Broadcaster;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 

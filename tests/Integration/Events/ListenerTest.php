@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Integration\Events;
 use JMac\Testing\Double;
 use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class ListenerTest extends TestCase

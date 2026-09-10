@@ -9,7 +9,6 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\PasswordBroker as PasswordBrokerContract;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Support\Arr;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 

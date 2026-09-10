@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Queue;
 use JMac\Testing\Double;
 use Illuminate\Queue\Listener;
 use Illuminate\Queue\ListenerOptions;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 

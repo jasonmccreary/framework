@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Store;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticateSessionTest extends TestCase

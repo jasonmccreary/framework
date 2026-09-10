@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Translation;
 use JMac\Testing\Double;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Translation\FileLoader;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class TranslationFileLoaderTest extends TestCase

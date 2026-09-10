@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar;
 use Illuminate\Database\Schema\SqlServerBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class SqlServerBuilderTest extends TestCase

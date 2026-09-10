@@ -13,7 +13,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Events\Dispatcher as Event;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

@@ -4,7 +4,6 @@ namespace Illuminate\Tests\Bus;
 
 use JMac\Testing\Double;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use stdClass;

@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Mockery;
 
 class WithoutOverlappingJobsTest extends QueueTestCase
 {

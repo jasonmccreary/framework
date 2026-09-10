@@ -9,7 +9,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseTruncationTest extends TestCase

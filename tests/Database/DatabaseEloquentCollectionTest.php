@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as BaseCollection;
 use LogicException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

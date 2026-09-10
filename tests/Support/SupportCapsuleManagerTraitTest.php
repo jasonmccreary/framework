@@ -7,7 +7,6 @@ use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Traits\CapsuleManagerTrait;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class SupportCapsuleManagerTraitTest extends TestCase

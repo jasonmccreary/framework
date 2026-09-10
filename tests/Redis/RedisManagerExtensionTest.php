@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Contracts\Redis\Connector;
 use Illuminate\Foundation\Application;
 use Illuminate\Redis\RedisManager;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class RedisManagerExtensionTest extends TestCase

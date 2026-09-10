@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class JsonResourceTest extends TestCase

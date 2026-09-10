@@ -17,7 +17,6 @@ use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContrac
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Router;
 use Illuminate\Tests\Auth\Fixtures\AbilitiesEnum;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

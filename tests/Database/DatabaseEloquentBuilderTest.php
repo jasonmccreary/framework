@@ -22,7 +22,6 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
-use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use stdClass;

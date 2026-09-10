@@ -13,7 +13,6 @@ use Illuminate\Mail\Message;
 use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\HtmlString;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\Address;
 

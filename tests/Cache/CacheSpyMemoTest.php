@@ -9,7 +9,6 @@ use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
-use Mockery;
 use Mockery\LegacyMockInterface;
 use PHPUnit\Framework\TestCase;
 

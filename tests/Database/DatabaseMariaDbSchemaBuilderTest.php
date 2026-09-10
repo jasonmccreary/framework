@@ -7,7 +7,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseMariaDbSchemaBuilderTest extends TestCase

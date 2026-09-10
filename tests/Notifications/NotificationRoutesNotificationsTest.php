@@ -8,7 +8,6 @@ use Illuminate\Contracts\Notifications\Dispatcher;
 use Illuminate\Notifications\RoutesNotifications;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

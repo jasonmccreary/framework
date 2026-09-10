@@ -7,7 +7,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\PostgresBuilder;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabasePostgresBuilderTest extends TestCase

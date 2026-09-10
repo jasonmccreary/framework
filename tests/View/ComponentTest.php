@@ -15,7 +15,6 @@ use Illuminate\View\Component;
 use Illuminate\View\ComponentSlot;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ComponentTest extends TestCase

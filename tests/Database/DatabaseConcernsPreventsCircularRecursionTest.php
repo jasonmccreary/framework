@@ -4,7 +4,6 @@ namespace Illuminate\Tests\Database;
 
 use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Concerns\PreventsCircularRecursion;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseConcernsPreventsCircularRecursionTest extends TestCase

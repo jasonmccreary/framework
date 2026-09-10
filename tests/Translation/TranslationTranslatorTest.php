@@ -12,7 +12,6 @@ use Illuminate\Tests\Translation\Fixtures\Enums\Foo;
 use Illuminate\Translation\MessageSelector;
 use Illuminate\Translation\Translator;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class TranslationTranslatorTest extends TestCase

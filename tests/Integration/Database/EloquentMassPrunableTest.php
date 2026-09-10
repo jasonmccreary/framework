@@ -13,7 +13,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use LogicException;
-use Mockery;
 
 class EloquentMassPrunableTest extends DatabaseTestCase
 {

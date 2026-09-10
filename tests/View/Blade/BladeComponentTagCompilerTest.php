@@ -13,7 +13,6 @@ use Illuminate\View\Compilers\ComponentTagCompiler;
 use Illuminate\View\Component;
 use Illuminate\View\ComponentAttributeBag;
 use InvalidArgumentException;
-use Mockery;
 
 class BladeComponentTagCompilerTest extends AbstractBladeTestCase
 {

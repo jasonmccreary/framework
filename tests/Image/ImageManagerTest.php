@@ -17,7 +17,6 @@ use Illuminate\Image\ImageException;
 use Illuminate\Image\ImageManager;
 use Illuminate\Image\ImagePipeline;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ImageManagerTest extends TestCase

@@ -6,7 +6,6 @@ use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Queue\Jobs\RedisJob;
 use Illuminate\Queue\RedisQueue;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

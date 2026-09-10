@@ -15,7 +15,6 @@ use Illuminate\Tests\Routing\Fixtures\IntegerEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteDomainEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteNameEnum;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 

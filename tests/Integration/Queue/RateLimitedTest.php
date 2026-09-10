@@ -17,7 +17,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Carbon;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class RateLimitedTest extends TestCase

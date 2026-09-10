@@ -9,7 +9,6 @@ use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Tests\Events\Fixtures\ExampleEvent;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class EventsDispatcherTest extends TestCase

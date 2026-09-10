@@ -23,7 +23,6 @@ use Illuminate\Queue\QueueRoutes;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class NotificationChannelManagerTest extends TestCase

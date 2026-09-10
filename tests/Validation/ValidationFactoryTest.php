@@ -8,7 +8,6 @@ use Illuminate\Contracts\Translation\Translator as TranslatorInterface;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\PresenceVerifierInterface;
 use Illuminate\Validation\Validator;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 

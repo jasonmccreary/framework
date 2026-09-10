@@ -9,7 +9,6 @@ use Illuminate\Container\Container;
 use Illuminate\Support\ProcessUtils;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
-use Mockery;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
 use PHPUnit\Framework\TestCase;
 

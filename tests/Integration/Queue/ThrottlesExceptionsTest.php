@@ -14,7 +14,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Support\Carbon;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 use RuntimeException;
 

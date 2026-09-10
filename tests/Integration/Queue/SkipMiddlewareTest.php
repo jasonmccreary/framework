@@ -10,7 +10,6 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\Skip;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class SkipMiddlewareTest extends TestCase

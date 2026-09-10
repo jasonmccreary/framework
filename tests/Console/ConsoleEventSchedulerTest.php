@@ -11,7 +11,6 @@ use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\Scheduling\SchedulingMutex;
 use Illuminate\Container\Container;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ConsoleEventSchedulerTest extends TestCase

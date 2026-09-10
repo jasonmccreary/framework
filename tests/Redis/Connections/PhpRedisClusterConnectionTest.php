@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Redis\Connections;
 use JMac\Testing\Double;
 use Illuminate\Redis\Connections\PhpRedisClusterConnection;
 use InvalidArgumentException;
-use Mockery;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
