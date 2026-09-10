@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\Double;
 use Carbon\CarbonInterval;
 use Carbon\Unit;
 use Illuminate\Http\Request;
@@ -1496,7 +1497,7 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCallsSession()
     {
         $request = Request::create('/');
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('getOldInput')->with('foo', 'bar')->andReturn('boom');
         $request->setLaravelSession($session);
         $this->assertSame('boom', $request->old('foo', 'bar'));
@@ -1505,7 +1506,7 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCallsSessionWhenDefaultIsArray()
     {
         $request = Request::create('/');
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('getOldInput')->with('foo', ['bar'])->andReturn(['bar']);
         $request->setLaravelSession($session);
         $this->assertSame(['bar'], $request->old('foo', ['bar']));
@@ -1514,9 +1515,9 @@ class HttpRequestTest extends TestCase
     public function testOldMethodCanGetDefaultValueFromModelByKey()
     {
         $request = Request::create('/');
-        $model = Mockery::mock(Price::class);
+        $model = Double::for(Price::class);
         $model->expects('getAttribute')->with('name')->andReturn('foobar');
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('getOldInput')->with('name', 'foobar')->andReturn('foobar');
         $request->setLaravelSession($session);
         $this->assertSame('foobar', $request->old('name', $model));
@@ -1525,7 +1526,7 @@ class HttpRequestTest extends TestCase
     public function testFlushMethodCallsSession()
     {
         $request = Request::create('/');
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('flashInput');
         $request->setLaravelSession($session);
         $request->flush();
@@ -1812,7 +1813,7 @@ class HttpRequestTest extends TestCase
 
         $this->assertFalse($request->hasSession());
 
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $request->setLaravelSession($session);
 
         $this->assertTrue($request->hasSession());
@@ -1822,7 +1823,7 @@ class HttpRequestTest extends TestCase
     {
         $request = Request::create('/');
 
-        $laravelSession = Mockery::mock(Store::class);
+        $laravelSession = Double::for(Store::class);
         $request->setLaravelSession($laravelSession);
 
         $session = $request->getSession();
@@ -2017,7 +2018,7 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashCallsSessionFlashInputWithInputData()
     {
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('flashInput')->with(['name' => 'Taylor', 'email' => 'foo']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);
@@ -2026,7 +2027,7 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashOnlyCallsFlashWithProperParameters()
     {
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('flashInput')->with(['name' => 'Taylor']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);
@@ -2035,7 +2036,7 @@ class HttpRequestTest extends TestCase
 
     public function testHttpRequestFlashExceptCallsFlashWithProperParameters()
     {
-        $session = Mockery::mock(Store::class);
+        $session = Double::for(Store::class);
         $session->expects('flashInput')->with(['name' => 'Taylor']);
         $request = Request::create('/', 'GET', ['name' => 'Taylor', 'email' => 'foo']);
         $request->setLaravelSession($session);

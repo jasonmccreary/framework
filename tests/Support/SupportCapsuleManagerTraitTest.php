@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Fluent;
@@ -27,7 +28,7 @@ class SupportCapsuleManagerTraitTest extends TestCase
     {
         $this->container = null;
         $app = new Container;
-        $app['config'] = Mockery::mock(Repository::class);
+        $app['config'] = Double::for(Repository::class);
 
         $this->setupContainer($app);
         $this->assertEquals($app, $this->getContainer());

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Double;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
@@ -108,12 +109,12 @@ class ConfiguresPromptsTest extends TestCase
 
     protected function runCommand($command, $expectations)
     {
-        $application = Mockery::mock(Application::class);
+        $application = Double::for(Application::class);
         $command->setLaravel($application);
 
-        $outputStyle = Mockery::mock(OutputStyle::class);
+        $outputStyle = Double::for(OutputStyle::class);
         $application->expects('make')->withArgs(fn ($abstract) => $abstract === OutputStyle::class)->andReturn($outputStyle);
-        $factory = Mockery::mock(Factory::class);
+        $factory = Double::for(Factory::class);
         $application->expects('make')->withArgs(fn ($abstract) => $abstract === Factory::class)->andReturn($factory);
         $application->shouldReceive('runningUnitTests')->andReturn(false);
         $application->expects('call')->with([$command, 'handle'])->andReturnUsing(fn ($callback) => call_user_func($callback));

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
     public function testModelsAreProperlyMatchedToParents()
     {
         $relation = $this->getRelation();
-        $model1 = Mockery::mock(Model::class);
+        $model1 = Double::for(Model::class);
         $model1->shouldReceive('hasAttribute')->passthru();
         $model1->shouldReceive('getAttribute')->with('parent_key')->andReturn(1);
         $model1->shouldReceive('getAttribute')->with('foo')->passthru();
@@ -26,7 +27,7 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $model1->shouldReceive('getCasts')->andReturn([]);
         $model1->shouldReceive('getRelationValue', 'relationLoaded', 'relationResolver', 'setRelation', 'isRelation')->passthru();
 
-        $model2 = Mockery::mock(Model::class);
+        $model2 = Double::for(Model::class);
         $model2->shouldReceive('hasAttribute')->passthru();
         $model2->shouldReceive('getAttribute')->with('parent_key')->andReturn(2);
         $model2->shouldReceive('getAttribute')->with('foo')->passthru();
@@ -56,8 +57,8 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
 
     protected function getRelation()
     {
-        $builder = Mockery::mock(Builder::class);
-        $related = Mockery::mock(Model::class);
+        $builder = Double::for(Builder::class);
+        $related = Double::for(Model::class);
         $related->shouldReceive('newCollection')->passthru();
         $related->shouldReceive('resolveCollectionFromAttribute')->passthru();
         $builder->shouldReceive('getModel')->andReturn($related);

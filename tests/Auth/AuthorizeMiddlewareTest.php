@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\Double;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Auth\Middleware\Authorize;
@@ -319,7 +320,7 @@ class AuthorizeMiddlewareTest extends TestCase
 
     public function testModelInstanceAsParameter()
     {
-        $instance = Mockery::mock(Model::class);
+        $instance = Double::for(Model::class);
 
         $this->gate()->define('success', function ($user, $model) use ($instance) {
             $this->assertSame($model, $instance);
@@ -327,7 +328,7 @@ class AuthorizeMiddlewareTest extends TestCase
             return true;
         });
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
 
         $next = function () {
             //

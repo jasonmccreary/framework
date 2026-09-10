@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\MySqlGrammar;
@@ -14,7 +15,7 @@ class DatabaseMySqlQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('escape')->with('foo', false)->andReturn("'foo'");
         $grammar = new MySqlGrammar($connection);
 
@@ -74,11 +75,11 @@ class DatabaseMySqlQueryGrammarTest extends TestCase
 
     protected function getBuilder()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->shouldReceive('getDatabaseName')->andReturn('database');
         $connection->shouldReceive('getTablePrefix')->andReturn('');
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = Double::for(Processor::class);
 
         return new Builder($connection, $grammar, $processor);
     }

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
@@ -25,10 +26,10 @@ class SendingMailNotificationsTest extends TestCase
 
     protected function defineEnvironment($app)
     {
-        $this->mailFactory = Mockery::mock(MailFactory::class);
-        $this->mailer = Mockery::mock(Mailer::class);
+        $this->mailFactory = Double::for(MailFactory::class);
+        $this->mailer = Double::for(Mailer::class);
         $this->mailFactory->shouldReceive('mailer')->andReturn($this->mailer);
-        $this->markdown = Mockery::mock(Markdown::class);
+        $this->markdown = Double::for(Markdown::class);
 
         $app->extend(Markdown::class, function () {
             return $this->markdown;
@@ -70,7 +71,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->expects('renderText')->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = Mockery::mock(Message::class);
+            $message = Double::for(Message::class);
 
             $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -108,7 +109,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->expects('renderText')->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = Mockery::mock(Message::class);
+            $message = Double::for(Message::class);
 
             $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -182,7 +183,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->expects('renderText')->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = Mockery::mock(Message::class);
+            $message = Double::for(Message::class);
 
             $message->expects('to')->with(['taylor@laravel.com' => 'Taylor Otwell', 'foo_taylor@laravel.com']);
 
@@ -220,7 +221,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->expects('renderText')->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = Mockery::mock(Message::class);
+            $message = Double::for(Message::class);
 
             $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -248,7 +249,7 @@ class SendingMailNotificationsTest extends TestCase
         $this->markdown->expects('renderText')->andReturn('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
-            $message = Mockery::mock(Message::class);
+            $message = Double::for(Message::class);
 
             $message->expects('to')->with(['foo_taylor@laravel.com', 'bar_taylor@laravel.com']);
 
@@ -290,7 +291,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             Mockery::on(function ($closure) {
-                $message = Mockery::mock(Message::class);
+                $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -322,7 +323,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             Mockery::on(function ($closure) {
-                $message = Mockery::mock(Message::class);
+                $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -354,7 +355,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification_queued' => false,
             ]),
             Mockery::on(function ($closure) {
-                $message = Mockery::mock(Message::class);
+                $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
 
@@ -436,7 +437,7 @@ class TestMailNotificationWithMailable extends Notification
 
     public function toMail($notifiable)
     {
-        $mailable = Mockery::mock(Mailable::class);
+        $mailable = Double::for(Mailable::class);
 
         $mailable->expects('send');
 

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\Double;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\Job;
@@ -82,7 +83,7 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('isReleased')->times(2)->andReturn(false);
@@ -102,7 +103,7 @@ class ReleaseMiddlewareTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('isReleased')->times(2)->andReturn(true);

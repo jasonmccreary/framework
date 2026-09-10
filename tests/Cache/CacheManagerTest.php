@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\NullStore;
@@ -109,7 +110,7 @@ class CacheManagerTest extends TestCase
     {
         $disk = new ArrayFilesystem;
 
-        $filesystem = Mockery::mock();
+        $filesystem = Double::for(\stdClass::class);
         $filesystem->expects('disk')->with('s3')->andReturn($disk);
 
         $app = $this->getApp([
@@ -268,9 +269,7 @@ class CacheManagerTest extends TestCase
 
     public function testForgetDriver()
     {
-        $cacheManager = Mockery::mock(CacheManager::class)
-            ->shouldAllowMockingProtectedMethods()
-            ->makePartial();
+        $cacheManager = Double::for(CacheManager::class)->passthru();
 
         $cacheManager->expects('resolve')
             ->withArgs(['array'])

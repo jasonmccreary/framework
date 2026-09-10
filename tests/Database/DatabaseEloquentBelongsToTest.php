@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -88,7 +89,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('setRelation')->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
@@ -156,10 +157,10 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyOnModel()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
-        $associate = Mockery::mock(Model::class);
+        $associate = Double::for(Model::class);
         $associate->expects('getAttribute')->with('id')->andReturn(1);
         $parent->expects('setAttribute')->with('foreign_key', 1);
         $parent->expects('setRelation')->with('relation', $associate);
@@ -169,7 +170,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testDissociateMethodUnsetsForeignKeyOnModel()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
         $parent->expects('setAttribute')->with('foreign_key', null);
@@ -182,7 +183,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyOnModelById()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
         $relation = $this->getRelation($parent);
         $parent->expects('setAttribute')->with('foreign_key', 1);
@@ -233,7 +234,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -243,7 +244,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerParentKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -254,7 +255,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('1');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -264,7 +265,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerRelatedKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -275,7 +276,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(1);
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -285,7 +286,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsModelWithIntegerKeys()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -296,7 +297,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(1);
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -306,7 +307,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     public function testIsNotModelWithNullParentKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -317,7 +318,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -331,7 +332,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -345,7 +346,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value.two');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -359,7 +360,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -373,7 +374,7 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation.two');
@@ -383,9 +384,9 @@ class DatabaseEloquentBelongsToTest extends TestCase
 
     protected function getRelation($parent = null, $keyType = 'int')
     {
-        $this->builder = Mockery::mock(Builder::class);
+        $this->builder = Double::for(Builder::class);
         $this->builder->expects('where')->with('relation.id', '=', 'foreign.value');
-        $this->related = Mockery::mock(Model::class);
+        $this->related = Double::for(Model::class);
         $this->related->shouldReceive('getKeyType')->andReturn($keyType);
         $this->related->shouldReceive('getKeyName')->andReturn('id');
         $this->related->shouldReceive('getTable')->andReturn('relation');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Console\Scheduling;
 
+use JMac\Testing\Double;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\Scheduling\SchedulingMutex;
@@ -24,9 +25,9 @@ final class ScheduleTest extends TestCase
     {
         $this->container = new Container;
         Container::setInstance($this->container);
-        $eventMutex = Mockery::mock(EventMutex::class);
+        $eventMutex = Double::for(EventMutex::class);
         $this->container->instance(EventMutex::class, $eventMutex);
-        $schedulingMutex = Mockery::mock(SchedulingMutex::class);
+        $schedulingMutex = Double::for(SchedulingMutex::class);
         $this->container->instance(SchedulingMutex::class, $schedulingMutex);
     }
 

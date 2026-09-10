@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Console;
 
+use JMac\Testing\Double;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
@@ -133,7 +134,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsInReadableFormat(): void
     {
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))
@@ -161,7 +162,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItSkipsCommentsAndBlankLinesInReadableFormat(): void
     {
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))
@@ -204,7 +205,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))
@@ -254,7 +255,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))
@@ -305,7 +306,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))
@@ -355,7 +356,7 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Mockery::mock(Filesystem::class));
+        File::swap(Double::for(Filesystem::class));
 
         File::expects('exists')
             ->with(base_path('.env'))

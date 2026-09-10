@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use ArrayAccess;
 use ArrayIterator;
 use ArrayObject;
@@ -707,9 +708,9 @@ class SupportCollectionTest extends TestCase
     #[DataProvider('collectionClassProvider')]
     public function testToArrayCallsToArrayOnEachItemInCollection($collection)
     {
-        $item1 = Mockery::mock(Arrayable::class);
+        $item1 = Double::for(Arrayable::class);
         $item1->expects('toArray')->andReturn('foo.array');
-        $item2 = Mockery::mock(Arrayable::class);
+        $item2 = Double::for(Arrayable::class);
         $item2->expects('toArray')->andReturn('bar.array');
         $c = new $collection([$item1, $item2]);
         $results = $c->toArray();
@@ -732,9 +733,9 @@ class SupportCollectionTest extends TestCase
     #[DataProvider('collectionClassProvider')]
     public function testJsonSerializeCallsToArrayOrJsonSerializeOnEachItemInCollection($collection)
     {
-        $item1 = Mockery::mock(JsonSerializable::class);
+        $item1 = Double::for(JsonSerializable::class);
         $item1->expects('jsonSerialize')->andReturn('foo.json');
-        $item2 = Mockery::mock(Arrayable::class);
+        $item2 = Double::for(Arrayable::class);
         $item2->expects('toArray')->andReturn('bar.array');
         $c = new $collection([$item1, $item2]);
         $results = $c->jsonSerialize();

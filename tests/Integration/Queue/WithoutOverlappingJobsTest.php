@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
@@ -19,7 +20,7 @@ class WithoutOverlappingJobsTest extends QueueTestCase
         OverlappingTestJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('isReleased')->times(2)->andReturn(false);
@@ -41,7 +42,7 @@ class WithoutOverlappingJobsTest extends QueueTestCase
         FailedOverlappingTestJob::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $this->expectException(Exception::class);
 
@@ -65,7 +66,7 @@ class WithoutOverlappingJobsTest extends QueueTestCase
         $lockKey = (new WithoutOverlapping)->getLockKey($command = new OverlappingTestJob);
         $this->app->get(Cache::class)->lock($lockKey, 10)->acquire();
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('release');
         $job->expects('hasFailed')->andReturn(false);
@@ -87,7 +88,7 @@ class WithoutOverlappingJobsTest extends QueueTestCase
         $lockKey = (new WithoutOverlapping)->getLockKey($command = new SkipOverlappingTestJob);
         $this->app->get(Cache::class)->lock($lockKey, 10)->acquire();
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('isReleased')->times(2)->andReturn(false);
@@ -109,7 +110,7 @@ class WithoutOverlappingJobsTest extends QueueTestCase
         $lockKey = (new WithoutOverlapping)->shared()->getLockKey(new OverlappingTestJobWithSharedKeyTwo);
         $this->app->get(Cache::class)->lock($lockKey, 10)->acquire();
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('release');
         $job->expects('hasFailed')->andReturn(false);

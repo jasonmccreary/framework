@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Testing;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\View\View;
@@ -3293,7 +3294,7 @@ EOT
     private function makeMockResponse($content)
     {
         $baseResponse = tap(new Response, function ($response) use ($content) {
-            $response->setContent(Mockery::mock(View::class, $content));
+            $response->setContent(Double::for(View::class, $content));
         });
 
         return TestResponse::fromBaseResponse($baseResponse);

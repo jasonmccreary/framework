@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
         parent::setUp();
 
         $this->app->singleton(Dispatcher::class, function () {
-            return Mockery::mock(Dispatcher::class);
+            return Double::for(Dispatcher::class);
         });
 
         $this->app->alias(Dispatcher::class, 'events');

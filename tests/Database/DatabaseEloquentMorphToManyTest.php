@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -31,7 +32,7 @@ class DatabaseEloquentMorphToManyTest extends TestCase
     public function testAttachInsertsPivotTableRecord(): void
     {
         $relation = $this->getMockBuilder(MorphToMany::class)->onlyMethods(['touchIfTouching'])->setConstructorArgs($this->getRelationArguments())->getMock();
-        $query = Mockery::mock(QueryBuilder::class);
+        $query = Double::for(QueryBuilder::class);
         $query->expects('from')->with('taggables')->andReturn($query);
         $query->expects('insert')->with([['taggable_id' => 1, 'taggable_type' => get_class($relation->getParent()), 'tag_id' => 2, 'foo' => 'bar']])->andReturn(true);
         $relation->getQuery()->getQuery()->expects('newQuery')->andReturn($query);
@@ -43,7 +44,7 @@ class DatabaseEloquentMorphToManyTest extends TestCase
     public function testDetachRemovesPivotTableRecord(): void
     {
         $relation = $this->getMockBuilder(MorphToMany::class)->onlyMethods(['touchIfTouching'])->setConstructorArgs($this->getRelationArguments())->getMock();
-        $query = Mockery::mock(QueryBuilder::class);
+        $query = Double::for(QueryBuilder::class);
         $query->expects('from')->with('taggables')->andReturn($query);
         $query->expects('where')->with('taggables.taggable_id', 1)->andReturn($query);
         $query->expects('where')->with('taggable_type', get_class($relation->getParent()))->andReturn($query);
@@ -58,7 +59,7 @@ class DatabaseEloquentMorphToManyTest extends TestCase
     public function testDetachMethodClearsAllPivotRecordsWhenNoIDsAreGiven(): void
     {
         $relation = $this->getMockBuilder(MorphToMany::class)->onlyMethods(['touchIfTouching'])->setConstructorArgs($this->getRelationArguments())->getMock();
-        $query = Mockery::mock(QueryBuilder::class);
+        $query = Double::for(QueryBuilder::class);
         $query->expects('from')->with('taggables')->andReturn($query);
         $query->expects('where')->with('taggables.taggable_id', 1)->andReturn($query);
         $query->expects('where')->with('taggable_type', get_class($relation->getParent()))->andReturn($query);
@@ -104,7 +105,7 @@ class DatabaseEloquentMorphToManyTest extends TestCase
 
     public function getRelationArguments(): array
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->shouldReceive('getMorphClass')->andReturn(get_class($parent));
         $parent->shouldReceive('getKey')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
@@ -112,8 +113,8 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $parent->shouldReceive('getMorphClass')->andReturn(get_class($parent));
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
-        $builder = Mockery::mock(Builder::class);
-        $related = Mockery::mock(Model::class);
+        $builder = Double::for(Builder::class);
+        $related = Double::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
 
         $related->shouldReceive('getTable')->andReturn('tags');
@@ -125,7 +126,7 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $builder->expects('where')->with('taggables.taggable_id', '=', 1);
         $builder->expects('where')->with('taggables.taggable_type', get_class($parent));
 
-        $grammar = Mockery::mock(Grammar::class);
+        $grammar = Double::for(Grammar::class);
         $grammar->shouldReceive('isExpression')->with(Mockery::type(Expression::class))->andReturnTrue();
         $grammar->shouldReceive('isExpression')->with(Mockery::type('string'))->andReturnFalse();
         $builder->shouldReceive('getQuery')->andReturn(

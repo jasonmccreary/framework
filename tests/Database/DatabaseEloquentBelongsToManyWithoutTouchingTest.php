@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,7 +18,7 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
     public function testItWillNotTouchRelatedModelsWhenUpdatingChild(): void
     {
         /** @var Article $related */
-        $related = Mockery::mock(Article::class)->makePartial();
+        $related = Double::for(Article::class)->passthru();
         $related->shouldReceive('getUpdatedAtColumn')->never();
         $related->shouldReceive('freshTimestampString')->never();
 
@@ -26,9 +27,9 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
         Model::withoutTouching(function () use ($related) {
             $this->assertTrue($related::isIgnoringTouch());
 
-            $builder = Mockery::mock(Builder::class);
+            $builder = Double::for(Builder::class);
             $builder->expects('join');
-            $parent = Mockery::mock(User::class);
+            $parent = Double::for(User::class);
 
             $parent->expects('getAttribute')->with('id')->andReturn(1);
             $builder->expects('getModel')->andReturn($related);

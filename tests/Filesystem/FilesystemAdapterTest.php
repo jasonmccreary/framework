@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Filesystem;
 
+use JMac\Testing\Double;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -71,7 +72,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
-        $files = Mockery::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
+        $files = Double::for(FilesystemAdapter::class)->passthru(new FilesystemAdapter($this->filesystem, $this->adapter));
         $files->shouldReceive('mimeType')->never();
 
         $files->response('file.txt', null, [
@@ -83,7 +84,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
-        $files = Mockery::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])->makePartial();
+        $files = Double::for(FilesystemAdapter::class)->passthru(new FilesystemAdapter($this->filesystem, $this->adapter));
         $files->shouldReceive('size')->never();
 
         $files->response('file.txt', null, [
@@ -95,9 +96,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $this->filesystem->write('file.txt', 'Hello World');
 
-        $files = Mockery::mock(FilesystemAdapter::class, [$this->filesystem, $this->adapter])
-            ->shouldAllowMockingProtectedMethods()
-            ->makePartial();
+        $files = Double::for(FilesystemAdapter::class)->passthru(new FilesystemAdapter($this->filesystem, $this->adapter));
         $files->shouldReceive('fallbackName')->never();
 
         $files->response('file.txt', null, [
@@ -704,7 +703,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = Mockery::mock(ExceptionHandler::class);
+        $exceptionHandler = Double::for(ExceptionHandler::class);
 
         $exceptionHandler->expects('report')
             ->andReturnUsing(function (UnableToReadFile $e) {
@@ -731,7 +730,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = Mockery::mock(ExceptionHandler::class);
+        $exceptionHandler = Double::for(ExceptionHandler::class);
 
         $exceptionHandler->expects('report')
             ->andReturnUsing(function (UnableToReadFile $e) {
@@ -758,7 +757,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = Mockery::mock(ExceptionHandler::class);
+        $exceptionHandler = Double::for(ExceptionHandler::class);
 
         $exceptionHandler->expects('report')
             ->andReturnUsing(function (UnableToWriteFile $e) {
@@ -791,7 +790,7 @@ class FilesystemAdapterTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $exceptionHandler = Mockery::mock(ExceptionHandler::class);
+        $exceptionHandler = Double::for(ExceptionHandler::class);
 
         $exceptionHandler->expects('report')
             ->andReturnUsing(function (UnableToRetrieveMetadata $e) {

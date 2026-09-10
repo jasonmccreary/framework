@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\Double;
 use Illuminate\Auth\DatabaseUserProvider;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -16,10 +17,10 @@ class AuthDatabaseUserProviderTest extends TestCase
 {
     public function testRetrieveByIDReturnsUserWhenUserIsFound()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(['id' => 1, 'name' => 'Dayle']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
 
@@ -30,10 +31,10 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByIDReturnsNullWhenUserIsNotFound()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
 
@@ -45,10 +46,10 @@ class AuthDatabaseUserProviderTest extends TestCase
         $mockUser = new stdClass;
         $mockUser->remember_token = 'a';
 
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn($mockUser);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -57,10 +58,10 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveTokenWithBadIdentifierReturnsNull()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -72,10 +73,10 @@ class AuthDatabaseUserProviderTest extends TestCase
         $mockUser = new stdClass;
         $mockUser->remember_token = null;
 
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn($mockUser);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -84,12 +85,12 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByCredentialsReturnsUserWhenUserIsFound()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
         $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle', 'password' => 'foo', 'group' => ['one', 'two']]);
 
@@ -100,12 +101,12 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByCredentialsAcceptsCallback()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
         $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
 
         $user = $provider->retrieveByCredentials([function ($builder) {
@@ -120,11 +121,11 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByCredentialsReturnsNullWhenUserIsFound()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = Double::for(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('first')->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle']);
 
@@ -133,8 +134,8 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByCredentialsWithMultiplyPasswordsReturnsNull()
     {
-        $conn = Mockery::mock(Connection::class);
-        $hasher = Mockery::mock(Hasher::class);
+        $conn = Double::for(Connection::class);
+        $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials([
             'password' => 'dayle',
@@ -146,11 +147,11 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidation()
     {
-        $conn = Mockery::mock(Connection::class);
-        $hasher = Mockery::mock(Hasher::class);
+        $conn = Double::for(Connection::class);
+        $hasher = Double::for(Hasher::class);
         $hasher->expects('check')->with('plain', 'hash')->andReturn(true);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
         $user->expects('getAuthPassword')->andReturn('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
@@ -159,11 +160,11 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidationFails()
     {
-        $conn = Mockery::mock(Connection::class);
-        $hasher = Mockery::mock(Hasher::class);
+        $conn = Double::for(Connection::class);
+        $hasher = Double::for(Hasher::class);
         $hasher->expects('check')->with('plain', 'hash')->andReturn(false);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
         $user->expects('getAuthPassword')->andReturn('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
@@ -172,11 +173,11 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidationFailsGracefullyWithNullPassword()
     {
-        $conn = Mockery::mock(Connection::class);
-        $hasher = Mockery::mock(Hasher::class);
+        $conn = Double::for(Connection::class);
+        $hasher = Double::for(Hasher::class);
         $hasher->shouldReceive('check')->never();
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
         $user->expects('getAuthPassword')->andReturn(null);
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
@@ -185,17 +186,17 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRehashPasswordIfRequired()
     {
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $hasher->expects('needsRehash')->with('hash')->andReturn(true);
         $hasher->expects('make')->with('plain')->andReturn('rehashed');
 
-        $conn = Mockery::mock(Connection::class);
-        $table = Mockery::mock(ConnectionInterface::class);
+        $conn = Double::for(Connection::class);
+        $table = Double::for(ConnectionInterface::class);
         $conn->expects('table')->with('foo')->andReturn($table);
         $table->expects('where')->with('id', 1)->andReturnSelf();
         $table->expects('update')->with(['password_attribute' => 'rehashed']);
 
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
         $user->expects('getAuthIdentifierName')->andReturn('id');
         $user->expects('getAuthIdentifier')->andReturn(1);
         $user->expects('getAuthPassword')->andReturn('hash');
@@ -207,17 +208,17 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testDontRehashPasswordIfNotRequired()
     {
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = Double::for(Hasher::class);
         $hasher->expects('needsRehash')->with('hash')->andReturn(false);
         $hasher->shouldNotReceive('make');
 
-        $conn = Mockery::mock(Connection::class);
-        $table = Mockery::mock(ConnectionInterface::class);
+        $conn = Double::for(Connection::class);
+        $table = Double::for(ConnectionInterface::class);
         $conn->shouldNotReceive('table');
         $table->shouldNotReceive('where');
         $table->shouldNotReceive('update');
 
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
         $user->expects('getAuthPassword')->andReturn('hash');
         $user->shouldNotReceive('getAuthIdentifierName');
         $user->shouldNotReceive('getAuthIdentifier');

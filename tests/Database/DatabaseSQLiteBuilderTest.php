@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\SQLiteBuilder;
@@ -31,7 +32,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
 
     public function testCreateDatabase()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);
@@ -51,7 +52,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);

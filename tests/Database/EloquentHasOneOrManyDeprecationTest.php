@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -58,13 +59,13 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
 
     protected function getHasManyRelation(): HasMany
     {
-        $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder = Mockery::mock(Builder::class, [$queryBuilder]);
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $builder = Double::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
-        $related = Mockery::mock(Model::class);
+        $related = Double::for(Model::class);
         $builder->expects('getModel')->andReturn($related);
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('id')->andReturn(1);
 
         return new HasMany($builder, $parent, 'table.foreign_key', 'id');
@@ -72,13 +73,13 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
 
     protected function getHasOneRelation(): HasOne
     {
-        $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder = Mockery::mock(Builder::class, [$queryBuilder]);
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $builder = Double::for(new Builder($queryBuilder));
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
-        $related = Mockery::mock(Model::class);
+        $related = Double::for(Model::class);
         $builder->expects('getModel')->andReturn($related);
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('id')->andReturn(1);
 
         return new HasOne($builder, $parent, 'table.foreign_key', 'id');

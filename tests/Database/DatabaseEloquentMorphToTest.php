@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -151,12 +152,12 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testAssociateMethodSetsForeignKeyAndTypeOnModel()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
 
-        $associate = Mockery::mock(Model::class);
+        $associate = Double::for(Model::class);
         $associate->expects('getAttribute')->times(2)->andReturn(1);
         $associate->expects('getMorphClass')->andReturn('Model');
 
@@ -169,7 +170,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testAssociateMethodIgnoresNullValue()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
@@ -183,7 +184,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testDissociateMethodDeletesUnsetsKeyAndTypeOnModel()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
 
         $relation = $this->getRelation($parent);
@@ -211,7 +212,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -221,7 +222,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerParentKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
         // when getParentKey is called we want to return an integer
@@ -231,7 +232,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('1');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -241,7 +242,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerRelatedKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
         // when getParentKey is called we want to return a string
@@ -251,7 +252,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(1);
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -261,7 +262,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsModelWithIntegerKeys()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -272,7 +273,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(1);
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation');
@@ -282,7 +283,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function testIsNotModelWithNullParentKey()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
         $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
@@ -294,7 +295,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -308,7 +309,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -322,7 +323,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value.two');
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -336,7 +337,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -350,7 +351,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $this->related->expects('getConnectionName')->andReturn('relation');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
         $model->expects('getTable')->andReturn('relation');
         $model->expects('getConnectionName')->andReturn('relation.two');
@@ -368,8 +369,8 @@ class DatabaseEloquentMorphToTest extends TestCase
             }
         };
 
-        $builder = Mockery::mock(Builder::class);
-        $related = Mockery::mock(Model::class);
+        $builder = Double::for(Builder::class);
+        $related = Double::for(Model::class);
         $builder->expects('getModel')->andReturn($related);
 
         $parent = new EloquentMorphToModelStub;
@@ -382,7 +383,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $relation->addEagerConstraints([$parent]);
 
-        $result = Mockery::mock(Model::class);
+        $result = Double::for(Model::class);
         $result->expects('getKey')->andReturn($uuidObject);
 
         $relation->callMatchToMorphParents('type_1', new EloquentCollection([$result]));
@@ -392,9 +393,9 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     protected function getRelationAssociate($parent)
     {
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
         $builder->expects('where')->with('relation.id', '=', 'foreign.value');
-        $related = Mockery::mock(Model::class);
+        $related = Double::for(Model::class);
         $related->expects('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
         $builder->expects('getModel')->andReturn($related);
 
@@ -403,16 +404,16 @@ class DatabaseEloquentMorphToTest extends TestCase
 
     public function getRelation($parent = null, $builder = null)
     {
-        $this->builder = $builder ?: Mockery::mock(Builder::class);
+        $this->builder = $builder ?: Double::for(Builder::class);
         $this->builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
-        $this->related = Mockery::mock(Model::class);
+        $this->related = Double::for(Model::class);
         $this->related->shouldReceive('getKeyName')->andReturn('id');
         $this->related->shouldReceive('getTable')->andReturn('relation');
         $this->related->shouldReceive('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
         $this->builder->shouldReceive('getModel')->andReturn($this->related);
         $parent = $parent ?: new EloquentMorphToModelStub;
 
-        return Mockery::mock(MorphTo::class.'[createModelByType]', [$this->builder, $parent, 'foreign_key', 'id', 'morph_type', 'relation']);
+        return Double::for(MorphTo::class)->passthru(new MorphTo($this->builder, $parent, 'foreign_key', 'id', 'morph_type', 'relation'));
     }
 }
 

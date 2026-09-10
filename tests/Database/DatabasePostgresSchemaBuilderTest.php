@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
@@ -13,8 +14,8 @@ class DatabasePostgresSchemaBuilderTest extends TestCase
 {
     public function testHasTable()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(PostgresGrammar::class);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(PostgresGrammar::class);
         $connection->expects('getSchemaGrammar')->andReturn($grammar);
         $builder = new PostgresBuilder($connection);
         $grammar->expects('compileTableExists')->times(2)->andReturn('sql');
@@ -27,9 +28,9 @@ class DatabasePostgresSchemaBuilderTest extends TestCase
 
     public function testGetColumnListing()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(PostgresGrammar::class);
-        $processor = Mockery::mock(PostgresProcessor::class);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(PostgresGrammar::class);
+        $processor = Double::for(PostgresProcessor::class);
         $connection->expects('getSchemaGrammar')->andReturn($grammar);
         $connection->expects('getPostProcessor')->andReturn($processor);
         $grammar->expects('compileColumns')->with(null, 'prefix_table')->andReturn('sql');

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Double;
 use Closure;
 use Exception;
 use Illuminate\Cache\ArrayStore;
@@ -57,11 +58,11 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->config = Mockery::mock(Config::class);
+        $this->config = Double::for(Config::class);
 
-        $this->viewFactory = Mockery::mock(ViewFactory::class);
+        $this->viewFactory = Double::for(ViewFactory::class);
 
-        $this->request = Mockery::mock(Request::class);
+        $this->request = Double::for(Request::class);
 
         $this->container = Container::setInstance(new Container);
 
@@ -71,7 +72,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
         $this->container->instance(ResponseFactoryContract::class, new ResponseFactory(
             $this->viewFactory,
-            Mockery::mock(Redirector::class)
+            Double::for(Redirector::class)
         ));
 
         $this->handler = new Handler($this->container);
@@ -84,7 +85,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerReportsExceptionAsContext()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->expects('error')->withArgs(['Exception message', Mockery::hasKey('exception')]);
 
@@ -93,7 +94,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerCallsContextMethodIfPresent()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->expects('error')->withArgs(['Exception message', Mockery::subset(['foo' => 'bar'])]);
 
@@ -102,7 +103,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerReportsExceptionWhenUnReportable()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->expects('error')->withArgs(['Exception message', Mockery::hasKey('exception')]);
 
@@ -111,7 +112,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerReportsExceptionWithCustomLogLevel()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
 
         $logger->expects('critical')->withArgs(['Critical message', Mockery::hasKey('exception')]);
@@ -128,7 +129,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerIgnoresNotReportableExceptions()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->shouldNotReceive('log');
 
@@ -139,11 +140,11 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerCallsReportMethodWithDependencies()
     {
-        $reporter = Mockery::mock(ReportingService::class);
+        $reporter = Double::for(ReportingService::class);
         $this->container->instance(ReportingService::class, $reporter);
         $reporter->expects('send')->withArgs(['Exception message']);
 
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->shouldNotReceive('log');
 
@@ -152,10 +153,10 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testHandlerReportsExceptionUsingCallableClass()
     {
-        $reporter = Mockery::mock(ReportingService::class);
+        $reporter = Double::for(ReportingService::class);
         $reporter->expects('send')->withArgs(['Exception message']);
 
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->shouldNotReceive('log');
 
@@ -350,9 +351,9 @@ class FoundationExceptionsHandlerTest extends TestCase
         $argumentActual = null;
 
         $this->container->singleton('redirect', function () use (&$argumentActual) {
-            $redirector = Mockery::mock(Redirector::class);
+            $redirector = Double::for(Redirector::class);
 
-            $responder = Mockery::mock(RedirectResponse::class);
+            $responder = Double::for(RedirectResponse::class);
             $redirector->expects('to')
                 ->andReturn($responder);
 
@@ -369,11 +370,11 @@ class FoundationExceptionsHandlerTest extends TestCase
             return $redirector;
         });
 
-        $file = Mockery::mock(UploadedFile::class);
+        $file = Double::for(UploadedFile::class);
 
         $request = Request::create('/', 'POST', $argumentExpected, [], ['photo' => $file]);
 
-        $validator = Mockery::mock(Validator::class);
+        $validator = Double::for(Validator::class);
         $validator->expects('errors')->times(2)->andReturn(new MessageBag(['error' => 'My custom validation exception']));
 
         $validationException = new ValidationException($validator);
@@ -394,7 +395,7 @@ class FoundationExceptionsHandlerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString('"message": "Bad request."', $response->getContent());
 
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->shouldNotReceive('log');
 
@@ -411,7 +412,7 @@ class FoundationExceptionsHandlerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertStringContainsString('"message": "Not found."', $response->getContent());
 
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->shouldNotReceive('log');
 
@@ -420,7 +421,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testMultipleRecordsFoundIsReported()
     {
-        $logger = Mockery::mock(LoggerInterface::class);
+        $logger = Double::for(LoggerInterface::class);
         $this->container->instance(LoggerInterface::class, $logger);
         $logger->expects('error')->withArgs(['2 records were found.', Mockery::hasKey('exception')]);
 
@@ -429,7 +430,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testItReturnsSpecificErrorViewIfExists()
     {
-        $viewFactory = Mockery::mock(ViewFactory::class);
+        $viewFactory = Double::for(ViewFactory::class);
         $viewFactory->expects('exists')->with('errors::502')->andReturn(true);
 
         $this->container->instance(ViewFactory::class, $viewFactory);
@@ -447,7 +448,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testItReturnsFallbackErrorViewIfExists()
     {
-        $viewFactory = Mockery::mock(ViewFactory::class);
+        $viewFactory = Double::for(ViewFactory::class);
         $viewFactory->expects('exists')->with('errors::502')->andReturn(false);
         $viewFactory->expects('exists')->with('errors::5xx')->andReturn(true);
 
@@ -466,7 +467,7 @@ class FoundationExceptionsHandlerTest extends TestCase
 
     public function testItReturnsNullIfNoErrorViewExists()
     {
-        $viewFactory = Mockery::mock(ViewFactory::class);
+        $viewFactory = Double::for(ViewFactory::class);
         $viewFactory->expects('exists')->with('errors::404')->andReturn(false);
         $viewFactory->expects('exists')->with('errors::4xx')->andReturn(false);
 

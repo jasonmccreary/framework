@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Mail\Events\MessageSending;
@@ -24,7 +25,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperViewContent(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
 
@@ -39,7 +40,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithCcAndBccRecipients(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
 
@@ -64,7 +65,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperViewContentUsingHtmlStrings(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->shouldReceive('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -83,7 +84,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperViewContentUsingStringCallbacks(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->shouldReceive('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -113,7 +114,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperViewContentUsingHtmlMethod(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->shouldReceive('render')->never();
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -127,7 +128,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperPlainViewContent(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->times(2)->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $view->expects('render')->andReturn('rendered.plain');
@@ -159,7 +160,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerSendSendsMessageWithProperPlainViewContentWhenExplicit(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->times(2)->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $view->expects('render')->andReturn('rendered.plain');
@@ -191,7 +192,7 @@ class MailMailerTest extends TestCase
 
     public function testToAllowsEmailAndName(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -206,7 +207,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerRejectsAddressesContainingLineBreaks(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -220,7 +221,7 @@ class MailMailerTest extends TestCase
 
     public function testMailerRejectsSymfonyAddressesContainingLineBreaks(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -241,7 +242,7 @@ class MailMailerTest extends TestCase
 
     public function testGlobalFromIsRespectedOnAllMessages(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -257,7 +258,7 @@ class MailMailerTest extends TestCase
 
     public function testGlobalReplyToIsRespectedOnAllMessages(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -273,7 +274,7 @@ class MailMailerTest extends TestCase
 
     public function testGlobalToIsRespectedOnAllMessages(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
         $mailer = new Mailer('array', $view, new ArrayTransport);
@@ -303,7 +304,7 @@ class MailMailerTest extends TestCase
 
     public function testGlobalReturnPathIsRespectedOnAllMessages(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
 
@@ -319,11 +320,11 @@ class MailMailerTest extends TestCase
 
     public function testEventsAreDispatched(): void
     {
-        $view = Mockery::mock(Factory::class);
+        $view = Double::for(Factory::class);
         $view->expects('make')->andReturn($view);
         $view->expects('render')->andReturn('rendered.view');
 
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('until')->with(Mockery::type(MessageSending::class));
         $events->expects('dispatch')->with(Mockery::type(MessageSent::class));
 
@@ -340,7 +341,7 @@ class MailMailerTest extends TestCase
             return 'bar';
         });
 
-        $mailer = new Mailer('array', Mockery::mock(Factory::class), new ArrayTransport);
+        $mailer = new Mailer('array', Double::for(Factory::class), new ArrayTransport);
 
         $this->assertSame(
             'bar', $mailer->foo()

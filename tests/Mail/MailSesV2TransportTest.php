@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\Double;
 use Aws\Command;
 use Aws\Exception\AwsException;
 use Aws\SesV2\SesV2Client;
@@ -57,8 +58,8 @@ class MailSesV2TransportTest extends TestCase
         $message->getHeaders()->add(new MetadataHeader('FooTag', 'TagValue'));
         $message->getHeaders()->addTextHeader('X-SES-LIST-MANAGEMENT-OPTIONS', 'contactListName=TestList;topicName=TestTopic');
 
-        $client = Mockery::mock(SesV2Client::class);
-        $sesResult = Mockery::mock();
+        $client = Double::for(SesV2Client::class);
+        $sesResult = Double::for(\stdClass::class);
         $sesResult->expects('get')
             ->with('MessageId')
             ->andReturn('ses-message-id');
@@ -84,8 +85,8 @@ class MailSesV2TransportTest extends TestCase
         $message->to('me@example.com');
         $message->getHeaders()->addTextHeader('X-SES-TENANT-NAME', 'my-tenant');
 
-        $client = Mockery::mock(SesV2Client::class);
-        $sesResult = Mockery::mock();
+        $client = Double::for(SesV2Client::class);
+        $sesResult = Double::for(\stdClass::class);
         $sesResult->expects('get')
             ->with('MessageId')
             ->andReturn('ses-message-id');
@@ -106,8 +107,8 @@ class MailSesV2TransportTest extends TestCase
         $message->sender('myself@example.com');
         $message->to('me@example.com');
 
-        $client = Mockery::mock(SesV2Client::class);
-        $sesResult = Mockery::mock();
+        $client = Double::for(SesV2Client::class);
+        $sesResult = Double::for(\stdClass::class);
         $sesResult->expects('get')
             ->with('MessageId')
             ->andReturn('ses-message-id');
@@ -128,7 +129,7 @@ class MailSesV2TransportTest extends TestCase
         $message->sender('myself@example.com');
         $message->to('me@example.com');
 
-        $client = Mockery::mock(SesV2Client::class);
+        $client = Double::for(SesV2Client::class);
         $client->expects('sendEmail')
             ->andThrow(new AwsException('Email address is not verified.', new Command('sendRawEmail')));
 

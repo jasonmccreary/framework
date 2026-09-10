@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\Double;
 use Closure;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\ConnectionResolverInterface;
@@ -14,12 +15,12 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 {
     public function testBasicCount()
     {
-        $db = Mockery::mock(ConnectionResolverInterface::class);
+        $db = Double::for(ConnectionResolverInterface::class);
         $verifier = new DatabasePresenceVerifier($db);
         $verifier->setConnection('connection');
-        $conn = Mockery::mock(ConnectionInterface::class);
+        $conn = Double::for(ConnectionInterface::class);
         $db->expects('connection')->with('connection')->andReturn($conn);
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
         $conn->expects('table')->with('table')->andReturn($builder);
         $builder->expects('useWritePdo')->andReturn($builder);
         $builder->expects('where')->with('column', '=', 'value')->andReturn($builder);
@@ -36,12 +37,12 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 
     public function testBasicCountWithClosures()
     {
-        $db = Mockery::mock(ConnectionResolverInterface::class);
+        $db = Double::for(ConnectionResolverInterface::class);
         $verifier = new DatabasePresenceVerifier($db);
         $verifier->setConnection('connection');
-        $conn = Mockery::mock(ConnectionInterface::class);
+        $conn = Double::for(ConnectionInterface::class);
         $db->expects('connection')->with('connection')->andReturn($conn);
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
         $conn->expects('table')->with('table')->andReturn($builder);
         $builder->expects('useWritePdo')->andReturn($builder);
         $builder->expects('where')->with('column', '=', 'value')->andReturn($builder);
@@ -65,12 +66,12 @@ class ValidationDatabasePresenceVerifierTest extends TestCase
 
     public function testGetCountWithValidExcludeId()
     {
-        $db = Mockery::mock(ConnectionResolverInterface::class);
+        $db = Double::for(ConnectionResolverInterface::class);
         $verifier = new DatabasePresenceVerifier($db);
         $verifier->setConnection('connection');
-        $conn = Mockery::mock(ConnectionInterface::class);
+        $conn = Double::for(ConnectionInterface::class);
         $db->expects('connection')->with('connection')->andReturn($conn);
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
         $conn->expects('table')->with('table')->andReturn($builder);
         $builder->expects('useWritePdo')->andReturn($builder);
         $builder->expects('where')->with('column', '=', 'value')->andReturn($builder);

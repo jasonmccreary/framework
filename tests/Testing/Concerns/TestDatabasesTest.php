@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
+use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class TestDatabasesTest extends TestCase
         Container::setInstance($container = new Container);
 
         $container->singleton('config', function () {
-            return Mockery::mock(Config::class)
+            return Double::for(Config::class)
                 ->expects('get')
                 ->with('database.default', null)
                 ->andReturn('mysql')

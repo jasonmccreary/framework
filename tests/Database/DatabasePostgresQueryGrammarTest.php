@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
@@ -12,7 +13,7 @@ class DatabasePostgresQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('escape')->with('foo', false)->andReturn("'foo'");
         $grammar = new PostgresGrammar($connection);
 
@@ -29,7 +30,7 @@ class DatabasePostgresQueryGrammarTest extends TestCase
         PostgresGrammar::customOperators(['@@@', '@>', '']);
         PostgresGrammar::customOperators(['@@>', 1]);
 
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $grammar = new PostgresGrammar($connection);
 
         $operators = $grammar->getOperators();
@@ -44,11 +45,11 @@ class DatabasePostgresQueryGrammarTest extends TestCase
 
     public function testCompileTruncate()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getTablePrefix')->times(3)->andReturn('');
 
         $postgres = new PostgresGrammar($connection);
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
         $builder->from = 'users';
 
         $this->assertEquals([

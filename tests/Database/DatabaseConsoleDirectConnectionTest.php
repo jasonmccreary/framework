@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
@@ -16,9 +17,9 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
 {
     public function testInteractsWithPooledConnectionsUsesDirectVariantWhenConfigured()
     {
-        $resolver = Mockery::mock(ConnectionResolverInterface::class);
-        $baseConnection = Mockery::mock(Connection::class);
-        $directConnection = Mockery::mock(Connection::class);
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $baseConnection = Double::for(Connection::class);
+        $directConnection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
         $resolver->expects('getDefaultConnection')->andReturn('pgsql');
@@ -31,8 +32,8 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
 
     public function testInteractsWithPooledConnectionsPassesThroughWhenNoDirectVariantIsConfigured()
     {
-        $resolver = Mockery::mock(ConnectionResolverInterface::class);
-        $connection = Mockery::mock(Connection::class);
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $connection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
         $resolver->expects('connection')->with('sqlite')->andReturn($connection);
@@ -43,8 +44,8 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
 
     public function testInteractsWithPooledConnectionsPassesThroughExplicitSuffixes()
     {
-        $resolver = Mockery::mock(ConnectionResolverInterface::class);
-        $connection = Mockery::mock(Connection::class);
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $connection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
         $resolver->expects('connection')->with('pgsql::write')->andReturn($connection);

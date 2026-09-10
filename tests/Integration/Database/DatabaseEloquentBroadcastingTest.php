@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Double;
 use Closure;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Contracts\Broadcasting\Broadcaster;
@@ -194,13 +195,13 @@ class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 
     private function assertHandldedBroadcastableEvent(BroadcastableModelEventOccurred $event, Closure $closure)
     {
-        $broadcaster = Mockery::mock(Broadcaster::class);
+        $broadcaster = Double::for(Broadcaster::class);
         $broadcaster->expects('broadcast')
             ->withArgs(function (array $channels, string $eventName, array $payload) use ($closure) {
                 return $closure($channels, $eventName, $payload);
             });
 
-        $manager = Mockery::mock(BroadcastingFactory::class);
+        $manager = Double::for(BroadcastingFactory::class);
         $manager->expects('connection')->with(null)->andReturn($broadcaster);
 
         (new BroadcastEvent($event))->handle($manager);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
@@ -1392,7 +1393,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
         ?PostgresBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn($prefix);
         $connection->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(null);
 
@@ -1412,7 +1413,7 @@ class DatabasePostgresSchemaGrammarTest extends TestCase
 
     public function getBuilder()
     {
-        return mock(PostgresBuilder::class);
+        return Double::for(PostgresBuilder::class);
     }
 
     /** @return list<array{method: string, type: string, user: int|null, grammar: false|int|null, expected: int|null}> */

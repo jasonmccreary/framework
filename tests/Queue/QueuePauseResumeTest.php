@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Events\Dispatcher;
@@ -30,7 +31,7 @@ class QueuePauseResumeTest extends TestCase
     protected function createManager($cache)
     {
         // Mock the cache facade to return our cache repository
-        $cacheMock = Mockery::mock();
+        $cacheMock = Double::for(\stdClass::class);
         $cacheMock->shouldReceive('store')->andReturn($cache);
 
         $app = [

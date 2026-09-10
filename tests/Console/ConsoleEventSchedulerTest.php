@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Double;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\CacheEventMutex;
@@ -24,11 +25,11 @@ class ConsoleEventSchedulerTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $container->instance(EventMutex::class, Mockery::mock(CacheEventMutex::class));
+        $container->instance(EventMutex::class, Double::for(CacheEventMutex::class));
 
-        $container->instance(SchedulingMutex::class, Mockery::mock(CacheSchedulingMutex::class));
+        $container->instance(SchedulingMutex::class, Double::for(CacheSchedulingMutex::class));
 
-        $container->instance(Schedule::class, $this->schedule = new Schedule(Mockery::mock(EventMutex::class)));
+        $container->instance(Schedule::class, $this->schedule = new Schedule(Double::for(EventMutex::class)));
     }
 
     public function testMutexCanReceiveCustomStore()

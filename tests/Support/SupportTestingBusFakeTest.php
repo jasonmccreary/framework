@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
@@ -23,14 +24,14 @@ class SupportTestingBusFakeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->fake = new BusFake(Mockery::mock(QueueingDispatcher::class));
+        $this->fake = new BusFake(Double::for(QueueingDispatcher::class));
     }
 
     public function testItUsesCustomBusRepository()
     {
         $busRepository = new BatchRepositoryFake;
 
-        $fake = new BusFake(Mockery::mock(QueueingDispatcher::class), [], $busRepository);
+        $fake = new BusFake(Double::for(QueueingDispatcher::class), [], $busRepository);
 
         $this->assertNull($fake->findBatch('non-existent-batch'));
 
@@ -607,7 +608,7 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testAssertDispatchedWithIgnoreClass()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
         $dispatcher->expects('dispatch')->with($job);
@@ -631,7 +632,7 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testDispatchedFakingOnlyGivenJobs()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
         $dispatcher->shouldReceive('dispatch')->never()->with($job);
@@ -663,7 +664,7 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testAssertDispatchedWithIgnoreCallback()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
         $dispatcher->expects('dispatch')->with($job);
@@ -792,7 +793,7 @@ class SupportTestingBusFakeTest extends TestCase
     {
         $batchRepository = new BatchRepositoryFake;
 
-        $fake = new BusFake(Mockery::mock(QueueingDispatcher::class), [], $batchRepository);
+        $fake = new BusFake(Double::for(QueueingDispatcher::class), [], $batchRepository);
 
         $batch = $fake->batch([])->dispatch();
 

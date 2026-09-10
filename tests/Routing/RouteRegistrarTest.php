@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Routing;
 
+use JMac\Testing\Double;
 use BadMethodCallException;
 use FooController;
 use Illuminate\Container\Container;
@@ -29,7 +30,7 @@ class RouteRegistrarTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->router = new Router(Mockery::mock(Dispatcher::class), Container::getInstance());
+        $this->router = new Router(Double::for(Dispatcher::class), Container::getInstance());
     }
 
     public function testMiddlewareFluentRegistration()

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -35,10 +36,10 @@ class DatabaseEloquentRelationTest extends TestCase
 
     public function testTouchMethodUpdatesRelatedTimestamps()
     {
-        $builder = Mockery::mock(Builder::class);
-        $parent = Mockery::mock(Model::class);
+        $builder = Double::for(Builder::class);
+        $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('id')->andReturn(1);
-        $related = Mockery::mock(EloquentNoTouchingModelStub::class)->makePartial();
+        $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $builder->expects('getModel')->andReturn($related);
         $builder->expects('whereNotNull');
         $builder->expects('where');
@@ -55,7 +56,7 @@ class DatabaseEloquentRelationTest extends TestCase
     public function testCanDisableParentTouchingForAllModels()
     {
         /** @var \Illuminate\Tests\Database\EloquentNoTouchingModelStub $related */
-        $related = Mockery::mock(EloquentNoTouchingModelStub::class)->makePartial();
+        $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $related->shouldReceive('getUpdatedAtColumn')->never();
         $related->shouldReceive('freshTimestampString')->never();
 
@@ -64,8 +65,8 @@ class DatabaseEloquentRelationTest extends TestCase
         Model::withoutTouching(function () use ($related) {
             $this->assertTrue($related::isIgnoringTouch());
 
-            $builder = Mockery::mock(Builder::class);
-            $parent = Mockery::mock(Model::class);
+            $builder = Double::for(Builder::class);
+            $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->andReturn(1);
             $builder->expects('getModel')->andReturn($related);
@@ -82,11 +83,11 @@ class DatabaseEloquentRelationTest extends TestCase
 
     public function testCanDisableTouchingForSpecificModel()
     {
-        $related = Mockery::mock(EloquentNoTouchingModelStub::class)->makePartial();
+        $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $related->shouldReceive('getUpdatedAtColumn')->never();
         $related->shouldReceive('freshTimestampString')->never();
 
-        $anotherRelated = Mockery::mock(EloquentNoTouchingAnotherModelStub::class)->makePartial();
+        $anotherRelated = Double::for(EloquentNoTouchingAnotherModelStub::class)->passthru();
 
         $this->assertFalse($related::isIgnoringTouch());
         $this->assertFalse($anotherRelated::isIgnoringTouch());
@@ -95,8 +96,8 @@ class DatabaseEloquentRelationTest extends TestCase
             $this->assertTrue($related::isIgnoringTouch());
             $this->assertFalse($anotherRelated::isIgnoringTouch());
 
-            $builder = Mockery::mock(Builder::class);
-            $parent = Mockery::mock(Model::class);
+            $builder = Double::for(Builder::class);
+            $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->andReturn(1);
             $builder->expects('getModel')->andReturn($related);
@@ -107,8 +108,8 @@ class DatabaseEloquentRelationTest extends TestCase
 
             $relation->touch();
 
-            $anotherBuilder = Mockery::mock(Builder::class);
-            $anotherParent = Mockery::mock(Model::class);
+            $anotherBuilder = Double::for(Builder::class);
+            $anotherParent = Double::for(Model::class);
 
             $anotherParent->expects('getAttribute')->with('id')->andReturn(2);
             $anotherBuilder->expects('getModel')->andReturn($anotherRelated);
@@ -129,11 +130,11 @@ class DatabaseEloquentRelationTest extends TestCase
 
     public function testParentModelIsNotTouchedWhenChildModelIsIgnored()
     {
-        $related = Mockery::mock(EloquentNoTouchingModelStub::class)->makePartial();
+        $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $related->shouldReceive('getUpdatedAtColumn')->never();
         $related->shouldReceive('freshTimestampString')->never();
 
-        $relatedChild = Mockery::mock(EloquentNoTouchingChildModelStub::class)->makePartial();
+        $relatedChild = Double::for(EloquentNoTouchingChildModelStub::class)->passthru();
         $relatedChild->shouldReceive('getUpdatedAtColumn')->never();
         $relatedChild->shouldReceive('freshTimestampString')->never();
 
@@ -144,8 +145,8 @@ class DatabaseEloquentRelationTest extends TestCase
             $this->assertTrue($related::isIgnoringTouch());
             $this->assertTrue($relatedChild::isIgnoringTouch());
 
-            $builder = Mockery::mock(Builder::class);
-            $parent = Mockery::mock(Model::class);
+            $builder = Double::for(Builder::class);
+            $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->andReturn(1);
             $builder->expects('getModel')->andReturn($related);
@@ -156,8 +157,8 @@ class DatabaseEloquentRelationTest extends TestCase
 
             $relation->touch();
 
-            $anotherBuilder = Mockery::mock(Builder::class);
-            $anotherParent = Mockery::mock(Model::class);
+            $anotherBuilder = Double::for(Builder::class);
+            $anotherParent = Double::for(Model::class);
 
             $anotherParent->expects('getAttribute')->with('id')->andReturn(2);
             $anotherBuilder->expects('getModel')->andReturn($relatedChild);
@@ -175,11 +176,11 @@ class DatabaseEloquentRelationTest extends TestCase
 
     public function testIgnoredModelsStateIsResetWhenThereAreExceptions()
     {
-        $related = Mockery::mock(EloquentNoTouchingModelStub::class)->makePartial();
+        $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $related->shouldReceive('getUpdatedAtColumn')->never();
         $related->shouldReceive('freshTimestampString')->never();
 
-        $relatedChild = Mockery::mock(EloquentNoTouchingChildModelStub::class)->makePartial();
+        $relatedChild = Double::for(EloquentNoTouchingChildModelStub::class)->passthru();
         $relatedChild->shouldReceive('getUpdatedAtColumn')->never();
         $relatedChild->shouldReceive('freshTimestampString')->never();
 

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -129,7 +130,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $relation = $this->getRelation();
         $attributes = ['name' => 'taylor', $relation->getForeignKeyName() => $relation->getParentKey()];
 
-        $created = Mockery::mock(Model::class);
+        $created = Double::for(Model::class);
         $created->expects('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
 
         $relation->getRelated()->expects('forceCreate')->with($attributes)->andReturn($created);
@@ -141,7 +142,7 @@ class DatabaseEloquentHasOneTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('setRelation')->with('foo', null);
         $models = $relation->initRelation([$model], 'foo');
 
@@ -198,11 +199,11 @@ class DatabaseEloquentHasOneTest extends TestCase
     public function testRelationCountQueryCanBeBuilt()
     {
         $relation = $this->getRelation();
-        $builder = Mockery::mock(Builder::class);
+        $builder = Double::for(Builder::class);
 
-        $baseQuery = Mockery::mock(BaseBuilder::class);
+        $baseQuery = Double::for(BaseBuilder::class);
         $baseQuery->from = 'one';
-        $parentQuery = Mockery::mock(BaseBuilder::class);
+        $parentQuery = Double::for(BaseBuilder::class);
         $parentQuery->from = 'two';
 
         $builder->expects('getQuery')->andReturn($baseQuery);
@@ -233,7 +234,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->expects('getTable')->andReturn('table');
         $this->related->expects('getConnectionName')->andReturn('connection');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn(1);
         $model->expects('getTable')->andReturn('table');
         $model->expects('getConnectionName')->andReturn('connection');
@@ -248,7 +249,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->expects('getTable')->andReturn('table');
         $this->related->expects('getConnectionName')->andReturn('connection');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn('1');
         $model->expects('getTable')->andReturn('table');
         $model->expects('getConnectionName')->andReturn('connection');
@@ -263,7 +264,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->never();
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn(null);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -278,7 +279,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->shouldReceive('getTable')->never();
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn(2);
         $model->shouldReceive('getTable')->never();
         $model->shouldReceive('getConnectionName')->never();
@@ -293,7 +294,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->expects('getTable')->andReturn('table');
         $this->related->shouldReceive('getConnectionName')->never();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn(1);
         $model->expects('getTable')->andReturn('table.two');
         $model->shouldReceive('getConnectionName')->never();
@@ -308,7 +309,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $this->related->expects('getTable')->andReturn('table');
         $this->related->expects('getConnectionName')->andReturn('connection');
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with('foreign_key')->andReturn(1);
         $model->expects('getTable')->andReturn('table');
         $model->expects('getConnectionName')->andReturn('connection.two');
@@ -318,12 +319,12 @@ class DatabaseEloquentHasOneTest extends TestCase
 
     protected function getRelation()
     {
-        $this->builder = Mockery::mock(Builder::class);
+        $this->builder = Double::for(Builder::class);
         $this->builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $this->builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $this->related = Mockery::mock(Model::class);
+        $this->related = Double::for(Model::class);
         $this->builder->shouldReceive('getModel')->andReturn($this->related);
-        $this->parent = Mockery::mock(Model::class);
+        $this->parent = Double::for(Model::class);
         $this->parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $this->parent->shouldReceive('getAttribute')->with('username')->andReturn('taylor');
         $this->parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');

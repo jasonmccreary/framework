@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Broadcasting;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
 use Illuminate\Container\Container;
@@ -60,7 +61,7 @@ class BroadcasterTest extends TestCase
         // Test Explicit Binding...
         $container = new Container;
         Container::setInstance($container);
-        $binder = Mockery::mock(BindingRegistrar::class);
+        $binder = Double::for(BindingRegistrar::class);
         $binder->expects('getBindingCallback')->times(2)->with('model')->andReturn(function () {
             return 'bound';
         });
@@ -83,7 +84,7 @@ class BroadcasterTest extends TestCase
     {
         $container = new Container;
         Container::setInstance($container);
-        $binder = Mockery::mock(BindingRegistrar::class);
+        $binder = Double::for(BindingRegistrar::class);
         $callback = RouteBinding::forModel($container, BroadcasterTestEloquentModelStub::class);
 
         $binder->expects('getBindingCallback')->times(2)->with('model')->andReturn($callback);
@@ -198,7 +199,7 @@ class BroadcasterTest extends TestCase
             //
         });
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
         $request->expects('user')
             ->withNoArgs()
             ->andReturn(new DummyUser);
@@ -215,7 +216,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
         $request->expects('user')
             ->with('myguard')
             ->andReturn(new DummyUser);
@@ -235,7 +236,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard2', 'myguard1']]);
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
         $request->expects('user')
             ->with('myguard1')
             ->andReturn(null);
@@ -262,7 +263,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
         $request->expects('user')
             ->with('myguard')
             ->andReturn(null);
@@ -278,7 +279,7 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard1', 'myguard2']]);
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
         $request->expects('user')
             ->with('myguard1')
             ->andReturn(null);

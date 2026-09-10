@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Log;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Events\Dispatcher;
@@ -18,7 +19,7 @@ class LogLoggerTest extends TestCase
 {
     public function testMethodsPassErrorAdditionsToMonolog()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $monolog->expects('isHandling')->with('error')->andReturn(true);
         $monolog->expects('error')->with('foo', []);
         $writer = new Logger($monolog);
@@ -28,7 +29,7 @@ class LogLoggerTest extends TestCase
 
     public function testContextIsAddedToAllSubsequentLogs()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz']);
 
@@ -40,7 +41,7 @@ class LogLoggerTest extends TestCase
 
     public function testContextIsFlushed()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz']);
         $writer->withoutContext();
@@ -53,7 +54,7 @@ class LogLoggerTest extends TestCase
 
     public function testContextKeysCanBeRemovedForSubsequentLogs()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz', 'forget' => 'me']);
         $writer->withoutContext(['forget']);
@@ -66,7 +67,7 @@ class LogLoggerTest extends TestCase
 
     public function testLoggerFiresEventsDispatcher()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $monolog->expects('isHandling')->with('error')->andReturn(true);
         $monolog->expects('error')->with('foo', []);
         $writer = new Logger($monolog, $events = new Dispatcher);
@@ -93,7 +94,7 @@ class LogLoggerTest extends TestCase
     {
         $this->expectExceptionObject(new RuntimeException('Events dispatcher has not been set.'));
 
-        $writer = new Logger(Mockery::mock(Monolog::class));
+        $writer = new Logger(Double::for(Monolog::class));
         $writer->listen(function () {
             //
         });
@@ -101,8 +102,8 @@ class LogLoggerTest extends TestCase
 
     public function testListenShortcut()
     {
-        $events = Mockery::mock(DispatcherContract::class);
-        $writer = new Logger(Mockery::mock(Monolog::class), $events);
+        $events = Double::for(DispatcherContract::class);
+        $writer = new Logger(Double::for(Monolog::class), $events);
 
         $callback = function () {
             return 'success';
@@ -114,7 +115,7 @@ class LogLoggerTest extends TestCase
 
     public function testComplexContextManipulation()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
 
         $writer->withContext(['user_id' => 123, 'action' => 'login']);

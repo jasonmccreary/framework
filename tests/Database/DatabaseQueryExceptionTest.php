@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\QueryException;
@@ -176,7 +177,7 @@ class DatabaseQueryExceptionTest extends TestCase
 
     protected function getConnection()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
 
         $grammar = new Grammar($connection);
 

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\Double;
 use Error;
 use Exception;
 use Illuminate\Container\Container;
@@ -250,7 +251,7 @@ class EventsDispatcherTest extends TestCase
 
     public function testContainerResolutionOfEventHandlers()
     {
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $container->expects('make')->with(TestEventListener::class)->andReturn(new TestEventListener);
         $d = new Dispatcher($container);
         $d->listen('foo', TestEventListener::class.'@onFooEvent');
@@ -723,7 +724,7 @@ class EventsDispatcherTest extends TestCase
     public function testEventDispatchesUsingNamedArguments()
     {
         $container = new Container;
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $container->instance('events', $events);
 
         $originalContainer = Container::getInstance();

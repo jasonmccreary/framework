@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Redis;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Redis\Connections\PhpRedisConnection;
@@ -17,10 +18,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = Mockery::mock(Redis::class);
+        $client = Double::for(Redis::class);
         $client->expects('get')->with('key')->andThrow($exception);
 
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::on(function ($event) use ($exception) {
             return $event instanceof CommandFailed
                 && $event->command === 'get'
@@ -40,10 +41,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = Mockery::mock(Redis::class);
+        $client = Double::for(Redis::class);
         $client->expects('get')->with('key')->andThrow($exception);
 
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::type(CommandFailed::class));
         $events->shouldNotReceive('dispatch')->with(Mockery::type(CommandExecuted::class));
 
@@ -61,10 +62,10 @@ class RedisEventsTest extends TestCase
     {
         $exception = new Exception('Test exception');
 
-        $client = Mockery::mock(Redis::class);
+        $client = Double::for(Redis::class);
         $client->expects('get')->with('key')->andThrow($exception);
 
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::on(function ($event) {
             return $event instanceof CommandFailed
                 && $event->connectionName === 'test-connection';
@@ -83,9 +84,9 @@ class RedisEventsTest extends TestCase
 
     public function testListenForFailuresRegistersCallback()
     {
-        $client = Mockery::mock(Redis::class);
+        $client = Double::for(Redis::class);
 
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('listen')->with(CommandFailed::class, Mockery::type('Closure'));
 
         $connection = new PhpRedisConnection($client);

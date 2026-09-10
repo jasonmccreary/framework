@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Session;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Session\CacheBasedSessionHandler;
 use Mockery;
@@ -15,7 +16,7 @@ class CacheBasedSessionHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheMock = Mockery::mock(CacheContract::class);
+        $this->cacheMock = Double::for(CacheContract::class);
         $this->sessionHandler = new CacheBasedSessionHandler(cache: $this->cacheMock, minutes: 10);
     }
 

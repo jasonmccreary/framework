@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Double;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -38,7 +39,7 @@ class ConsoleApplicationTest extends TestCase
     public function testAddSetsLaravelInstance()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(Command::class);
+        $command = Double::for(Command::class);
         $command->expects('setLaravel')->with(Mockery::type(ApplicationContract::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
@@ -49,7 +50,7 @@ class ConsoleApplicationTest extends TestCase
     public function testLaravelNotSetOnSymfonyCommands()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(SymfonyCommand::class);
+        $command = Double::for(SymfonyCommand::class);
         $command->shouldReceive('setLaravel')->never();
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
@@ -60,8 +61,8 @@ class ConsoleApplicationTest extends TestCase
     public function testResolveAddsCommandViaApplicationResolution()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(SymfonyCommand::class);
-        $artisan->getLaravel()->expects('make')->with('foo')->andReturn(Mockery::mock(SymfonyCommand::class));
+        $command = Double::for(SymfonyCommand::class);
+        $artisan->getLaravel()->expects('make')->with('foo')->andReturn(Double::for(SymfonyCommand::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->resolve('foo');
 

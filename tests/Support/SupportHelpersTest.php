@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use ArrayAccess;
 use ArrayIterator;
 use Carbon\CarbonInterval;
@@ -47,7 +48,7 @@ class SupportHelpersTest extends TestCase
         $str = 'A \'quote\' is <b>bold</b>';
         $this->assertSame('A &#039;quote&#039; is &lt;b&gt;bold&lt;/b&gt;', e($str));
 
-        $html = Mockery::mock(Htmlable::class);
+        $html = Double::for(Htmlable::class);
         $html->expects('toHtml')->andReturn($str);
         $this->assertEquals($str, e($html));
     }
@@ -830,7 +831,7 @@ class SupportHelpersTest extends TestCase
             $object->id = 2;
         })->id);
 
-        $mock = Mockery::mock();
+        $mock = Double::for(\stdClass::class);
         $mock->expects('foo')->andReturn('bar');
         $this->assertEquals($mock, tap($mock)->foo());
     }

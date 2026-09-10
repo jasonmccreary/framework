@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Broadcasting\FakePendingBroadcast;
 use Illuminate\Container\Container;
@@ -23,7 +24,7 @@ class FoundationHelpersTest extends TestCase
     public function testCache()
     {
         $app = new Application;
-        $app['cache'] = $cache = Mockery::mock(CacheRepository::class);
+        $app['cache'] = $cache = Double::for(CacheRepository::class);
 
         // 1. cache()
         $this->assertInstanceOf(CacheRepository::class, cache());
@@ -48,7 +49,7 @@ class FoundationHelpersTest extends TestCase
     public function testEvents()
     {
         $app = new Application;
-        $app['events'] = $dispatcher = Mockery::mock(Dispatcher::class);
+        $app['events'] = $dispatcher = Double::for(Dispatcher::class);
 
         $dispatcher->expects('dispatch')->with('a', 'b', 'c')->andReturn('foo');
         $this->assertSame('foo', event('a', 'b', 'c'));
@@ -57,7 +58,7 @@ class FoundationHelpersTest extends TestCase
     public function testMixDoesNotIncludeHost()
     {
         $app = new Application;
-        $app['config'] = Mockery::mock(Repository::class);
+        $app['config'] = Double::for(Repository::class);
         $app['config']->shouldReceive('get')->with('app.mix_url');
         $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
 
@@ -73,7 +74,7 @@ class FoundationHelpersTest extends TestCase
     public function testMixCachesManifestForSubsequentCalls()
     {
         $app = new Application;
-        $app['config'] = Mockery::mock(Repository::class);
+        $app['config'] = Double::for(Repository::class);
         $app['config']->shouldReceive('get')->with('app.mix_url');
         $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
 
@@ -89,7 +90,7 @@ class FoundationHelpersTest extends TestCase
     public function testMixAssetMissingStartingSlashHaveItAdded()
     {
         $app = new Application;
-        $app['config'] = Mockery::mock(Repository::class);
+        $app['config'] = Double::for(Repository::class);
         $app['config']->shouldReceive('get')->with('app.mix_url');
         $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
 
@@ -112,7 +113,7 @@ class FoundationHelpersTest extends TestCase
     public function testMixWithManifestDirectory()
     {
         $app = new Application;
-        $app['config'] = Mockery::mock(Repository::class);
+        $app['config'] = Double::for(Repository::class);
         $app['config']->shouldReceive('get')->with('app.mix_url');
         $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
 
@@ -291,7 +292,7 @@ class FoundationHelpersTest extends TestCase
 
     public function testAbortReceivesCodeAsInteger()
     {
-        $app = Mockery::mock(Application::class);
+        $app = Double::for(Application::class);
         $app->expects('abort')
             ->with($code = 400, $message = 'Bad request', $headers = ['X-FOO' => 'BAR']);
 

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Validation;
 
+use JMac\Testing\Double;
 use Generator;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -23,7 +24,7 @@ class ValidationNotPwnedVerifierTest extends TestCase
     #[DataProvider('dataProviderEmptyValues')]
     public function testEmptyValues($password): void
     {
-        $httpFactory = Mockery::mock(HttpFactory::class);
+        $httpFactory = Double::for(HttpFactory::class);
         $verifier = new NotPwnedVerifier($httpFactory);
 
         $this->assertFalse($verifier->verify([
@@ -41,10 +42,10 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiResponseGoesWrong()
     {
-        $httpFactory = Mockery::mock(HttpFactory::class);
-        $response = Mockery::mock(Response::class);
+        $httpFactory = Double::for(HttpFactory::class);
+        $response = Double::for(Response::class);
 
-        $httpFactory = Mockery::mock(HttpFactory::class);
+        $httpFactory = Double::for(HttpFactory::class);
 
         $httpFactory
             ->expects('withHeaders')
@@ -75,8 +76,8 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
     public function testApiGoesDown()
     {
-        $httpFactory = Mockery::mock(HttpFactory::class);
-        $response = Mockery::mock(Response::class);
+        $httpFactory = Double::for(HttpFactory::class);
+        $response = Double::for(Response::class);
 
         $httpFactory
             ->expects('withHeaders')
@@ -113,8 +114,8 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
         $differentSuffix = '00000000000000000000000000000000000';
 
-        $httpFactory = Mockery::mock(HttpFactory::class);
-        $response = Mockery::mock(Response::class);
+        $httpFactory = Double::for(HttpFactory::class);
+        $response = Double::for(Response::class);
 
         $httpFactory
             ->expects('withHeaders')
@@ -149,13 +150,13 @@ class ValidationNotPwnedVerifierTest extends TestCase
         $container = Container::getInstance();
         $exception = new ConnectionException();
 
-        $exceptionHandler = Mockery::mock(ExceptionHandler::class);
+        $exceptionHandler = Double::for(ExceptionHandler::class);
         $exceptionHandler->expects('report')->with($exception);
         $container->bind(ExceptionHandler::class, function () use ($exceptionHandler) {
             return $exceptionHandler;
         });
 
-        $httpFactory = Mockery::mock(HttpFactory::class);
+        $httpFactory = Double::for(HttpFactory::class);
 
         $httpFactory
             ->expects('withHeaders')

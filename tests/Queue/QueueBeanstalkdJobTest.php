@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -23,7 +24,7 @@ class QueueBeanstalkdJobTest extends TestCase
     {
         $job = $this->getJob();
         $job->getPheanstalkJob()->expects('getData')->andReturn(json_encode(['job' => 'foo', 'data' => ['data']]));
-        $handler = Mockery::mock(stdClass::class);
+        $handler = Double::for(stdClass::class);
         $job->getContainer()->expects('make')->with('foo')->andReturn($handler);
         $handler->expects('fire')->with($job, ['data']);
 
@@ -34,11 +35,11 @@ class QueueBeanstalkdJobTest extends TestCase
     {
         $job = $this->getJob();
         $job->getPheanstalkJob()->expects('getData')->times(2)->andReturn(json_encode(['job' => 'foo', 'uuid' => 'test-uuid', 'data' => ['data']]));
-        $handler = Mockery::mock(BeanstalkdJobTestFailedTest::class);
+        $handler = Double::for(BeanstalkdJobTestFailedTest::class);
         $job->getContainer()->expects('make')->with('foo')->andReturn($handler);
         $job->getPheanstalk()->expects('delete')->with($job->getPheanstalkJob())->andReturnSelf();
         $handler->expects('failed')->with(['data'], Mockery::type(Exception::class), 'test-uuid', Mockery::type(Job::class));
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $job->getContainer()->expects('make')->with(Dispatcher::class)->andReturn($events);
         $events->expects('dispatch')->with(Mockery::type(JobFailed::class))->andReturnNull();
 
@@ -72,9 +73,9 @@ class QueueBeanstalkdJobTest extends TestCase
     protected function getJob()
     {
         return new BeanstalkdJob(
-            Mockery::mock(Container::class),
-            Mockery::mock(implode(',', [PheanstalkManagerInterface::class, PheanstalkPublisherInterface::class, PheanstalkSubscriberInterface::class])),
-            Mockery::mock(JobIdInterface::class),
+            Double::for(Container::class),
+            Double::for(implode(',', [PheanstalkManagerInterface::class, PheanstalkPublisherInterface::class, PheanstalkSubscriberInterface::class])),
+            Double::for(JobIdInterface::class),
             'connection-name',
             'default'
         );

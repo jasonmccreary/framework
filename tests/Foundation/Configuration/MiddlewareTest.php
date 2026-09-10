@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation\Configuration;
 
+use JMac\Testing\Double;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
@@ -204,7 +205,7 @@ class MiddlewareTest extends TestCase
 
     public function testTrustHosts()
     {
-        $app = Mockery::mock(Application::class);
+        $app = Double::for(Application::class);
         $configuration = new Middleware();
         $middleware = new class($app) extends TrustHosts
         {
@@ -247,7 +248,7 @@ class MiddlewareTest extends TestCase
     public function testEncryptCookies()
     {
         $configuration = new Middleware();
-        $encrypter = Mockery::mock(Encrypter::class);
+        $encrypter = Double::for(Encrypter::class);
         $middleware = new EncryptCookies($encrypter);
 
         $this->assertFalse($middleware->isDisabled('aaa'));
@@ -266,8 +267,8 @@ class MiddlewareTest extends TestCase
     {
         $configuration = new Middleware();
 
-        $mode = Mockery::mock(MaintenanceMode::class);
-        $app = Mockery::mock(Application::class);
+        $mode = Double::for(MaintenanceMode::class);
+        $app = Double::for(Application::class);
         $middleware = new PreventRequestsDuringMaintenance($app);
 
         $reflection = new ReflectionClass($middleware);
@@ -288,8 +289,8 @@ class MiddlewareTest extends TestCase
     {
         $configuration = new Middleware();
         $middleware = new PreventRequestForgery(
-            Mockery::mock(Application::class),
-            Mockery::mock(Encrypter::class)
+            Double::for(Application::class),
+            Double::for(Encrypter::class)
         );
 
         $this->assertSame([], $middleware->getExcludedPaths());

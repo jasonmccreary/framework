@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\Double;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
@@ -2449,7 +2450,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSent()
     {
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->times(5)->with(Mockery::type(RequestSending::class));
         $events->expects('dispatch')->times(5)->with(Mockery::type(ResponseReceived::class));
 
@@ -2465,7 +2466,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSentAsync()
     {
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->times(5)->with(Mockery::type(RequestSending::class));
         $events->expects('dispatch')->times(5)->with(Mockery::type(ResponseReceived::class));
 
@@ -2484,7 +2485,7 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredForEveryRetry()
     {
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->times(2)->with(Mockery::type(RequestSending::class));
         $events->expects('dispatch')->times(2)->with(Mockery::type(ResponseReceived::class));
 
@@ -2522,7 +2523,7 @@ class HttpClientTest extends TestCase
 
     public function testClonedClientsWorkSuccessfullyWithTheRequestObject()
     {
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::type(RequestSending::class));
         $events->expects('dispatch')->with(Mockery::type(ResponseReceived::class));
 

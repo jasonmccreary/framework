@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console\Concerns;
 
+use JMac\Testing\Double;
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Console\Concerns\InteractsWithIO;
@@ -20,7 +21,7 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = Mockery::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = Double::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
         $output->expects('createProgressBar')
@@ -53,7 +54,7 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = Mockery::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = Double::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
         $totalSteps = 5;

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -44,7 +45,7 @@ class QueueSyncQueueTest extends TestCase
         $sync = new SyncQueue;
         $container = new Container;
         Container::setInstance($container);
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->times(4);
         $container->instance('events', $events);
         $container->instance(Dispatcher::class, $events);
@@ -106,7 +107,7 @@ class QueueSyncQueueTest extends TestCase
         $sync = new SyncQueue;
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
-        $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
+        $transactionManager = Double::for(DatabaseTransactionsManager::class);
         $transactionManager->expects('addCallback')->andReturn(null);
         $transactionManager->shouldNotReceive('addCallbackForRollback');
         $container->instance('db.transactions', $transactionManager);
@@ -120,7 +121,7 @@ class QueueSyncQueueTest extends TestCase
         $sync = new SyncQueue;
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
-        $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
+        $transactionManager = Double::for(DatabaseTransactionsManager::class);
         $transactionManager->expects('addCallback')->andReturn(null);
         $transactionManager->shouldNotReceive('addCallbackForRollback');
         $container->instance('db.transactions', $transactionManager);
@@ -134,7 +135,7 @@ class QueueSyncQueueTest extends TestCase
         $sync = new SyncQueue;
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
-        $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
+        $transactionManager = Double::for(DatabaseTransactionsManager::class);
         $transactionManager->expects('addCallback')->andReturn(null);
         $transactionManager->expects('addCallbackForRollback')->andReturn(null);
         $container->instance('db.transactions', $transactionManager);
@@ -148,7 +149,7 @@ class QueueSyncQueueTest extends TestCase
         $sync = new SyncQueue;
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
-        $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
+        $transactionManager = Double::for(DatabaseTransactionsManager::class);
         $transactionManager->expects('addCallback')->andReturn(null);
         $transactionManager->expects('addCallbackForRollback')->andReturn(null);
         $container->instance('db.transactions', $transactionManager);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -64,7 +65,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     public function testFindOrNewMethodFindsModel()
     {
         $relation = $this->getRelation();
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('find')->with('foo', ['*'])->andReturn($model);
         $model->shouldReceive('setAttribute')->never();
 
@@ -75,7 +76,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('find')->with('foo', ['*'])->andReturn(null);
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getRelated()->expects('newInstance')->with()->andReturn($model);
         $model->expects('setAttribute')->with('foreign_key', 1);
 
@@ -86,7 +87,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('where')->with(['foo'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
         $model->shouldReceive('setAttribute')->never();
 
@@ -97,7 +98,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('where')->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
@@ -129,7 +130,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('where')->with(['foo'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
@@ -142,7 +143,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('where')->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
         $relation->getRelated()->shouldReceive('newInstance')->never();
         $model->shouldReceive('setAttribute')->never();
@@ -189,7 +190,7 @@ class DatabaseEloquentHasManyTest extends TestCase
         });
         $relation->getQuery()->expects('useWritePdo')->andReturn($relation->getQuery());
         $relation->getQuery()->expects('where')->with(['foo' => 'bar'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
 
         $this->assertInstanceOf(Model::class, $found = $relation->createOrFirst(['foo' => 'bar'], ['baz' => 'qux']));
@@ -227,7 +228,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $relation = $this->getRelation();
         $relation->getQuery()->expects('where')->with(['foo'])->andReturn($relation->getQuery());
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->andReturn($model);
         $relation->getRelated()->shouldReceive('newInstance')->never();
 
@@ -246,7 +247,7 @@ class DatabaseEloquentHasManyTest extends TestCase
         });
         $relation->getQuery()->expects('where')->with(['foo'])->andReturn($relation->getQuery());
         $relation->getQuery()->expects('first')->with()->andReturn(null);
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getRelated()->expects('newInstance')->with(['foo', 'bar'])->andReturn($model);
 
         $model->wasRecentlyCreated = true;
@@ -296,7 +297,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     public function testRelationIsProperlyInitialized()
     {
         $relation = $this->getRelation();
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $relation->getRelated()->expects('newCollection')->andReturnUsing(function ($array = []) {
             return new Collection($array);
         });
@@ -384,13 +385,13 @@ class DatabaseEloquentHasManyTest extends TestCase
 
     protected function getRelation()
     {
-        $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder = Mockery::mock(Builder::class, [$queryBuilder]);
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $builder = Double::for(new Builder($queryBuilder));
         $builder->shouldReceive('whereNotNull')->with('table.foreign_key');
         $builder->shouldReceive('where')->with('table.foreign_key', '=', 1);
-        $related = Mockery::mock(Model::class);
+        $related = Double::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
         $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
@@ -419,7 +420,7 @@ class DatabaseEloquentHasManyTest extends TestCase
     {
         $attributes[$relation->getForeignKeyName()] = $relation->getParentKey();
 
-        $model = Mockery::mock(Model::class);
+        $model = Double::for(Model::class);
         $model->expects('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
 
         $relation->getRelated()->expects('forceCreate')->with($attributes)->andReturn($model);

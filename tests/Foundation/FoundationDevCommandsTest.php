@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
@@ -322,7 +323,7 @@ class FoundationDevCommandsTest extends TestCase
     {
         File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
 
-        $provider = Mockery::mock('alias:Laravel\Pail\PailServiceProvider');
+        $provider = Double::for('alias:Laravel\Pail\PailServiceProvider');
         $provider->shouldReceive('register');
 
         Application::getInstance()->register($provider);

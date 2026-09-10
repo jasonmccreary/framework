@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console\Scheduling;
 
+use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Console\Scheduling\CacheEventMutex;
 use Illuminate\Console\Scheduling\Event;
@@ -34,8 +35,8 @@ class CacheEventMutexTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cacheFactory = Mockery::mock(Factory::class);
-        $this->cacheRepository = Mockery::mock(Repository::class);
+        $this->cacheFactory = Double::for(Factory::class);
+        $this->cacheRepository = Double::for(Repository::class);
         $this->cacheFactory->shouldReceive('store')->andReturn($this->cacheRepository);
         $this->cacheMutex = new CacheEventMutex($this->cacheFactory);
         $this->event = new Event($this->cacheMutex, 'command');

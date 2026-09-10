@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Routing;
 
+use JMac\Testing\Double;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -21,9 +22,9 @@ class RoutingRedirectorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->headers = Mockery::mock(HeaderBag::class);
+        $this->headers = Double::for(HeaderBag::class);
 
-        $this->request = Mockery::mock(Request::class);
+        $this->request = Double::for(Request::class);
         $this->request->shouldReceive('isMethod')->andReturn(true)->byDefault();
         $this->request->shouldReceive('method')->andReturn('GET')->byDefault();
         $this->request->shouldReceive('route')->andReturn(true)->byDefault();
@@ -31,7 +32,7 @@ class RoutingRedirectorTest extends TestCase
         $this->request->shouldReceive('expectsJson')->andReturn(false)->byDefault();
         $this->request->headers = $this->headers;
 
-        $this->url = Mockery::mock(UrlGenerator::class);
+        $this->url = Double::for(UrlGenerator::class);
         $this->url->shouldReceive('getRequest')->andReturn($this->request);
         $this->url->shouldReceive('to')->with('bar', [], null)->andReturn('http://foo.com/bar');
         $this->url->shouldReceive('to')->with('bar', [], true)->andReturn('https://foo.com/bar');
@@ -40,7 +41,7 @@ class RoutingRedirectorTest extends TestCase
         $this->url->shouldReceive('to')->with('/', [], null)->andReturn('http://foo.com/');
         $this->url->shouldReceive('to')->with('http://foo.com/bar?signature=secret', [], null)->andReturn('http://foo.com/bar?signature=secret');
 
-        $this->session = Mockery::mock(Store::class);
+        $this->session = Double::for(Store::class);
 
         $this->redirect = new Redirector($this->url);
         $this->redirect->setSession($this->session);

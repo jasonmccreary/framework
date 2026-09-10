@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,7 +24,7 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
         $relation = $this->getMockBuilder(BelongsToMany::class)->onlyMethods(['touchIfTouching'])->setConstructorArgs($this->getRelationArguments())->getMock();
         $relation->withPivotValue(['is_admin' => 1]);
 
-        $query = Mockery::mock(QueryBuilder::class);
+        $query = Double::for(QueryBuilder::class);
         $query->expects('from')->with('club_user')->andReturn($query);
         $query->expects('insert')->with([['club_id' => 1, 'user_id' => 1, 'is_admin' => 1]])->andReturn(true);
         $relation->getQuery()->getQuery()->expects('newQuery')->andReturn($query);
@@ -33,14 +34,14 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
 
     public function getRelationArguments()
     {
-        $parent = Mockery::mock(Model::class);
+        $parent = Double::for(Model::class);
         $parent->shouldReceive('getKey')->andReturn(1);
         $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
         $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
         $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
-        $builder = Mockery::mock(Builder::class);
-        $related = Mockery::mock(Model::class);
+        $builder = Double::for(Builder::class);
+        $related = Double::for(Model::class);
         $builder->shouldReceive('getModel')->andReturn($related);
 
         $related->shouldReceive('getTable')->andReturn('users');
@@ -51,7 +52,7 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
         $builder->expects('where')->with('club_user.club_id', '=', 1);
         $builder->expects('where')->with('club_user.is_admin', '=', 1, 'and');
 
-        $mockQueryBuilder = Mockery::mock(QueryBuilder::class);
+        $mockQueryBuilder = Double::for(QueryBuilder::class);
         $builder->shouldReceive('getQuery')->andReturn($mockQueryBuilder);
         $mockQueryBuilder->shouldReceive('getGrammar')->andReturn(Mockery::mock(Grammar::class, ['isExpression' => false]));
 

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Queue;
 
+use JMac\Testing\Double;
 use Exception;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
@@ -56,7 +57,7 @@ class ThrottlesExceptionsTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('release')->with(0);
@@ -75,7 +76,7 @@ class ThrottlesExceptionsTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('release')->withArgs(function ($delay) {
@@ -98,7 +99,7 @@ class ThrottlesExceptionsTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('delete');
@@ -117,7 +118,7 @@ class ThrottlesExceptionsTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(true);
         $job->expects('fail');
@@ -136,7 +137,7 @@ class ThrottlesExceptionsTest extends TestCase
         $class::$handled = false;
         $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
 
-        $job = Mockery::mock(Job::class);
+        $job = Double::for(Job::class);
 
         $job->expects('hasFailed')->andReturn(false);
         $job->expects('isReleased')->times(2)->andReturn(false);

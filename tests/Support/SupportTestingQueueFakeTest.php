@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use BadMethodCallException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Application;
@@ -65,7 +66,7 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = Mockery::mock(QueueManager::class);
+        $manager = Double::for(QueueManager::class);
         $manager->expects('push')->withArgs(function ($passedJob) use ($job) {
             return $passedJob === $job;
         });
@@ -421,7 +422,7 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = Mockery::mock(QueueManager::class);
+        $manager = Double::for(QueueManager::class);
         $manager->expects('push')->withArgs(function ($passedJob) use ($job) {
             return $passedJob === $job;
         });
@@ -488,7 +489,7 @@ class SupportTestingQueueFakeTest extends TestCase
         $job = new JobStub;
         $steps = [];
 
-        $manager = Mockery::mock(QueueManager::class);
+        $manager = Double::for(QueueManager::class);
         $manager->expects('push')->withArgs(function ($passedJob, $passedData, $passedQueue) use ($job) {
             return $passedJob === $job && $passedData === ['foo' => 'bar'] && $passedQueue === 'redis';
         });

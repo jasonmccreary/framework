@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Support;
 
+use JMac\Testing\Double;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -19,8 +20,8 @@ class SupportServiceProviderTest extends TestCase
         ServiceProvider::$publishes = [];
         ServiceProvider::$publishGroups = [];
 
-        $this->app = $app = Mockery::mock(Application::class)->makePartial();
-        $config = Mockery::mock(Config::class)->makePartial();
+        $this->app = $app = Double::for(Application::class)->passthru();
+        $config = Double::for(Config::class)->passthru();
 
         $config = new Config();
 
@@ -167,7 +168,7 @@ class SupportServiceProviderTest extends TestCase
 
     public function testLoadTranslationsFromWithoutNamespace()
     {
-        $translator = Mockery::mock(Translator::class);
+        $translator = Double::for(Translator::class);
         $translator->expects('addPath')->with(__DIR__.'/translations');
 
         $this->app->expects('afterResolving')->with('translator', Mockery::on(function ($callback) use ($translator) {
@@ -182,7 +183,7 @@ class SupportServiceProviderTest extends TestCase
 
     public function testLoadTranslationsFromWithNamespace()
     {
-        $translator = Mockery::mock(Translator::class);
+        $translator = Double::for(Translator::class);
         $translator->expects('addNamespace')->with('namespace', __DIR__.'/translations');
 
         $this->app->expects('afterResolving')->with('translator', Mockery::on(function ($callback) use ($translator) {
