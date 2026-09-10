@@ -2,10 +2,11 @@
 
 namespace Illuminate\Tests\Integration\Console;
 
-use JMac\Testing\Double;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Mockery;
 use Orchestra\Testbench\TestCase;
 
@@ -18,14 +19,14 @@ class EnvironmentEncryptCommandTest extends TestCase
         parent::setUp();
 
         $this->filesystem = File::spy();
-        $this->filesystem->allows('get')->returns(true);
-        $this->filesystem->allows('put')->returns('APP_NAME=Laravel');
+        $this->filesystem->allows('get')->andReturn(true);
+        $this->filesystem->allows('put')->andReturn('APP_NAME=Laravel');
     }
 
     public function testItFailsWithInvalidCipherFails(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt', ['--cipher' => 'invalid'])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -35,8 +36,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItFailsUsingCipherWithInvalidKey(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt', ['--cipher' => 'aes-128-cbc', '--key' => 'invalid'])
             ->expectsOutputToContain('incorrect key length')
@@ -45,8 +46,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheCorrectFileWhenUsingEnvironment(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt', ['--env' => 'production'])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -59,8 +60,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheCorrectFileWhenNotUsingEnvironment(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
         $this->filesystem->allows('get');
 
         $this->artisan('env:encrypt')
@@ -74,7 +75,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItFailsWhenEnvironmentFileCannotBeFound(): void
     {
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt')
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -84,7 +85,7 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItFailsWhenEncryptionFileExists(): void
     {
-        $this->filesystem->expects('exists')->times(2)->returns(true);
+        $this->filesystem->expects('exists')->times(2)->andReturn(true);
 
         $this->artisan('env:encrypt')
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -94,8 +95,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItGeneratesTheEncryptionFileWhenForcing(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(true);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(true);
 
         $this->artisan('env:encrypt', ['--force' => true])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -108,8 +109,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsWithGivenKeyAndDisplaysIt(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt', ['--key' => $key = 'ANvVbPbE0tWMHpUySh6liY4WaCmAYKXP'])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -120,8 +121,8 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsWithGivenGeneratedBase64KeyAndDisplaysIt(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $key = Encrypter::generateKey('AES-256-CBC');
 
@@ -134,26 +135,27 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItEncryptsInReadableFormat(): void
     {
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn("APP_NAME=Laravel\nAPP_ENV=local");
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) {
+            ->returns("APP_NAME=Laravel\nAPP_ENV=local");
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) {
                 $lines = explode("\n", rtrim($content));
 
                 return count($lines) === 2
                     && str_starts_with($lines[0], 'APP_NAME=')
                     && str_starts_with($lines[1], 'APP_ENV=');
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => 'ANvVbPbE0tWMHpUySh6liY4WaCmAYKXP'])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -162,19 +164,20 @@ class EnvironmentEncryptCommandTest extends TestCase
 
     public function testItSkipsCommentsAndBlankLinesInReadableFormat(): void
     {
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn("# Comment\nAPP_NAME=Laravel\n\nAPP_ENV=local");
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) {
+            ->returns("# Comment\nAPP_NAME=Laravel\n\nAPP_ENV=local");
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) {
                 $lines = explode("\n", rtrim($content));
 
                 // Comments and blank lines are skipped
@@ -182,7 +185,7 @@ class EnvironmentEncryptCommandTest extends TestCase
                     && str_starts_with($lines[0], 'APP_NAME=')
                     && str_starts_with($lines[1], 'APP_ENV=');
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => 'ANvVbPbE0tWMHpUySh6liY4WaCmAYKXP'])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -205,24 +208,25 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn($originalContent);
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) use (&$encryptedOutput) {
+            ->returns($originalContent);
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => $key])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -255,24 +259,25 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn($originalContent);
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) use (&$encryptedOutput) {
+            ->returns($originalContent);
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => $key])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -306,24 +311,25 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn($originalContent);
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) use (&$encryptedOutput) {
+            ->returns($originalContent);
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => $key])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -356,24 +362,25 @@ ENV;
 
         $encryptedOutput = null;
 
-        File::swap(Double::for(Filesystem::class));
+        $filesystem = Double::for(Filesystem::class);
+        File::swap($filesystem);
 
-        File::expects('exists')
+        $filesystem->expects('exists')
             ->with(base_path('.env'))
-            ->andReturn(true);
-        File::expects('exists')
+            ->returns(true);
+        $filesystem->expects('exists')
             ->with(base_path('.env.encrypted'))
-            ->andReturn(false);
-        File::expects('get')
+            ->returns(false);
+        $filesystem->expects('get')
             ->with(base_path('.env'))
-            ->andReturn($originalContent);
-        File::expects('put')
-            ->with(base_path('.env.encrypted'), Mockery::on(function ($content) use (&$encryptedOutput) {
+            ->returns($originalContent);
+        $filesystem->expects('put')
+            ->with(base_path('.env.encrypted'), Argument::satisfies(function ($content) use (&$encryptedOutput) {
                 $encryptedOutput = $content;
 
                 return true;
             }))
-            ->andReturn(true);
+            ->returns(true);
 
         $this->artisan('env:encrypt', ['--readable' => true, '--key' => $key])
             ->expectsOutputToContain('Environment successfully encrypted')
@@ -399,8 +406,8 @@ ENV;
 
     public function testItCanRemoveTheOriginalFile(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt', ['--prune' => true])
             ->expectsQuestion('What encryption key would you like to use?', 'generate')
@@ -416,8 +423,8 @@ ENV;
 
     public function testItEncryptsWithInteractivelyGivenKeyAndDisplaysIt(): void
     {
-        $this->filesystem->expects('exists')->returns(true);
-        $this->filesystem->expects('exists')->returns(false);
+        $this->filesystem->expects('exists')->andReturn(true);
+        $this->filesystem->expects('exists')->andReturn(false);
 
         $this->artisan('env:encrypt')
             ->expectsQuestion('What encryption key would you like to use?', 'ask')
