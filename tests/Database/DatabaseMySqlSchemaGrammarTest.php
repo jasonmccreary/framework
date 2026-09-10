@@ -2,7 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
-use Illuminate\Database\Connection;
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ForeignIdColumnDefinition;
@@ -1584,7 +1584,7 @@ class DatabaseMySqlSchemaGrammarTest extends TestCase
         ?MySqlBuilder $builder = null,
         string $prefix = ''
     ) {
-        $connection = Double::for(Connection::class);
+        $connection = Double::for(MySqlConnection::class);
         $connection->allows('getTablePrefix')->returns($prefix);
         $connection->allows('getConfig')->with('prefix_indexes')->returns(null);
         $connection->allows('isMaria')->returns(false);
@@ -1738,7 +1738,7 @@ class DatabaseMySqlSchemaGrammarTest extends TestCase
         $this->assertSame('alter table `users` add index `custom_idx` using btree(`name`), lock=none', $statements[0]);
     }
 
-    public function getGrammar(?Connection $connection = null)
+    public function getGrammar(?MySqlConnection $connection = null)
     {
         return new MySqlGrammar($connection ?? $this->getConnection());
     }

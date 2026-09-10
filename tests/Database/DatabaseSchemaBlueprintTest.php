@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Database;
 
 use Closure;
-use Illuminate\Database\Connection;
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar;
@@ -710,11 +710,15 @@ class DatabaseSchemaBlueprintTest extends TestCase
 
     protected function getConnection(?string $grammar = null, string $prefix = '')
     {
-        $connection = Double::for(Connection::class);
+        $grammar ??= 'MySql';
+
+        // Several tests below call ->allows('isMaria') regardless of which grammar
+        // they're testing — isMaria() is only declared on MySqlConnection, not the
+        // base Connection, so double that concrete class unconditionally.
+        $connection = Double::for(MySqlConnection::class);
         $connection->allows('getTablePrefix')->returns($prefix);
         $connection->allows('getConfig')->with('prefix_indexes')->returns(true);
 
-        $grammar ??= 'MySql';
         $grammarClass = 'Illuminate\Database\Schema\Grammars\\'.$grammar.'Grammar';
         $builderClass = 'Illuminate\Database\Schema\\'.$grammar.'Builder';
 
