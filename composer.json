@@ -95,7 +95,8 @@
         "symfony/mercure": "^0.8.0",
         "symfony/psr-http-message-bridge": "^7.4.0 || ^8.0.0",
         "symfony/translation": "^7.4.0 || ^8.0.0",
-        "web-token/jwt-library": "^4.1"
+        "web-token/jwt-library": "^4.1",
+        "jasonmccreary/double": "~0.6"
     },
     "replace": {
         "illuminate/auth": "self.version",
