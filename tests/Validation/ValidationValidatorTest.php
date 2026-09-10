@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Validation;
 
-use JMac\Testing\Double;
 use Countable;
 use DateTime;
 use DateTimeImmutable;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Contracts\Translation\Translator as TranslatorContract;
@@ -31,12 +31,12 @@ use Illuminate\Validation\ValidationData;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use RuntimeException;
-use stdClass;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -446,7 +446,7 @@ class ValidationValidatorTest extends TestCase
         $container = Double::for(Container::class);
         $v->setContainer($container);
         $v->addReplacer('required', 'Foo@bar');
-        $foo = Double::for(stdClass::class);
+        $foo = Double::for(ValidationValidatorTestCustomReplacer::class);
         $container->expects('make')->with('Foo')->returns($foo);
         $foo->expects('bar')->returns('replaced!');
         $v->passes();
@@ -1124,7 +1124,8 @@ class ValidationValidatorTest extends TestCase
 
         $v = new Validator($trans, ['name' => ''], ['name' => 'required']);
 
-        $exception = new class($v) extends ValidationException {
+        $exception = new class($v) extends ValidationException
+        {
         };
         $v->setException($exception);
 
@@ -1315,13 +1316,14 @@ class ValidationValidatorTest extends TestCase
     {
         // Fails when user is not logged in.
         $auth = Double::for(Guard::class);
-        $auth->expects('guard')->returns($auth);
         $auth->expects('guest')->returns(true);
+        $authFactory = Double::for(AuthFactory::class);
+        $authFactory->expects('guard')->returns($auth);
 
         $hasher = Double::for(Hasher::class);
 
         $container = Double::for(Container::class);
-        $container->expects('make')->with('auth')->returns($auth);
+        $container->expects('make')->with('auth')->returns($authFactory);
         $container->expects('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
@@ -1337,15 +1339,16 @@ class ValidationValidatorTest extends TestCase
         $user->expects('getAuthPassword');
 
         $auth = Double::for(Guard::class);
-        $auth->expects('guard')->returns($auth);
         $auth->expects('guest')->returns(false);
         $auth->expects('user')->returns($user);
+        $authFactory = Double::for(AuthFactory::class);
+        $authFactory->expects('guard')->returns($auth);
 
         $hasher = Double::for(Hasher::class);
         $hasher->expects('check')->returns(false);
 
         $container = Double::for(Container::class);
-        $container->expects('make')->with('auth')->returns($auth);
+        $container->expects('make')->with('auth')->returns($authFactory);
         $container->expects('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
@@ -1361,15 +1364,16 @@ class ValidationValidatorTest extends TestCase
         $user->expects('getAuthPassword');
 
         $auth = Double::for(Guard::class);
-        $auth->expects('guard')->returns($auth);
         $auth->expects('guest')->returns(false);
         $auth->expects('user')->returns($user);
+        $authFactory = Double::for(AuthFactory::class);
+        $authFactory->expects('guard')->returns($auth);
 
         $hasher = Double::for(Hasher::class);
         $hasher->expects('check')->returns(true);
 
         $container = Double::for(Container::class);
-        $container->expects('make')->with('auth')->returns($auth);
+        $container->expects('make')->with('auth')->returns($authFactory);
         $container->expects('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
@@ -1385,15 +1389,16 @@ class ValidationValidatorTest extends TestCase
         $user->expects('getAuthPassword');
 
         $auth = Double::for(Guard::class);
-        $auth->expects('guard')->with('custom')->returns($auth);
         $auth->expects('guest')->returns(false);
         $auth->expects('user')->returns($user);
+        $authFactory = Double::for(AuthFactory::class);
+        $authFactory->expects('guard')->with('custom')->returns($auth);
 
         $hasher = Double::for(Hasher::class);
         $hasher->expects('check')->returns(true);
 
         $container = Double::for(Container::class);
-        $container->expects('make')->with('auth')->returns($auth);
+        $container->expects('make')->with('auth')->returns($authFactory);
         $container->expects('make')->with('hash')->returns($hasher);
 
         $trans = $this->getTranslator();
@@ -4618,9 +4623,7 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Unique:users,email_addr,NULL,id_col,foo,bar']);
         $mock = Double::for(DatabasePresenceVerifierInterface::class);
         $mock->expects('setConnection')->with(null);
-        $mock->expects('getCount')->withArgs(function () {
-            return func_get_args() === ['users', 'email_addr', 'foo', null, 'id_col', ['foo' => 'bar']];
-        })->andReturn(2);
+        $mock->expects('getCount')->with('users', 'email_addr', 'foo', null, 'id_col', ['foo' => 'bar'])->returns(2);
         $v->setPresenceVerifier($mock);
         $this->assertFalse($v->passes());
     }
@@ -4668,7 +4671,7 @@ class ValidationValidatorTest extends TestCase
         $v = new Validator($trans, ['email' => 'foo'], ['email' => 'Exists:users,email,account_id,1,name,taylor']);
         $mock = Double::for(DatabasePresenceVerifierInterface::class);
         $mock->expects('setConnection')->with(null);
-        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, ['account_id' => 1, 'name' => 'taylor'])->returns(1);
+        $mock->expects('getCount')->with('users', 'email', 'foo', null, null, ['account_id' => '1', 'name' => 'taylor'])->returns(1);
         $v->setPresenceVerifier($mock);
         $this->assertTrue($v->passes());
 
@@ -7382,7 +7385,7 @@ class ValidationValidatorTest extends TestCase
         $container = Double::for(Container::class);
         $v->setContainer($container);
         $v->addExtension('foo', 'Foo@bar');
-        $foo = Double::for(stdClass::class);
+        $foo = Double::for(ValidationValidatorTestCustomValidator::class);
         $container->expects('make')->with('Foo')->returns($foo);
         $foo->expects('bar')->returns(false);
         $this->assertFalse($v->passes());
@@ -7398,7 +7401,7 @@ class ValidationValidatorTest extends TestCase
         $container = Double::for(Container::class);
         $v->setContainer($container);
         $v->addExtension('foo', 'Foo');
-        $foo = Double::for(stdClass::class);
+        $foo = Double::for(ValidationValidatorTestCustomValidatorConventionalMethod::class);
         $container->expects('make')->with('Foo')->returns($foo);
         $foo->expects('validate')->returns(false);
         $this->assertFalse($v->passes());
@@ -10428,4 +10431,28 @@ class ExplicitTableAndConnectionModel extends Model
 
 class NonEloquentModel
 {
+}
+
+class ValidationValidatorTestCustomReplacer
+{
+    public function bar()
+    {
+        //
+    }
+}
+
+class ValidationValidatorTestCustomValidator
+{
+    public function bar()
+    {
+        //
+    }
+}
+
+class ValidationValidatorTestCustomValidatorConventionalMethod
+{
+    public function validate()
+    {
+        //
+    }
 }
