@@ -31,7 +31,7 @@ class DatabaseEloquentMorphTest extends TestCase
         $relation = $this->getOneRelation();
         $relation->getParent()->expects('getKeyName')->returns('id');
         $relation->getParent()->expects('getKeyType')->returns('string');
-        $relation->getQuery()->expects('whereIn')->with('table.morph_id', [1, 2]);
+        $relation->getQuery()->getQuery()->expects('whereIn')->with('table.morph_id', [1, 2]);
         $relation->getQuery()->expects('where')->with('table.morph_type', get_class($relation->getParent()));
 
         $model1 = new EloquentMorphResetModelStub;
@@ -55,7 +55,7 @@ class DatabaseEloquentMorphTest extends TestCase
         $relation = $this->getManyRelation();
         $relation->getParent()->expects('getKeyName')->returns('id');
         $relation->getParent()->expects('getKeyType')->returns('int');
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('table.morph_id', [1, 2]);
+        $relation->getQuery()->getQuery()->expects('whereIntegerInRaw')->with('table.morph_id', [1, 2]);
         $relation->getQuery()->expects('where')->with('table.morph_type', get_class($relation->getParent()));
 
         $model1 = new EloquentMorphResetModelStub;
@@ -277,7 +277,7 @@ class DatabaseEloquentMorphTest extends TestCase
         $relation->getQuery()->expects('withSavepointIfNeeded')->resolves(function ($scope) {
             return $scope();
         });
-        $relation->getQuery()->expects('useWritePdo')->returns($relation->getQuery());
+        $relation->getQuery()->getQuery()->expects('useWritePdo');
         $relation->getQuery()->expects('where')->with(['foo'])->returns($relation->getQuery());
         $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->returns($model);
@@ -298,7 +298,7 @@ class DatabaseEloquentMorphTest extends TestCase
         $relation->getQuery()->expects('withSavepointIfNeeded')->resolves(function ($scope) {
             return $scope();
         });
-        $relation->getQuery()->expects('useWritePdo')->returns($relation->getQuery());
+        $relation->getQuery()->getQuery()->expects('useWritePdo');
         $relation->getQuery()->expects('where')->with(['foo' => 'bar'])->returns($relation->getQuery());
         $model = Double::for(Model::class);
         $relation->getQuery()->expects('first')->with()->returns($model);
@@ -491,11 +491,23 @@ class DatabaseEloquentMorphTest extends TestCase
         $this->assertFalse($relation->is($model));
     }
 
+    /**
+     * whereNotNull()/whereIn()/whereIntegerInRaw() are forwarded via Eloquent
+     * Builder's own __call() to the underlying query builder via
+     * forwardCallTo() — but forwardCallTo() is itself a proxied method on a
+     * Double, so it never runs for real and $this->query is never populated
+     * (Double::for() doesn't run the real constructor). Wire $builder to a
+     * real query-builder double and stub forwardCallTo to forward for real.
+     */
     protected function getOneRelation()
     {
         $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.morph_id');
         $builder = Double::for(new Builder($queryBuilder));
-        $builder->expects('whereNotNull')->with('table.morph_id');
+        $builder->allows('getQuery')->returns($queryBuilder);
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.morph_id', '=', 1);
         $related = Double::for(Model::class);
         $builder->allows('getModel')->returns($related);
@@ -509,8 +521,13 @@ class DatabaseEloquentMorphTest extends TestCase
 
     protected function getManyRelation()
     {
-        $builder = Double::for(Builder::class);
-        $builder->expects('whereNotNull')->with('table.morph_id');
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.morph_id');
+        $builder = Double::for(new Builder($queryBuilder));
+        $builder->allows('getQuery')->returns($queryBuilder);
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.morph_id', '=', 1);
         $related = Double::for(Model::class);
         $builder->allows('getModel')->returns($related);
@@ -530,8 +547,13 @@ class DatabaseEloquentMorphTest extends TestCase
             $alias => EloquentModelNamespacedStub::class,
         ]);
 
-        $builder = Double::for(Builder::class);
-        $builder->expects('whereNotNull')->with('table.morph_id');
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.morph_id');
+        $builder = Double::for(new Builder($queryBuilder));
+        $builder->allows('getQuery')->returns($queryBuilder);
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.morph_id', '=', 1);
         $related = Double::for(Model::class);
         $builder->allows('getModel')->returns($related);
