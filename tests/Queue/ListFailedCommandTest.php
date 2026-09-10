@@ -56,7 +56,7 @@ class ListFailedCommandTest extends TestCase
         $failer = Double::for(\stdClass::class);
         $container->instance('queue.failer', $failer);
 
-        $failer->expects('all')->andReturn($failedJobs);
+        $failer->expects('all')->returns($failedJobs);
 
         $command = new ListFailedCommand;
         $command->setLaravel($container);

@@ -1498,7 +1498,7 @@ class HttpRequestTest extends TestCase
     {
         $request = Request::create('/');
         $session = Double::for(Store::class);
-        $session->expects('getOldInput')->with('foo', 'bar')->andReturn('boom');
+        $session->expects('getOldInput')->with('foo', 'bar')->returns('boom');
         $request->setLaravelSession($session);
         $this->assertSame('boom', $request->old('foo', 'bar'));
     }
@@ -1507,7 +1507,7 @@ class HttpRequestTest extends TestCase
     {
         $request = Request::create('/');
         $session = Double::for(Store::class);
-        $session->expects('getOldInput')->with('foo', ['bar'])->andReturn(['bar']);
+        $session->expects('getOldInput')->with('foo', ['bar'])->returns(['bar']);
         $request->setLaravelSession($session);
         $this->assertSame(['bar'], $request->old('foo', ['bar']));
     }
@@ -1516,9 +1516,9 @@ class HttpRequestTest extends TestCase
     {
         $request = Request::create('/');
         $model = Double::for(Price::class);
-        $model->expects('getAttribute')->with('name')->andReturn('foobar');
+        $model->expects('getAttribute')->with('name')->returns('foobar');
         $session = Double::for(Store::class);
-        $session->expects('getOldInput')->with('name', 'foobar')->andReturn('foobar');
+        $session->expects('getOldInput')->with('name', 'foobar')->returns('foobar');
         $request->setLaravelSession($session);
         $this->assertSame('foobar', $request->old('name', $model));
     }
@@ -1829,7 +1829,7 @@ class HttpRequestTest extends TestCase
         $session = $request->getSession();
         $this->assertInstanceOf(SessionInterface::class, $session);
 
-        $laravelSession->expects('start')->andReturn(true);
+        $laravelSession->expects('start')->returns(true);
         $session->start();
     }
 

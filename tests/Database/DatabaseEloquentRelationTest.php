@@ -38,16 +38,16 @@ class DatabaseEloquentRelationTest extends TestCase
     {
         $builder = Double::for(Builder::class);
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('id')->andReturn(1);
+        $parent->expects('getAttribute')->with('id')->returns(1);
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
-        $builder->expects('getModel')->andReturn($related);
+        $builder->expects('getModel')->returns($related);
         $builder->expects('whereNotNull');
         $builder->expects('where');
-        $builder->expects('withoutGlobalScopes')->andReturn($builder);
+        $builder->expects('withoutGlobalScopes')->returns($builder);
         $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
-        $related->expects('getUpdatedAtColumn')->andReturn('updated_at');
+        $related->expects('getUpdatedAtColumn')->returns('updated_at');
         $now = Carbon::now();
-        $related->expects('freshTimestampString')->andReturn($now);
+        $related->expects('freshTimestampString')->returns($now);
         $builder->expects('update')->with(['updated_at' => $now]);
 
         $relation->touch();
@@ -57,8 +57,8 @@ class DatabaseEloquentRelationTest extends TestCase
     {
         /** @var \Illuminate\Tests\Database\EloquentNoTouchingModelStub $related */
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
-        $related->shouldReceive('getUpdatedAtColumn')->never();
-        $related->shouldReceive('freshTimestampString')->never();
+        $related->expects('getUpdatedAtColumn')->never();
+        $related->expects('freshTimestampString')->never();
 
         $this->assertFalse($related::isIgnoringTouch());
 
@@ -68,12 +68,12 @@ class DatabaseEloquentRelationTest extends TestCase
             $builder = Double::for(Builder::class);
             $parent = Double::for(Model::class);
 
-            $parent->expects('getAttribute')->with('id')->andReturn(1);
-            $builder->expects('getModel')->andReturn($related);
+            $parent->expects('getAttribute')->with('id')->returns(1);
+            $builder->expects('getModel')->returns($related);
             $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
-            $builder->shouldReceive('update')->never();
+            $builder->expects('update')->never();
 
             $relation->touch();
         });
@@ -84,8 +84,8 @@ class DatabaseEloquentRelationTest extends TestCase
     public function testCanDisableTouchingForSpecificModel()
     {
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
-        $related->shouldReceive('getUpdatedAtColumn')->never();
-        $related->shouldReceive('freshTimestampString')->never();
+        $related->expects('getUpdatedAtColumn')->never();
+        $related->expects('freshTimestampString')->never();
 
         $anotherRelated = Double::for(EloquentNoTouchingAnotherModelStub::class)->passthru();
 
@@ -99,26 +99,26 @@ class DatabaseEloquentRelationTest extends TestCase
             $builder = Double::for(Builder::class);
             $parent = Double::for(Model::class);
 
-            $parent->expects('getAttribute')->with('id')->andReturn(1);
-            $builder->expects('getModel')->andReturn($related);
+            $parent->expects('getAttribute')->with('id')->returns(1);
+            $builder->expects('getModel')->returns($related);
             $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
-            $builder->shouldReceive('update')->never();
+            $builder->expects('update')->never();
 
             $relation->touch();
 
             $anotherBuilder = Double::for(Builder::class);
             $anotherParent = Double::for(Model::class);
 
-            $anotherParent->expects('getAttribute')->with('id')->andReturn(2);
-            $anotherBuilder->expects('getModel')->andReturn($anotherRelated);
+            $anotherParent->expects('getAttribute')->with('id')->returns(2);
+            $anotherBuilder->expects('getModel')->returns($anotherRelated);
             $anotherBuilder->expects('whereNotNull');
             $anotherBuilder->expects('where');
-            $anotherBuilder->expects('withoutGlobalScopes')->andReturnSelf();
+            $anotherBuilder->expects('withoutGlobalScopes')->returns($anotherBuilder);
             $anotherRelation = new HasOne($anotherBuilder, $anotherParent, 'foreign_key', 'id');
             $now = Carbon::now();
-            $anotherRelated->expects('freshTimestampString')->andReturn($now);
+            $anotherRelated->expects('freshTimestampString')->returns($now);
             $anotherBuilder->expects('update')->with(['updated_at' => $now]);
 
             $anotherRelation->touch();
@@ -131,12 +131,12 @@ class DatabaseEloquentRelationTest extends TestCase
     public function testParentModelIsNotTouchedWhenChildModelIsIgnored()
     {
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
-        $related->shouldReceive('getUpdatedAtColumn')->never();
-        $related->shouldReceive('freshTimestampString')->never();
+        $related->expects('getUpdatedAtColumn')->never();
+        $related->expects('freshTimestampString')->never();
 
         $relatedChild = Double::for(EloquentNoTouchingChildModelStub::class)->passthru();
-        $relatedChild->shouldReceive('getUpdatedAtColumn')->never();
-        $relatedChild->shouldReceive('freshTimestampString')->never();
+        $relatedChild->expects('getUpdatedAtColumn')->never();
+        $relatedChild->expects('freshTimestampString')->never();
 
         $this->assertFalse($related::isIgnoringTouch());
         $this->assertFalse($relatedChild::isIgnoringTouch());
@@ -148,24 +148,24 @@ class DatabaseEloquentRelationTest extends TestCase
             $builder = Double::for(Builder::class);
             $parent = Double::for(Model::class);
 
-            $parent->expects('getAttribute')->with('id')->andReturn(1);
-            $builder->expects('getModel')->andReturn($related);
+            $parent->expects('getAttribute')->with('id')->returns(1);
+            $builder->expects('getModel')->returns($related);
             $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
-            $builder->shouldReceive('update')->never();
+            $builder->expects('update')->never();
 
             $relation->touch();
 
             $anotherBuilder = Double::for(Builder::class);
             $anotherParent = Double::for(Model::class);
 
-            $anotherParent->expects('getAttribute')->with('id')->andReturn(2);
-            $anotherBuilder->expects('getModel')->andReturn($relatedChild);
+            $anotherParent->expects('getAttribute')->with('id')->returns(2);
+            $anotherBuilder->expects('getModel')->returns($relatedChild);
             $anotherBuilder->expects('whereNotNull');
             $anotherBuilder->expects('where');
             $anotherRelation = new HasOne($anotherBuilder, $anotherParent, 'foreign_key', 'id');
-            $anotherBuilder->shouldReceive('update')->never();
+            $anotherBuilder->expects('update')->never();
 
             $anotherRelation->touch();
         });
@@ -177,12 +177,12 @@ class DatabaseEloquentRelationTest extends TestCase
     public function testIgnoredModelsStateIsResetWhenThereAreExceptions()
     {
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
-        $related->shouldReceive('getUpdatedAtColumn')->never();
-        $related->shouldReceive('freshTimestampString')->never();
+        $related->expects('getUpdatedAtColumn')->never();
+        $related->expects('freshTimestampString')->never();
 
         $relatedChild = Double::for(EloquentNoTouchingChildModelStub::class)->passthru();
-        $relatedChild->shouldReceive('getUpdatedAtColumn')->never();
-        $relatedChild->shouldReceive('freshTimestampString')->never();
+        $relatedChild->expects('getUpdatedAtColumn')->never();
+        $relatedChild->expects('freshTimestampString')->never();
 
         $this->assertFalse($related::isIgnoringTouch());
         $this->assertFalse($relatedChild::isIgnoringTouch());

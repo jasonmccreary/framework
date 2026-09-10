@@ -181,9 +181,9 @@ class RateLimitedWithRedisTest extends TestCase
 
         $job = Double::for(Job::class);
 
-        $job->expects('hasFailed')->andReturn(false);
-        $job->expects('isReleased')->times(2)->andReturn(false);
-        $job->expects('isDeletedOrReleased')->andReturn(false);
+        $job->expects('hasFailed')->returns(false);
+        $job->expects('isReleased')->times(2)->returns(false);
+        $job->expects('isDeletedOrReleased')->returns(false);
         $job->expects('delete');
 
         $instance->call($job, [
@@ -200,10 +200,10 @@ class RateLimitedWithRedisTest extends TestCase
 
         $job = Double::for(Job::class);
 
-        $job->expects('hasFailed')->andReturn(false);
+        $job->expects('hasFailed')->returns(false);
         $job->expects('release');
-        $job->expects('isReleased')->times(2)->andReturn(true);
-        $job->expects('isDeletedOrReleased')->andReturn(true);
+        $job->expects('isReleased')->times(2)->returns(true);
+        $job->expects('isDeletedOrReleased')->returns(true);
 
         $instance->call($job, [
             'command' => serialize($testJob),
@@ -219,9 +219,9 @@ class RateLimitedWithRedisTest extends TestCase
 
         $job = Double::for(Job::class);
 
-        $job->expects('hasFailed')->andReturn(false);
-        $job->expects('isReleased')->times(2)->andReturn(false);
-        $job->expects('isDeletedOrReleased')->andReturn(false);
+        $job->expects('hasFailed')->returns(false);
+        $job->expects('isReleased')->times(2)->returns(false);
+        $job->expects('isDeletedOrReleased')->returns(false);
         $job->expects('delete');
 
         $instance->call($job, [

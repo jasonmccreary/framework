@@ -58,7 +58,7 @@ class HttpResponseTest extends TestCase
     public function testRenderablesAreRendered()
     {
         $mock = Double::for(Renderable::class);
-        $mock->expects('render')->andReturn('foo');
+        $mock->expects('render')->returns('foo');
         $response = new Response($mock);
         $this->assertSame('foo', $response->getContent());
     }
@@ -199,11 +199,11 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $session = Double::for(Store::class);
-        $session->expects('get')->with('errors', Mockery::type(ViewErrorBag::class))->andReturn(new ViewErrorBag);
+        $session->expects('get')->with('errors', Mockery::type(ViewErrorBag::class))->returns(new ViewErrorBag);
         $session->expects('flash')->with('errors', Mockery::type(ViewErrorBag::class));
         $response->setSession($session);
         $provider = Double::for(MessageProvider::class);
-        $provider->expects('getMessageBag')->andReturn(new MessageBag);
+        $provider->expects('getMessageBag')->returns(new MessageBag);
         $response->withErrors($provider);
     }
 
@@ -226,7 +226,7 @@ class HttpResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
         $response->setRequest(Request::create('/', 'GET', ['name' => 'Taylor', 'age' => 26]));
         $session = Double::for(Store::class);
-        $session->expects('get')->with('errors', Mockery::type(ViewErrorBag::class))->andReturn(new ViewErrorBag);
+        $session->expects('get')->with('errors', Mockery::type(ViewErrorBag::class))->returns(new ViewErrorBag);
         $session->expects('flash')->with('errors', Mockery::type(ViewErrorBag::class));
         $response->setSession($session);
         $provider = ['foo' => 'bar'];

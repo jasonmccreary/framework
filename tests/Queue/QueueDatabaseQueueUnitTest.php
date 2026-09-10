@@ -40,8 +40,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $container = Double::for(Container::class);
         $queue->setContainer($container);
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insertGetId')->andReturnUsing(function ($array) use ($uuid, $displayNameStartsWith, $jobStartsWith) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insertGetId')->resolves(function ($array) use ($uuid, $displayNameStartsWith, $jobStartsWith) {
             $payload = json_decode($array['payload'], true);
             $this->assertSame($uuid, $payload['uuid']);
             $this->assertStringContainsString($displayNameStartsWith, $payload['displayName']);
@@ -91,8 +91,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $container = Double::for(Container::class);
         $queue->setContainer($container);
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insertGetId')->andReturnUsing(function ($array) use ($uuid, $time) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insertGetId')->resolves(function ($array) use ($uuid, $time) {
             $this->assertSame('default', $array['queue']);
             $this->assertSame(json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'delay' => 10]), $array['payload']);
             $this->assertEquals(0, $array['attempts']);
@@ -123,8 +123,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $container = Double::for(Container::class);
         $queue->setContainer($container);
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insertGetId')->andReturnUsing(function ($array) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insertGetId')->resolves(function ($array) {
             $payload = json_decode($array['payload'], true);
             $this->assertSame('test-batch-id', $payload['data']['batchId']);
         });
@@ -143,8 +143,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $container = Double::for(Container::class);
         $queue->setContainer($container);
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insertGetId')->andReturnUsing(function ($array) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insertGetId')->resolves(function ($array) {
             $payload = json_decode($array['payload'], true);
 
             $this->assertSame(1700, $payload['timeout']);
@@ -166,8 +166,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $container = Double::for(Container::class);
         $queue->setContainer($container);
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insertGetId')->andReturnUsing(function ($array) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insertGetId')->resolves(function ($array) {
             $payload = json_decode($array['payload'], true);
 
             $this->assertSame(40, $payload['timeout']);
@@ -229,8 +229,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue->method('currentTime')->willReturn('created');
         $queue->method('availableAt')->willReturn('available');
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insert')->andReturnUsing(function ($records) use ($uuid, $time) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insert')->resolves(function ($records) use ($uuid, $time) {
             $this->assertEquals([[
                 'queue' => 'queue',
                 'payload' => json_encode(['uuid' => $uuid, 'displayName' => 'foo', 'job' => 'foo', 'maxTries' => null, 'maxExceptions' => null, 'failOnTimeout' => false, 'backoff' => null, 'timeout' => null, 'data' => ['data'], 'createdAt' => $time->getTimestamp(), 'delay' => null]),
@@ -262,8 +262,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
             return 'available:'.$delay;
         });
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insert')->andReturnUsing(function ($records) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insert')->resolves(function ($records) {
             $this->assertSame('available:15', $records[0]['available_at']);
         });
 
@@ -276,7 +276,7 @@ class QueueDatabaseQueueUnitTest extends TestCase
 
         $committed = null;
 
-        $transactions->expects('addCallback')->andReturnUsing(function ($callback) use (&$committed) {
+        $transactions->expects('addCallback')->resolves(function ($callback) use (&$committed) {
             $committed = $callback;
         });
 
@@ -290,8 +290,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $inserted = false;
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('insert')->andReturnUsing(function () use (&$inserted) {
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('insert')->resolves(function () use (&$inserted) {
             $inserted = true;
         });
 
@@ -322,11 +322,11 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyTestJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('queue', 'default')->andReturnSelf();
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '<=', Mockery::any())->andReturnSelf();
-        $query->expects('get')->andReturn(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('queue', 'default')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '<=', Mockery::any())->returns($query);
+        $query->expects('get')->returns(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
 
         $jobs = $queue->pendingJobs();
 
@@ -349,11 +349,11 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyDelayedJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('queue', 'default')->andReturnSelf();
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '>', Mockery::any())->andReturnSelf();
-        $query->expects('get')->andReturn(collect([(object) ['id' => 2, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('queue', 'default')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '>', Mockery::any())->returns($query);
+        $query->expects('get')->returns(collect([(object) ['id' => 2, 'queue' => 'default', 'payload' => $payload, 'attempts' => 0, 'reserved_at' => null]]));
 
         $jobs = $queue->delayedJobs();
 
@@ -376,10 +376,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload = json_encode(['uuid' => 'test-uuid', 'displayName' => 'MyTestJob', 'job' => 'foo', 'data' => [], 'createdAt' => 1000000]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('queue', 'default')->andReturnSelf();
-        $query->expects('whereNotNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('get')->andReturn(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 1, 'reserved_at' => Carbon::now()->getTimestamp()]]));
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('queue', 'default')->returns($query);
+        $query->expects('whereNotNull')->with('reserved_at')->returns($query);
+        $query->expects('get')->returns(collect([(object) ['id' => 1, 'queue' => 'default', 'payload' => $payload, 'attempts' => 1, 'reserved_at' => Carbon::now()->getTimestamp()]]));
 
         $jobs = $queue->reservedJobs();
 
@@ -403,10 +403,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '<=', Mockery::any())->andReturnSelf();
-        $query->expects('get')->andReturn(collect([
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '<=', Mockery::any())->returns($query);
+        $query->expects('get')->returns(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 0, 'reserved_at' => null],
             (object) ['id' => 2, 'queue' => 'emails', 'payload' => $payload2, 'attempts' => 0, 'reserved_at' => null],
         ]));
@@ -436,10 +436,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '>', Mockery::any())->andReturnSelf();
-        $query->expects('get')->andReturn(collect([
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '>', Mockery::any())->returns($query);
+        $query->expects('get')->returns(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 0, 'reserved_at' => null],
             (object) ['id' => 2, 'queue' => 'emails', 'payload' => $payload2, 'attempts' => 0, 'reserved_at' => null],
         ]));
@@ -469,9 +469,9 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $payload2 = json_encode(['uuid' => 'uuid-2', 'displayName' => 'JobB', 'job' => 'foo', 'data' => [], 'createdAt' => 1000001]);
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNotNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('get')->andReturn(collect([
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNotNull')->with('reserved_at')->returns($query);
+        $query->expects('get')->returns(collect([
             (object) ['id' => 1, 'queue' => 'default', 'payload' => $payload1, 'attempts' => 1, 'reserved_at' => 1000005],
             (object) ['id' => 2, 'queue' => 'emails', 'payload' => $payload2, 'attempts' => 2, 'reserved_at' => 1000006],
         ]));
@@ -499,8 +499,8 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue->setContainer(Double::for(Container::class));
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('count')->andReturn(9);
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('count')->returns(9);
 
         $this->assertSame(9, $queue->totalSize());
     }
@@ -512,10 +512,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue->setContainer(Double::for(Container::class));
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '<=', Mockery::any())->andReturnSelf();
-        $query->expects('count')->andReturn(2);
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '<=', Mockery::any())->returns($query);
+        $query->expects('count')->returns(2);
 
         $this->assertSame(2, $queue->totalPendingSize());
     }
@@ -527,10 +527,10 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue->setContainer(Double::for(Container::class));
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('where')->with('available_at', '>', Mockery::any())->andReturnSelf();
-        $query->expects('count')->andReturn(3);
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNull')->with('reserved_at')->returns($query);
+        $query->expects('where')->with('available_at', '>', Mockery::any())->returns($query);
+        $query->expects('count')->returns(3);
 
         $this->assertSame(3, $queue->totalDelayedSize());
     }
@@ -542,9 +542,9 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue->setContainer(Double::for(Container::class));
 
         $query = Double::for(QueryBuilder::class);
-        $database->expects('table')->with('table')->andReturn($query);
-        $query->expects('whereNotNull')->with('reserved_at')->andReturnSelf();
-        $query->expects('count')->andReturn(4);
+        $database->expects('table')->with('table')->returns($query);
+        $query->expects('whereNotNull')->with('reserved_at')->returns($query);
+        $query->expects('count')->returns(4);
 
         $this->assertSame(4, $queue->totalReservedSize());
     }
@@ -555,11 +555,11 @@ class QueueDatabaseQueueUnitTest extends TestCase
         $queue = new DatabaseQueue($database, 'table', 'default');
 
         $pdo = Double::for(\PDO::class);
-        $pdo->expects('getAttribute')->with(\PDO::ATTR_DRIVER_NAME)->andReturn('mysql');
-        $pdo->expects('getAttribute')->with(\PDO::ATTR_SERVER_VERSION)->andReturn('8.0.36');
+        $pdo->expects('getAttribute')->with(\PDO::ATTR_DRIVER_NAME)->returns('mysql');
+        $pdo->expects('getAttribute')->with(\PDO::ATTR_SERVER_VERSION)->returns('8.0.36');
 
-        $database->expects('getPdo')->times(2)->andReturn($pdo);
-        $database->expects('getConfig')->with('version')->andReturn(null);
+        $database->expects('getPdo')->times(2)->returns($pdo);
+        $database->expects('getConfig')->with('version')->returns(null);
 
         $method = new \ReflectionMethod($queue, 'getLockForPopping');
 

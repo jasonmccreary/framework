@@ -24,7 +24,7 @@ class FoundationApplicationTest extends TestCase
         $app = new Application;
 
         $app['config'] = $config = Double::for(Repository::class);
-        $config->expects('get')->with('app.locale')->andReturn('bar');
+        $config->expects('get')->with('app.locale')->returns('bar');
         $config->expects('set')->with('app.locale', 'foo');
         $app['translator'] = $trans = Double::for(Translator::class);
         $trans->expects('setLocale')->with('foo');

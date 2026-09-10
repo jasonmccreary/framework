@@ -132,7 +132,7 @@ class PreventRequestForgeryTest extends TestCase
         );
 
         $session = Double::for(Session::class);
-        $session->shouldReceive('token')->andReturn('test-token');
+        $session->allows('token')->returns('test-token');
         $request->setLaravelSession($session);
 
         return $request;

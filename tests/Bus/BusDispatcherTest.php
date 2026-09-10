@@ -21,8 +21,8 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getQueue')->andReturn(null);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
@@ -41,7 +41,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
@@ -60,7 +60,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
@@ -79,8 +79,8 @@ class BusDispatcherTest extends TestCase
     {
         Container::setInstance($container = new Container);
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getQueue')->andReturn('high-priority');
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns('high-priority');
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
 
         $mock = Double::for(Queue::class);
@@ -149,7 +149,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $mock = Double::for(Queue::class);
-        $mock->shouldReceive('push')->never();
+        $mock->expects('push')->never();
         $dispatcher = new Dispatcher($container, function () use ($mock) {
             return $mock;
         });
@@ -186,7 +186,7 @@ class BusDispatcherTest extends TestCase
             ]);
         });
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getQueue')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         Container::setInstance($container);
 
@@ -208,8 +208,8 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $queueRoutes = Double::for(\stdClass::class);
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(3)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(3)->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         Container::setInstance($container);
 

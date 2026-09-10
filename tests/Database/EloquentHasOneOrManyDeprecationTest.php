@@ -29,7 +29,7 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
         $model2 = new HasOneOrManyDeprecationModelStub;
         $model2->id = null;
 
-        $relation->getRelated()->expects('newCollection')->andReturnUsing(function ($array) {
+        $relation->getRelated()->expects('newCollection')->resolves(function ($array) {
             return new Collection($array);
         });
 
@@ -64,9 +64,9 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = Double::for(Model::class);
-        $builder->expects('getModel')->andReturn($related);
+        $builder->expects('getModel')->returns($related);
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('id')->andReturn(1);
+        $parent->expects('getAttribute')->with('id')->returns(1);
 
         return new HasMany($builder, $parent, 'table.foreign_key', 'id');
     }
@@ -78,9 +78,9 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
         $builder->expects('whereNotNull')->with('table.foreign_key');
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = Double::for(Model::class);
-        $builder->expects('getModel')->andReturn($related);
+        $builder->expects('getModel')->returns($related);
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('id')->andReturn(1);
+        $parent->expects('getAttribute')->with('id')->returns(1);
 
         return new HasOne($builder, $parent, 'table.foreign_key', 'id');
     }

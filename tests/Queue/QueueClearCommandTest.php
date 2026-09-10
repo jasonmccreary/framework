@@ -18,7 +18,7 @@ class QueueClearCommandTest extends TestCase
     public function testClearingDefaultQueue()
     {
         $queue = Double::for(ClearableQueue::class);
-        $queue->expects('clear')->with('default')->andReturn(2);
+        $queue->expects('clear')->with('default')->returns(2);
 
         $output = $this->runClearCommand($queue);
 
@@ -28,9 +28,9 @@ class QueueClearCommandTest extends TestCase
     public function testClearingMultipleQueues()
     {
         $queue = Double::for(ClearableQueue::class);
-        $queue->expects('clear')->with('high')->andReturn(3);
-        $queue->expects('clear')->with('low')->andReturn(0);
-        $queue->expects('clear')->with('emails')->andReturn(1);
+        $queue->expects('clear')->with('high')->returns(3);
+        $queue->expects('clear')->with('low')->returns(0);
+        $queue->expects('clear')->with('emails')->returns(1);
 
         $output = $this->runClearCommand($queue, ['--queue' => 'high,low,emails']);
 
@@ -40,8 +40,8 @@ class QueueClearCommandTest extends TestCase
     public function testClearingMultipleQueuesWithWhitespace()
     {
         $queue = Double::for(ClearableQueue::class);
-        $queue->expects('clear')->with('high')->andReturn(3);
-        $queue->expects('clear')->with('low')->andReturn(0);
+        $queue->expects('clear')->with('high')->returns(3);
+        $queue->expects('clear')->with('low')->returns(0);
 
         $output = $this->runClearCommand($queue, ['--queue' => 'high, low']);
 
@@ -51,8 +51,8 @@ class QueueClearCommandTest extends TestCase
     public function testClearingMultipleQueuesWithEmptyValues()
     {
         $queue = Double::for(ClearableQueue::class);
-        $queue->expects('clear')->with('high')->andReturn(3);
-        $queue->expects('clear')->with('low')->andReturn(0);
+        $queue->expects('clear')->with('high')->returns(3);
+        $queue->expects('clear')->with('low')->returns(0);
 
         $output = $this->runClearCommand($queue, ['--queue' => 'high,,low']);
 
@@ -62,8 +62,8 @@ class QueueClearCommandTest extends TestCase
     public function testClearingMultipleQueuesWithDuplicates()
     {
         $queue = Double::for(ClearableQueue::class);
-        $queue->expects('clear')->with('high')->andReturn(3);
-        $queue->expects('clear')->with('low')->andReturn(0);
+        $queue->expects('clear')->with('high')->returns(3);
+        $queue->expects('clear')->with('low')->returns(0);
 
         $output = $this->runClearCommand($queue, ['--queue' => 'high,low,high']);
 
@@ -76,13 +76,13 @@ class QueueClearCommandTest extends TestCase
         $container['env'] = 'testing';
 
         $config = Double::for(Repository::class, \ArrayAccess::class);
-        $config->expects('offsetGet')->with('queue.default')->andReturn('redis');
-        $config->shouldReceive('get')->with('queue.connections.redis.queue', 'default')->andReturn('default');
+        $config->expects('offsetGet')->with('queue.default')->returns('redis');
+        $config->allows('get')->with('queue.connections.redis.queue', 'default')->returns('default');
 
         $container['config'] = $config;
 
         $queueManager = Double::for(QueueManager::class);
-        $queueManager->expects('connection')->with('redis')->andReturn($queue);
+        $queueManager->expects('connection')->with('redis')->returns($queue);
 
         $container['queue'] = $queueManager;
 

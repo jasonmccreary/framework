@@ -30,8 +30,8 @@ class SeedCommandTest extends TestCase
         $outputStyle = new OutputStyle($input, $output);
 
         $seeder = Double::for(Seeder::class);
-        $seeder->expects('setContainer')->andReturnSelf();
-        $seeder->expects('setCommand')->andReturnSelf();
+        $seeder->expects('setContainer')->returns($seeder);
+        $seeder->expects('setCommand')->returns($seeder);
         $seeder->expects('__invoke');
 
         $resolver = Double::for(ConnectionResolverInterface::class);
@@ -40,15 +40,11 @@ class SeedCommandTest extends TestCase
 
         $container = Double::for(Container::class);
         $container->expects('call');
-        $container->expects('environment')->andReturn('testing');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->expects('make')->with('DatabaseSeeder')->andReturn($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->andReturn(
-            $outputStyle
-        );
-        $container->expects('make')->with(Factory::class, Mockery::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('environment')->returns('testing');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->expects('make')->with('DatabaseSeeder')->returns($seeder);
+        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -67,29 +63,25 @@ class SeedCommandTest extends TestCase
         $outputStyle = new OutputStyle($input, $output);
 
         $seeder = Double::for(Seeder::class);
-        $seeder->expects('setContainer')->andReturnSelf();
-        $seeder->expects('setCommand')->andReturnSelf();
-        $seeder->expects('__invoke')->andThrow(new RuntimeException('Seeding failed.'));
+        $seeder->expects('setContainer')->returns($seeder);
+        $seeder->expects('setCommand')->returns($seeder);
+        $seeder->expects('__invoke')->throws(new RuntimeException('Seeding failed.'));
 
         $connections = [];
 
         $resolver = Double::for(ConnectionResolverInterface::class);
-        $resolver->expects('getDefaultConnection')->andReturn('mysql');
-        $resolver->shouldReceive('setDefaultConnection')->andReturnUsing(function ($name) use (&$connections) {
+        $resolver->expects('getDefaultConnection')->returns('mysql');
+        $resolver->allows('setDefaultConnection')->resolves(function ($name) use (&$connections) {
             $connections[] = $name;
         });
 
         $container = Double::for(Container::class);
         $container->expects('call');
-        $container->expects('environment')->andReturn('testing');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->expects('make')->with('DatabaseSeeder')->andReturn($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->andReturn(
-            $outputStyle
-        );
-        $container->expects('make')->with(Factory::class, Mockery::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('environment')->returns('testing');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->expects('make')->with('DatabaseSeeder')->returns($seeder);
+        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -120,8 +112,8 @@ class SeedCommandTest extends TestCase
         $instance = new UserWithoutModelEventsSeeder();
 
         $seeder = Double::for($instance);
-        $seeder->expects('setContainer')->andReturnSelf();
-        $seeder->expects('setCommand')->andReturnSelf();
+        $seeder->expects('setContainer')->returns($seeder);
+        $seeder->expects('setCommand')->returns($seeder);
 
         $resolver = Double::for(ConnectionResolverInterface::class);
         $resolver->expects('getDefaultConnection');
@@ -129,15 +121,11 @@ class SeedCommandTest extends TestCase
 
         $container = Double::for(Container::class);
         $container->expects('call');
-        $container->expects('environment')->andReturn('testing');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->expects('make')->with(UserWithoutModelEventsSeeder::class)->andReturn($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->andReturn(
-            $outputStyle
-        );
-        $container->expects('make')->with(Factory::class, Mockery::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->expects('environment')->returns('testing');
+        $container->allows('runningUnitTests')->returns('true');
+        $container->expects('make')->with(UserWithoutModelEventsSeeder::class)->returns($seeder);
+        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -164,13 +152,9 @@ class SeedCommandTest extends TestCase
 
         $container = Double::for(Container::class);
         $container->expects('call');
-        $container->shouldReceive('runningUnitTests')->andReturn('true');
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->andReturn(
-            $outputStyle
-        );
-        $container->expects('make')->with(Factory::class, Mockery::any())->andReturn(
-            new Factory($outputStyle)
-        );
+        $container->allows('runningUnitTests')->returns('true');
+        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);

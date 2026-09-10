@@ -19,7 +19,7 @@ class RedisEventsTest extends TestCase
         $exception = new Exception('Test exception');
 
         $client = Double::for(Redis::class);
-        $client->expects('get')->with('key')->andThrow($exception);
+        $client->expects('get')->with('key')->throws($exception);
 
         $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::on(function ($event) use ($exception) {
@@ -42,11 +42,11 @@ class RedisEventsTest extends TestCase
         $exception = new Exception('Test exception');
 
         $client = Double::for(Redis::class);
-        $client->expects('get')->with('key')->andThrow($exception);
+        $client->expects('get')->with('key')->throws($exception);
 
         $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::type(CommandFailed::class));
-        $events->shouldNotReceive('dispatch')->with(Mockery::type(CommandExecuted::class));
+        $events->expects('dispatch')->with(Mockery::type(CommandExecuted::class))->never();
 
         $connection = new PhpRedisConnection($client);
         $connection->setEventDispatcher($events);
@@ -63,7 +63,7 @@ class RedisEventsTest extends TestCase
         $exception = new Exception('Test exception');
 
         $client = Double::for(Redis::class);
-        $client->expects('get')->with('key')->andThrow($exception);
+        $client->expects('get')->with('key')->throws($exception);
 
         $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Mockery::on(function ($event) {

@@ -108,8 +108,8 @@ class QueueSyncQueueTest extends TestCase
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
         $transactionManager = Double::for(DatabaseTransactionsManager::class);
-        $transactionManager->expects('addCallback')->andReturn(null);
-        $transactionManager->shouldNotReceive('addCallbackForRollback');
+        $transactionManager->expects('addCallback')->returns(null);
+        $transactionManager->expects('addCallbackForRollback')->never();
         $container->instance('db.transactions', $transactionManager);
 
         $sync->setContainer($container);
@@ -122,8 +122,8 @@ class QueueSyncQueueTest extends TestCase
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
         $transactionManager = Double::for(DatabaseTransactionsManager::class);
-        $transactionManager->expects('addCallback')->andReturn(null);
-        $transactionManager->shouldNotReceive('addCallbackForRollback');
+        $transactionManager->expects('addCallback')->returns(null);
+        $transactionManager->expects('addCallbackForRollback')->never();
         $container->instance('db.transactions', $transactionManager);
 
         $sync->setContainer($container);
@@ -136,8 +136,8 @@ class QueueSyncQueueTest extends TestCase
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
         $transactionManager = Double::for(DatabaseTransactionsManager::class);
-        $transactionManager->expects('addCallback')->andReturn(null);
-        $transactionManager->expects('addCallbackForRollback')->andReturn(null);
+        $transactionManager->expects('addCallback')->returns(null);
+        $transactionManager->expects('addCallbackForRollback')->returns(null);
         $container->instance('db.transactions', $transactionManager);
 
         $sync->setContainer($container);
@@ -150,8 +150,8 @@ class QueueSyncQueueTest extends TestCase
         $container = new Container;
         $container->bind(\Illuminate\Contracts\Container\Container::class, \Illuminate\Container\Container::class);
         $transactionManager = Double::for(DatabaseTransactionsManager::class);
-        $transactionManager->expects('addCallback')->andReturn(null);
-        $transactionManager->expects('addCallbackForRollback')->andReturn(null);
+        $transactionManager->expects('addCallback')->returns(null);
+        $transactionManager->expects('addCallbackForRollback')->returns(null);
         $container->instance('db.transactions', $transactionManager);
 
         $sync->setContainer($container);

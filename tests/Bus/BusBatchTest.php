@@ -60,20 +60,20 @@ class BusBatchTest extends TestCase
 
             $dispatcher = Double::for(new Dispatcher($container));
 
-            $dispatcher->shouldReceive('batch')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
+            $dispatcher->allows('batch')->resolves(function ($jobs) {
                 $pendingBatch = Double::for(PendingBatch::class);
-                $pendingBatch->expects('name')->andReturnSelf();
-                $pendingBatch->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(Double::for(Batch::class));
+                $pendingBatch->expects('name')->returns($pendingBatch);
+                $pendingBatch->allows('dispatch')->returns(Double::for(Batch::class));
 
                 return $pendingBatch;
-            })->byDefault();
+            });
 
-            $dispatcher->shouldReceive('chain')->zeroOrMoreTimes()->andReturnUsing(function ($jobs) {
+            $dispatcher->allows('chain')->resolves(function ($jobs) {
                 $pendingChain = Double::for(new PendingChain($jobs, \stdClass::class));
-                $pendingChain->shouldReceive('dispatch')->zeroOrMoreTimes()->andReturn(Double::for(Batch::class));
+                $pendingChain->allows('dispatch')->returns(Double::for(Batch::class));
 
                 return $pendingChain;
-            })->byDefault();
+            });
 
             $container->instance(BusDispatcher::class, $dispatcher);
             $container->alias(BusDispatcher::class, 'bus');
@@ -144,9 +144,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk')->with(Mockery::on(function ($args) use ($job, $secondJob) {
             return
@@ -235,9 +233,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -273,9 +269,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -311,9 +305,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -350,9 +342,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -383,9 +373,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -426,9 +414,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -505,9 +491,7 @@ class BusBatchTest extends TestCase
         };
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk');
 
@@ -628,9 +612,7 @@ class BusBatchTest extends TestCase
         $thirdJob = new ThirdTestJob;
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk')->with(Mockery::on(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
             return
@@ -668,9 +650,7 @@ class BusBatchTest extends TestCase
         $secondJob = (new SecondTestJob)->onQueue('custom-queue');
 
         $connection = Double::for(QueueContract::class);
-        $queue->expects('connection')
-            ->with('test-connection')
-            ->andReturn($connection);
+        $queue->expects('connection')->with('test-connection')->returns($connection);
 
         $connection->expects('bulk')->with(Mockery::on(function ($args) {
             return true;
@@ -718,9 +698,9 @@ class BusBatchTest extends TestCase
         $connection = Double::for(PostgresConnection::class);
         $builder = Double::for(Builder::class);
 
-        $connection->expects('table')->times(2)->andReturn($builder);
-        $builder->expects('useWritePdo')->andReturnSelf();
-        $builder->expects('where')->andReturnSelf();
+        $connection->expects('table')->times(2)->returns($builder);
+        $builder->expects('useWritePdo')->returns($builder);
+        $builder->expects('where')->returns($builder);
 
         $repository = new DatabaseBatchRepository(
             new BatchFactory(Double::for(Factory::class)), $connection, 'job_batches'

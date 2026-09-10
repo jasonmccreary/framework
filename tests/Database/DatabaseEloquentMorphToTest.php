@@ -75,7 +75,7 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation()->withDefault();
 
-        $this->builder->expects('first')->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentMorphToModelStub;
 
@@ -88,7 +88,7 @@ class DatabaseEloquentMorphToTest extends TestCase
             $newModel->username = 'taylor';
         });
 
-        $this->builder->expects('first')->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentMorphToModelStub;
         $newModel->username = 'taylor';
@@ -104,7 +104,7 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation()->withDefault(['username' => 'taylor']);
 
-        $this->builder->expects('first')->andReturnNull();
+        $this->builder->expects('first')->returns(null);
 
         $newModel = new EloquentMorphToModelStub;
         $newModel->username = 'taylor';
@@ -153,13 +153,13 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function testAssociateMethodSetsForeignKeyAndTypeOnModel()
     {
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
 
         $associate = Double::for(Model::class);
-        $associate->expects('getAttribute')->times(2)->andReturn(1);
-        $associate->expects('getMorphClass')->andReturn('Model');
+        $associate->expects('getAttribute')->times(2)->returns(1);
+        $associate->expects('getMorphClass')->returns('Model');
 
         $parent->expects('setAttribute')->with('foreign_key', 1);
         $parent->expects('setAttribute')->with('morph_type', 'Model');
@@ -171,7 +171,7 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function testAssociateMethodIgnoresNullValue()
     {
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
 
         $relation = $this->getRelationAssociate($parent);
 
@@ -185,7 +185,7 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function testDissociateMethodDeletesUnsetsKeyAndTypeOnModel()
     {
         $parent = Double::for(Model::class);
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
 
         $relation = $this->getRelation($parent);
 
@@ -200,8 +200,8 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $relation->getRelated()->shouldReceive('getTable')->never();
-        $relation->getRelated()->shouldReceive('getConnectionName')->never();
+        $relation->getRelated()->expects('getTable')->never();
+        $relation->getRelated()->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is(null));
     }
@@ -210,12 +210,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->expects('getConnectionName')->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
-        $model->expects('getTable')->andReturn('relation');
-        $model->expects('getConnectionName')->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -224,18 +224,18 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $parent = Double::for(Model::class);
         // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn(1);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->expects('getConnectionName')->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('1');
-        $model->expects('getTable')->andReturn('relation');
-        $model->expects('getConnectionName')->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns('1');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -244,18 +244,18 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $parent = Double::for(Model::class);
         // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return a string
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('1');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('1');
 
         $relation = $this->getRelation($parent);
 
-        $this->related->expects('getConnectionName')->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn(1);
-        $model->expects('getTable')->andReturn('relation');
-        $model->expects('getConnectionName')->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns(1);
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -265,18 +265,18 @@ class DatabaseEloquentMorphToTest extends TestCase
         $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return an integer
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn(1);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(1);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->expects('getConnectionName')->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn(1);
-        $model->expects('getTable')->andReturn('relation');
-        $model->expects('getConnectionName')->andReturn('relation');
+        $model->expects('getAttribute')->with('id')->returns(1);
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation');
 
         $this->assertTrue($relation->is($model));
     }
@@ -286,19 +286,19 @@ class DatabaseEloquentMorphToTest extends TestCase
         $parent = Double::for(Model::class);
 
         // when addConstraints is called we need to return the foreign value
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn('foreign.value');
+        $parent->expects('getAttribute')->with('foreign_key')->returns('foreign.value');
         // when getParentKey is called we want to return null
 
-        $parent->expects('getAttribute')->with('foreign_key')->andReturn(null);
+        $parent->expects('getAttribute')->with('foreign_key')->returns(null);
 
         $relation = $this->getRelation($parent);
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -307,12 +307,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn(null);
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns(null);
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -321,12 +321,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('foreign.value.two');
-        $model->shouldReceive('getTable')->never();
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value.two');
+        $model->expects('getTable')->never();
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -335,12 +335,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->shouldReceive('getConnectionName')->never();
+        $this->related->expects('getConnectionName')->never();
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
-        $model->expects('getTable')->andReturn('table.two');
-        $model->shouldReceive('getConnectionName')->never();
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('table.two');
+        $model->expects('getConnectionName')->never();
 
         $this->assertFalse($relation->is($model));
     }
@@ -349,12 +349,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     {
         $relation = $this->getRelation();
 
-        $this->related->expects('getConnectionName')->andReturn('relation');
+        $this->related->expects('getConnectionName')->returns('relation');
 
         $model = Double::for(Model::class);
-        $model->expects('getAttribute')->with('id')->andReturn('foreign.value');
-        $model->expects('getTable')->andReturn('relation');
-        $model->expects('getConnectionName')->andReturn('relation.two');
+        $model->expects('getAttribute')->with('id')->returns('foreign.value');
+        $model->expects('getTable')->returns('relation');
+        $model->expects('getConnectionName')->returns('relation.two');
 
         $this->assertFalse($relation->is($model));
     }
@@ -371,7 +371,7 @@ class DatabaseEloquentMorphToTest extends TestCase
 
         $builder = Double::for(Builder::class);
         $related = Double::for(Model::class);
-        $builder->expects('getModel')->andReturn($related);
+        $builder->expects('getModel')->returns($related);
 
         $parent = new EloquentMorphToModelStub;
         $parent->morph_type = 'type_1';
@@ -384,7 +384,7 @@ class DatabaseEloquentMorphToTest extends TestCase
         $relation->addEagerConstraints([$parent]);
 
         $result = Double::for(Model::class);
-        $result->expects('getKey')->andReturn($uuidObject);
+        $result->expects('getKey')->returns($uuidObject);
 
         $relation->callMatchToMorphParents('type_1', new EloquentCollection([$result]));
 
@@ -396,8 +396,8 @@ class DatabaseEloquentMorphToTest extends TestCase
         $builder = Double::for(Builder::class);
         $builder->expects('where')->with('relation.id', '=', 'foreign.value');
         $related = Double::for(Model::class);
-        $related->expects('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
-        $builder->expects('getModel')->andReturn($related);
+        $related->expects('qualifyColumn')->resolves(fn (string $column) => "relation.{$column}");
+        $builder->expects('getModel')->returns($related);
 
         return new MorphTo($builder, $parent, 'foreign_key', 'id', 'morph_type', 'relation');
     }
@@ -405,12 +405,12 @@ class DatabaseEloquentMorphToTest extends TestCase
     public function getRelation($parent = null, $builder = null)
     {
         $this->builder = $builder ?: Double::for(Builder::class);
-        $this->builder->shouldReceive('where')->with('relation.id', '=', 'foreign.value');
+        $this->builder->allows('where')->with('relation.id', '=', 'foreign.value');
         $this->related = Double::for(Model::class);
-        $this->related->shouldReceive('getKeyName')->andReturn('id');
-        $this->related->shouldReceive('getTable')->andReturn('relation');
-        $this->related->shouldReceive('qualifyColumn')->andReturnUsing(fn (string $column) => "relation.{$column}");
-        $this->builder->shouldReceive('getModel')->andReturn($this->related);
+        $this->related->allows('getKeyName')->returns('id');
+        $this->related->allows('getTable')->returns('relation');
+        $this->related->allows('qualifyColumn')->resolves(fn (string $column) => "relation.{$column}");
+        $this->builder->allows('getModel')->returns($this->related);
         $parent = $parent ?: new EloquentMorphToModelStub;
 
         return Double::for(MorphTo::class)->passthru(new MorphTo($this->builder, $parent, 'foreign_key', 'id', 'morph_type', 'relation'));

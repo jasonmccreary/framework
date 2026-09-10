@@ -46,7 +46,7 @@ class SupportTestingEventFakeTest extends TestCase
         $listener = ListenerStub::class;
 
         $dispatcher = Double::for(Dispatcher::class);
-        $dispatcher->expects('getListeners')->andReturn([function ($event, $payload) use ($listener) {
+        $dispatcher->expects('getListeners')->returns([function ($event, $payload) use ($listener) {
             return $listener(...array_values($payload));
         }]);
 

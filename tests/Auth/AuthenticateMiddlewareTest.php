@@ -260,7 +260,7 @@ class AuthenticateMiddlewareTest extends TestCase
     {
         $request = Double::for(Request::class);
 
-        $request->shouldReceive('expectsJson')->andReturn(false);
+        $request->allows('expectsJson')->returns(false);
 
         $nextParam = null;
 

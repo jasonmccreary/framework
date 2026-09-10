@@ -25,8 +25,8 @@ class QueueManagerTest extends TestCase
         $manager = new QueueManager($app);
         $connector = Double::for(ConnectorInterface::class);
         $queue = Double::for(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
@@ -48,8 +48,8 @@ class QueueManagerTest extends TestCase
         $manager = new QueueManager($app);
         $connector = Double::for(ConnectorInterface::class);
         $queue = Double::for(stdClass::class);
-        $queue->expects('setConnectionName')->with('foo')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'bar'])->andReturn($queue);
+        $queue->expects('setConnectionName')->with('foo')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'bar'])->returns($queue);
         $manager->addConnector('bar', function () use ($connector) {
             return $connector;
         });
@@ -70,8 +70,8 @@ class QueueManagerTest extends TestCase
         $manager = new QueueManager($app);
         $connector = Double::for(ConnectorInterface::class);
         $queue = Double::for(stdClass::class);
-        $queue->expects('setConnectionName')->with('null')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'null'])->andReturn($queue);
+        $queue->expects('setConnectionName')->with('null')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'null'])->returns($queue);
         $manager->addConnector('null', function () use ($connector) {
             return $connector;
         });
@@ -93,8 +93,8 @@ class QueueManagerTest extends TestCase
         $manager = new QueueManager($app);
         $connector = Double::for(ConnectorInterface::class);
         $queue = Double::for(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
@@ -116,8 +116,8 @@ class QueueManagerTest extends TestCase
         $manager = new QueueManager($app);
         $connector = Double::for(ConnectorInterface::class);
         $queue = Double::for(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });

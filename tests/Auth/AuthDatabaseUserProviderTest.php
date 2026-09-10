@@ -18,8 +18,8 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveByIDReturnsUserWhenUserIsFound()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
-        $conn->expects('find')->with(1)->andReturn(['id' => 1, 'name' => 'Dayle']);
+        $conn->expects('table')->with('foo')->returns($conn);
+        $conn->expects('find')->with(1)->returns(['id' => 1, 'name' => 'Dayle']);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
@@ -32,8 +32,8 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveByIDReturnsNullWhenUserIsNotFound()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
-        $conn->expects('find')->with(1)->andReturn(null);
+        $conn->expects('table')->with('foo')->returns($conn);
+        $conn->expects('find')->with(1)->returns(null);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
@@ -47,8 +47,8 @@ class AuthDatabaseUserProviderTest extends TestCase
         $mockUser->remember_token = 'a';
 
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
-        $conn->expects('find')->with(1)->andReturn($mockUser);
+        $conn->expects('table')->with('foo')->returns($conn);
+        $conn->expects('find')->with(1)->returns($mockUser);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
@@ -59,8 +59,8 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveTokenWithBadIdentifierReturnsNull()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
-        $conn->expects('find')->with(1)->andReturn(null);
+        $conn->expects('table')->with('foo')->returns($conn);
+        $conn->expects('find')->with(1)->returns(null);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
@@ -74,8 +74,8 @@ class AuthDatabaseUserProviderTest extends TestCase
         $mockUser->remember_token = null;
 
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
-        $conn->expects('find')->with(1)->andReturn($mockUser);
+        $conn->expects('table')->with('foo')->returns($conn);
+        $conn->expects('find')->with(1)->returns($mockUser);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
@@ -86,10 +86,10 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveByCredentialsReturnsUserWhenUserIsFound()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
+        $conn->expects('table')->with('foo')->returns($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
-        $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
+        $conn->expects('first')->returns(['id' => 1, 'name' => 'taylor']);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle', 'password' => 'foo', 'group' => ['one', 'two']]);
@@ -102,10 +102,10 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveByCredentialsAcceptsCallback()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
+        $conn->expects('table')->with('foo')->returns($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
-        $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
+        $conn->expects('first')->returns(['id' => 1, 'name' => 'taylor']);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
 
@@ -122,9 +122,9 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRetrieveByCredentialsReturnsNullWhenUserIsFound()
     {
         $conn = Double::for(Connection::class);
-        $conn->expects('table')->with('foo')->andReturn($conn);
+        $conn->expects('table')->with('foo')->returns($conn);
         $conn->expects('where')->with('username', 'dayle');
-        $conn->expects('first')->andReturn(null);
+        $conn->expects('first')->returns(null);
         $hasher = Double::for(Hasher::class);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle']);
@@ -149,10 +149,10 @@ class AuthDatabaseUserProviderTest extends TestCase
     {
         $conn = Double::for(Connection::class);
         $hasher = Double::for(Hasher::class);
-        $hasher->expects('check')->with('plain', 'hash')->andReturn(true);
+        $hasher->expects('check')->with('plain', 'hash')->returns(true);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthPassword')->andReturn('hash');
+        $user->expects('getAuthPassword')->returns('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertTrue($result);
@@ -162,10 +162,10 @@ class AuthDatabaseUserProviderTest extends TestCase
     {
         $conn = Double::for(Connection::class);
         $hasher = Double::for(Hasher::class);
-        $hasher->expects('check')->with('plain', 'hash')->andReturn(false);
+        $hasher->expects('check')->with('plain', 'hash')->returns(false);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthPassword')->andReturn('hash');
+        $user->expects('getAuthPassword')->returns('hash');
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertFalse($result);
@@ -175,10 +175,10 @@ class AuthDatabaseUserProviderTest extends TestCase
     {
         $conn = Double::for(Connection::class);
         $hasher = Double::for(Hasher::class);
-        $hasher->shouldReceive('check')->never();
+        $hasher->expects('check')->never();
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthPassword')->andReturn(null);
+        $user->expects('getAuthPassword')->returns(null);
         $result = $provider->validateCredentials($user, ['password' => 'plain']);
 
         $this->assertFalse($result);
@@ -187,20 +187,20 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testRehashPasswordIfRequired()
     {
         $hasher = Double::for(Hasher::class);
-        $hasher->expects('needsRehash')->with('hash')->andReturn(true);
-        $hasher->expects('make')->with('plain')->andReturn('rehashed');
+        $hasher->expects('needsRehash')->with('hash')->returns(true);
+        $hasher->expects('make')->with('plain')->returns('rehashed');
 
         $conn = Double::for(Connection::class);
         $table = Double::for(ConnectionInterface::class);
-        $conn->expects('table')->with('foo')->andReturn($table);
-        $table->expects('where')->with('id', 1)->andReturnSelf();
+        $conn->expects('table')->with('foo')->returns($table);
+        $table->expects('where')->with('id', 1)->returns($table);
         $table->expects('update')->with(['password_attribute' => 'rehashed']);
 
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthIdentifierName')->andReturn('id');
-        $user->expects('getAuthIdentifier')->andReturn(1);
-        $user->expects('getAuthPassword')->andReturn('hash');
-        $user->expects('getAuthPasswordName')->andReturn('password_attribute');
+        $user->expects('getAuthIdentifierName')->returns('id');
+        $user->expects('getAuthIdentifier')->returns(1);
+        $user->expects('getAuthPassword')->returns('hash');
+        $user->expects('getAuthPasswordName')->returns('password_attribute');
 
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $provider->rehashPasswordIfRequired($user, ['password' => 'plain']);
@@ -209,20 +209,20 @@ class AuthDatabaseUserProviderTest extends TestCase
     public function testDontRehashPasswordIfNotRequired()
     {
         $hasher = Double::for(Hasher::class);
-        $hasher->expects('needsRehash')->with('hash')->andReturn(false);
-        $hasher->shouldNotReceive('make');
+        $hasher->expects('needsRehash')->with('hash')->returns(false);
+        $hasher->expects('make')->never();
 
         $conn = Double::for(Connection::class);
         $table = Double::for(ConnectionInterface::class);
-        $conn->shouldNotReceive('table');
-        $table->shouldNotReceive('where');
-        $table->shouldNotReceive('update');
+        $conn->expects('table')->never();
+        $table->expects('where')->never();
+        $table->expects('update')->never();
 
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthPassword')->andReturn('hash');
-        $user->shouldNotReceive('getAuthIdentifierName');
-        $user->shouldNotReceive('getAuthIdentifier');
-        $user->shouldNotReceive('getAuthPasswordName');
+        $user->expects('getAuthPassword')->returns('hash');
+        $user->expects('getAuthIdentifierName')->never();
+        $user->expects('getAuthIdentifier')->never();
+        $user->expects('getAuthPasswordName')->never();
 
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $provider->rehashPasswordIfRequired($user, ['password' => 'plain']);

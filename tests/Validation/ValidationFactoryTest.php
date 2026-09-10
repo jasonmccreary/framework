@@ -65,11 +65,9 @@ class ValidationFactoryTest extends TestCase
         $translator = Double::for(TranslatorInterface::class);
         $factory = Double::for(Factory::class)->passthru(new Factory($translator));
 
-        $factory->expects('make')
-            ->with(['foo' => 'bar', 'baz' => 'boom'], ['foo' => 'required'], [], [])
-            ->andReturn($validator);
+        $factory->expects('make')->with(['foo' => 'bar', 'baz' => 'boom'], ['foo' => 'required'], [], [])->returns($validator);
 
-        $validator->expects('validate')->andReturn(['foo' => 'bar']);
+        $validator->expects('validate')->returns(['foo' => 'bar']);
 
         $validated = $factory->validate(
             ['foo' => 'bar', 'baz' => 'boom'],

@@ -101,7 +101,7 @@ class RendererTest extends TestCase
         $this->assertFalse($this->app->bound(ExceptionRenderer::class));
 
         $listener = Double::for(Listener::class);
-        $listener->shouldReceive('registerListeners')->never();
+        $listener->expects('registerListeners')->never();
 
         $this->app->instance(Listener::class, $listener);
         Event::swap(Double::for(Dispatcher::class));
@@ -126,7 +126,7 @@ class RendererTest extends TestCase
         $this->assertTrue($this->app->bound(ExceptionRenderer::class));
 
         $listener = Double::for(Listener::class);
-        $listener->shouldReceive('registerListeners')->never();
+        $listener->expects('registerListeners')->never();
 
         $this->app->instance(Listener::class, $listener);
         Event::swap(Double::for(Dispatcher::class));

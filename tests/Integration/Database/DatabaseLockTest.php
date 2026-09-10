@@ -153,19 +153,17 @@ class DatabaseLockTest extends DatabaseTestCase
         $insertBuilder = Double::for(Builder::class);
         $deleteBuilder = Double::for(Builder::class);
 
-        $insertBuilder->expects('insert')->andReturn(true);
+        $insertBuilder->expects('insert')->returns(true);
 
-        $deleteBuilder->expects('where')->with('expiration', '<=', Mockery::any())->andReturnSelf();
-        $deleteBuilder->expects('delete')->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('where')->with('expiration', '<=', Mockery::any())->returns($deleteBuilder);
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where expiration <= ?',
                 [],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->expects('table')->times(2)->with('cache_locks')->andReturn($insertBuilder, $deleteBuilder);
+        $connection->expects('table')->times(2)->with('cache_locks')->returns($insertBuilder, $deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 0, lottery: [1, 1]);
 
@@ -186,18 +184,16 @@ class DatabaseLockTest extends DatabaseTestCase
 
         $owner = 'owner-123';
 
-        $deleteBuilder->expects('where')->with('key', 'foo')->andReturnSelf();
-        $deleteBuilder->expects('where')->with('owner', $owner)->andReturnSelf();
-        $deleteBuilder->expects('delete')->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('where')->with('key', 'foo')->returns($deleteBuilder);
+        $deleteBuilder->expects('where')->with('owner', $owner)->returns($deleteBuilder);
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where key = ? and owner = ?',
                 ['foo', $owner],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->expects('table')->with('cache_locks')->andReturn($deleteBuilder);
+        $connection->expects('table')->with('cache_locks')->returns($deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 10, $owner); // same owner...
 

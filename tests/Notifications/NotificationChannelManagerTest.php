@@ -43,9 +43,9 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
+        $manager->expects('driver')->returns($driver);
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
         $driver->expects('send');
         $events->expects('dispatch')->with(Mockery::type(NotificationSent::class));
 
@@ -84,10 +84,10 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(false);
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(false);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
+        $manager->expects('driver')->returns($driver);
         $driver->expects('send');
         $events->expects('dispatch')->with(Mockery::type(NotificationSkipped::class));
         $events->expects('dispatch')->with(Mockery::type(NotificationSent::class));
@@ -106,9 +106,9 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $manager->shouldNotReceive('driver');
+        $manager->expects('driver')->never();
         $events->expects('dispatch')->with(Mockery::type(NotificationSkipped::class));
-        $events->shouldNotReceive('dispatch')->with(Mockery::type(NotificationSent::class));
+        $events->expects('dispatch')->with(Mockery::type(NotificationSent::class))->never();
 
         $manager->send([new NotificationChannelManagerTestNotifiable], new NotificationChannelManagerTestCancelledNotification);
     }
@@ -124,9 +124,9 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
+        $manager->expects('driver')->returns($driver);
         $driver->expects('send');
         $events->expects('dispatch')->with(Mockery::type(NotificationSent::class));
 
@@ -146,12 +146,12 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
-        $driver->expects('send')->andThrow(new Exception());
+        $manager->expects('driver')->returns($driver);
+        $driver->expects('send')->throws(new Exception());
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch')->with(Mockery::type(NotificationFailed::class));
-        $events->shouldReceive('dispatch')->never()->with(Mockery::type(NotificationSent::class));
+        $events->expects('dispatch')->never()->with(Mockery::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
     }
@@ -169,22 +169,22 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
-        $driver->expects('send')->andReturnUsing(function ($notifiable, $notification) use ($events) {
+        $manager->expects('driver')->returns($driver);
+        $driver->expects('send')->resolves(function ($notifiable, $notification) use ($events) {
             $events->dispatch(new NotificationFailed($notifiable, $notification, 'test'));
             throw new Exception();
         });
         $listeners = new Collection();
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
-        $events->expects('listen')->andReturnUsing(function ($event, $callback) use ($listeners) {
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
+        $events->expects('listen')->resolves(function ($event, $callback) use ($listeners) {
             $listeners->push($callback);
         });
-        $events->expects('dispatch')->with(Mockery::type(NotificationFailed::class))->andReturnUsing(function ($event) use ($listeners) {
+        $events->expects('dispatch')->with(Mockery::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
             foreach ($listeners as $listener) {
                 $listener($event);
             }
         });
-        $events->shouldReceive('dispatch')->never()->with(Mockery::type(NotificationSent::class));
+        $events->expects('dispatch')->never()->with(Mockery::type(NotificationSent::class));
 
         $manager->send(new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerTestNotification);
     }
@@ -221,11 +221,11 @@ class NotificationChannelManagerTest extends TestCase
             };
         });
         $listeners = new Collection();
-        $events->expects('until')->times(3)->with(Mockery::type(NotificationSending::class))->andReturn(true);
-        $events->expects('listen')->andReturnUsing(function ($event, $callback) use ($listeners) {
+        $events->expects('until')->times(3)->with(Mockery::type(NotificationSending::class))->returns(true);
+        $events->expects('listen')->resolves(function ($event, $callback) use ($listeners) {
             $listeners->push($callback);
         });
-        $events->expects('dispatch')->with(Mockery::type(NotificationFailed::class))->andReturnUsing(function ($event) use ($listeners) {
+        $events->expects('dispatch')->with(Mockery::type(NotificationFailed::class))->resolves(function ($event) use ($listeners) {
             foreach ($listeners as $listener) {
                 $listener($event);
             }
@@ -247,8 +247,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus);
         $queueRoutes = Double::for(\stdClass::class);
         $container->instance(QueueRoutes::class, $queueRoutes);
-        $queueRoutes->expects('getQueue')->andReturn(null);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->with(Mockery::type(SendQueuedNotifications::class));
         Container::setInstance($container);
@@ -268,8 +268,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus);
         $queueRoutes = Double::for(\stdClass::class);
         $container->instance(QueueRoutes::class, $queueRoutes);
-        $queueRoutes->expects('getQueue')->andReturn(null);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->with(Mockery::type(TestSendQueuedNotifications::class));
         $container->bind(SendQueuedNotifications::class, TestSendQueuedNotifications::class);
@@ -295,8 +295,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus);
         $queueRoutes = Double::for(\stdClass::class);
         $container->instance(QueueRoutes::class, $queueRoutes);
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->times(2)->withArgs(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -328,8 +328,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus);
         $queueRoutes = Double::for(\stdClass::class);
         $container->instance(QueueRoutes::class, $queueRoutes);
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->times(2)->withArgs(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -359,8 +359,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance(Bus::class, $bus);
         $queueRoutes = Double::for(\stdClass::class);
         $container->instance(QueueRoutes::class, $queueRoutes);
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         $container->instance('queue.routes', $queueRoutes);
         $bus->expects('dispatch')->times(2)->withArgs(function ($job) use ($mockedMessageGroupSet) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -397,8 +397,8 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -426,8 +426,8 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueRoutes->expects('getQueue')->andReturn(null);
-        $queueRoutes->expects('getConnection')->andReturn(null);
+        $queueRoutes->expects('getQueue')->returns(null);
+        $queueRoutes->expects('getConnection')->returns(null);
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -458,8 +458,8 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -484,8 +484,8 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -511,8 +511,8 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueRoutes->expects('getQueue')->times(2)->andReturn(null);
-        $queueRoutes->expects('getConnection')->times(2)->andReturn(null);
+        $queueRoutes->expects('getQueue')->times(2)->returns(null);
+        $queueRoutes->expects('getConnection')->times(2)->returns(null);
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $events->expects('listen');
@@ -532,11 +532,11 @@ class NotificationChannelManagerTest extends TestCase
         Container::setInstance($container);
         $manager = Double::for(ChannelManager::class)->passthru(new ChannelManager($container));
         $driver = Double::for(\stdClass::class);
-        $manager->expects('driver')->andReturn($driver);
+        $manager->expects('driver')->returns($driver);
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->andReturn(true);
+        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
         $response = Double::for(\stdClass::class);
-        $driver->expects('send')->andReturn($response);
+        $driver->expects('send')->returns($response);
         $events->expects('dispatch')->with(Mockery::type(NotificationSent::class));
 
         $manager->send($notifiable = new NotificationChannelManagerTestNotifiable, new NotificationChannelManagerWithAfterSendingMethodNotification);

@@ -49,7 +49,7 @@ class SupportHelpersTest extends TestCase
         $this->assertSame('A &#039;quote&#039; is &lt;b&gt;bold&lt;/b&gt;', e($str));
 
         $html = Double::for(Htmlable::class);
-        $html->expects('toHtml')->andReturn($str);
+        $html->expects('toHtml')->returns($str);
         $this->assertEquals($str, e($html));
     }
 
@@ -832,7 +832,7 @@ class SupportHelpersTest extends TestCase
         })->id);
 
         $mock = Double::for(\stdClass::class);
-        $mock->expects('foo')->andReturn('bar');
+        $mock->expects('foo')->returns('bar');
         $this->assertEquals($mock, tap($mock)->foo());
     }
 

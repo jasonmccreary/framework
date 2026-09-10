@@ -44,7 +44,7 @@ class CacheSchedulingMutexTest extends TestCase
     {
         $this->cacheFactory = Double::for(Factory::class);
         $this->cacheRepository = Double::for(Repository::class);
-        $this->cacheFactory->shouldReceive('store')->andReturn($this->cacheRepository);
+        $this->cacheFactory->allows('store')->returns($this->cacheRepository);
         $this->cacheMutex = new CacheSchedulingMutex($this->cacheFactory);
         $this->event = new Event(new CacheEventMutex($this->cacheFactory), 'command');
         $this->time = Carbon::now();
@@ -52,16 +52,16 @@ class CacheSchedulingMutexTest extends TestCase
 
     public function testMutexReceivesCorrectCreate()
     {
-        $this->cacheRepository->expects('getStore')->andReturn(new \stdClass);
-        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->andReturn(true);
+        $this->cacheRepository->expects('getStore')->returns(new \stdClass);
+        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->returns(true);
 
         $this->assertTrue($this->cacheMutex->create($this->event, $this->time));
     }
 
     public function testCanUseCustomConnection()
     {
-        $this->cacheRepository->expects('getStore')->andReturn(new \stdClass);
-        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->andReturn(true);
+        $this->cacheRepository->expects('getStore')->returns(new \stdClass);
+        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->returns(true);
         $this->cacheMutex->useStore('test');
 
         $this->assertTrue($this->cacheMutex->create($this->event, $this->time));
@@ -69,38 +69,38 @@ class CacheSchedulingMutexTest extends TestCase
 
     public function testPreventsMultipleRuns()
     {
-        $this->cacheRepository->expects('getStore')->andReturn(new \stdClass);
-        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->andReturn(false);
+        $this->cacheRepository->expects('getStore')->returns(new \stdClass);
+        $this->cacheRepository->expects('add')->with($this->event->mutexName().$this->time->format('Hi'), true, 3600)->returns(false);
 
         $this->assertFalse($this->cacheMutex->create($this->event, $this->time));
     }
 
     public function testChecksForNonRunSchedule()
     {
-        $this->cacheRepository->expects('getStore')->andReturn(new \stdClass);
-        $this->cacheRepository->expects('has')->with($this->event->mutexName().$this->time->format('Hi'))->andReturn(false);
+        $this->cacheRepository->expects('getStore')->returns(new \stdClass);
+        $this->cacheRepository->expects('has')->with($this->event->mutexName().$this->time->format('Hi'))->returns(false);
 
         $this->assertFalse($this->cacheMutex->exists($this->event, $this->time));
     }
 
     public function testChecksForAlreadyRunSchedule()
     {
-        $this->cacheRepository->expects('getStore')->andReturn(new \stdClass);
-        $this->cacheRepository->expects('has')->with($this->event->mutexName().$this->time->format('Hi'))->andReturn(true);
+        $this->cacheRepository->expects('getStore')->returns(new \stdClass);
+        $this->cacheRepository->expects('has')->with($this->event->mutexName().$this->time->format('Hi'))->returns(true);
 
         $this->assertTrue($this->cacheMutex->exists($this->event, $this->time));
     }
 
     public function testMutexReceivesCorrectCreateWithLockProvider()
     {
-        $this->cacheRepository->expects('getStore')->times(2)->andReturn(new ArrayStore);
+        $this->cacheRepository->expects('getStore')->times(2)->returns(new ArrayStore);
 
         $this->assertTrue($this->cacheMutex->create($this->event, $this->time));
     }
 
     public function testPreventsMultipleRunsWithLockProvider()
     {
-        $this->cacheRepository->expects('getStore')->times(4)->andReturn(new ArrayStore);
+        $this->cacheRepository->expects('getStore')->times(4)->returns(new ArrayStore);
 
         // first create the lock, so we can test that the next call fails.
         $this->cacheMutex->create($this->event, $this->time);
@@ -110,14 +110,14 @@ class CacheSchedulingMutexTest extends TestCase
 
     public function testChecksForNonRunScheduleWithLockProvider()
     {
-        $this->cacheRepository->expects('getStore')->times(2)->andReturn(new ArrayStore);
+        $this->cacheRepository->expects('getStore')->times(2)->returns(new ArrayStore);
 
         $this->assertFalse($this->cacheMutex->exists($this->event, $this->time));
     }
 
     public function testChecksForAlreadyRunScheduleWithLockProvider()
     {
-        $this->cacheRepository->expects('getStore')->times(4)->andReturn(new ArrayStore);
+        $this->cacheRepository->expects('getStore')->times(4)->returns(new ArrayStore);
 
         $this->cacheMutex->create($this->event, $this->time);
 

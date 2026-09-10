@@ -37,31 +37,24 @@ class FoundationAuthenticationTest extends TestCase
         $guard = Double::for(Guard::class);
 
         $auth = Double::for(AuthManager::class);
-        $auth->expects('guard')
-            ->andReturn($guard);
+        $auth->expects('guard')->returns($guard);
 
         $this->app = Double::for(Application::class);
-        $this->app->expects('make')
-            ->withArgs(['auth'])
-            ->andReturn($auth);
+        $this->app->expects('make')->with('auth')->returns($auth);
 
         return $guard;
     }
 
     public function testAssertAuthenticated()
     {
-        $this->mockGuard()
-            ->expects('check')
-            ->andReturn(true);
+        $this->mockGuard()->expects('check')->returns(true);
 
         $this->assertAuthenticated();
     }
 
     public function testAssertGuest()
     {
-        $this->mockGuard()
-            ->expects('check')
-            ->andReturn(false);
+        $this->mockGuard()->expects('check')->returns(false);
 
         $this->assertGuest();
     }
@@ -69,16 +62,12 @@ class FoundationAuthenticationTest extends TestCase
     public function testAssertAuthenticatedAs()
     {
         $expected = Double::for(Authenticatable::class);
-        $expected->expects('getAuthIdentifier')
-            ->andReturn('1');
+        $expected->expects('getAuthIdentifier')->returns('1');
 
-        $this->mockGuard()
-            ->expects('user')
-            ->andReturn($expected);
+        $this->mockGuard()->expects('user')->returns($expected);
 
         $user = Double::for(Authenticatable::class);
-        $user->expects('getAuthIdentifier')
-            ->andReturn('1');
+        $user->expects('getAuthIdentifier')->returns('1');
 
         $this->assertAuthenticatedAs($user);
     }
@@ -89,17 +78,11 @@ class FoundationAuthenticationTest extends TestCase
 
         $provider = Double::for(UserProvider::class);
 
-        $provider->expects('retrieveByCredentials')
-            ->with($credentials)
-            ->andReturn($user);
+        $provider->expects('retrieveByCredentials')->with($credentials)->returns($user);
 
-        $provider->expects('validateCredentials')
-            ->with($user, $credentials)
-            ->andReturn($this->credentials === $credentials);
+        $provider->expects('validateCredentials')->with($user, $credentials)->returns($this->credentials === $credentials);
 
-        $this->mockGuard()
-            ->expects('getProvider')
-            ->andReturn($provider);
+        $this->mockGuard()->expects('getProvider')->returns($provider);
     }
 
     public function testAssertCredentials()

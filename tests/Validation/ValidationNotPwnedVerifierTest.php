@@ -47,24 +47,15 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
         $httpFactory = Double::for(HttpFactory::class);
 
-        $httpFactory
-            ->expects('withHeaders')
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->expects('timeout')
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->expects('get')
-            ->andReturn($response);
+        $httpFactory->expects('get')->returns($response);
 
-        $response->expects('successful')
-            ->andReturn(true);
+        $response->expects('successful')->returns(true);
 
-        $response->expects('body')
-            ->andReturn('');
+        $response->expects('body')->returns('');
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -79,21 +70,13 @@ class ValidationNotPwnedVerifierTest extends TestCase
         $httpFactory = Double::for(HttpFactory::class);
         $response = Double::for(Response::class);
 
-        $httpFactory
-            ->expects('withHeaders')
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->expects('timeout')
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->expects('get')
-            ->andReturn($response);
+        $httpFactory->expects('get')->returns($response);
 
-        $response->expects('successful')
-            ->andReturn(false);
+        $response->expects('successful')->returns(false);
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -117,25 +100,15 @@ class ValidationNotPwnedVerifierTest extends TestCase
         $httpFactory = Double::for(HttpFactory::class);
         $response = Double::for(Response::class);
 
-        $httpFactory
-            ->expects('withHeaders')
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->expects('timeout')
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory->expects('get')
-            ->with('https://api.pwnedpasswords.com/range/'.$hashPrefix)
-            ->andReturn($response);
+        $httpFactory->expects('get')->with('https://api.pwnedpasswords.com/range/'.$hashPrefix)->returns($response);
 
-        $response->expects('successful')
-            ->andReturn(true);
+        $response->expects('successful')->returns(true);
 
-        $response->expects('body')
-            ->andReturn($differentSuffix.':5');
+        $response->expects('body')->returns($differentSuffix.':5');
 
         $verifier = new NotPwnedVerifier($httpFactory);
 
@@ -158,19 +131,11 @@ class ValidationNotPwnedVerifierTest extends TestCase
 
         $httpFactory = Double::for(HttpFactory::class);
 
-        $httpFactory
-            ->expects('withHeaders')
-            ->with(['Add-Padding' => true])
-            ->andReturn($httpFactory);
+        $httpFactory->expects('withHeaders')->with(['Add-Padding' => true])->returns($httpFactory);
 
-        $httpFactory
-            ->expects('timeout')
-            ->with(30)
-            ->andReturn($httpFactory);
+        $httpFactory->expects('timeout')->with(30)->returns($httpFactory);
 
-        $httpFactory
-            ->expects('get')
-            ->andThrow($exception);
+        $httpFactory->expects('get')->throws($exception);
 
         $verifier = new NotPwnedVerifier($httpFactory);
         $this->assertTrue($verifier->verify([

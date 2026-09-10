@@ -45,7 +45,7 @@ class DatabaseQueryGrammarTest extends TestCase
         $grammar = new Grammar(Double::for(Connection::class));
 
         // compileOrders() calls $query->getGrammar() → return our $grammar
-        $builder->expects('getGrammar')->andReturn($grammar);
+        $builder->expects('getGrammar')->returns($grammar);
 
         $orders = [
             ['sql' => new Expression('length("name") desc')], // mimics orderByRaw(DB::raw(...))
@@ -62,7 +62,7 @@ class DatabaseQueryGrammarTest extends TestCase
     {
         $builder = Double::for(Builder::class);
         $grammar = new Grammar(Double::for(Connection::class));
-        $builder->expects('getGrammar')->andReturn($grammar);
+        $builder->expects('getGrammar')->returns($grammar);
 
         $orders = [
             ['sql' => new Expression('field(status, ?, ?) asc')],

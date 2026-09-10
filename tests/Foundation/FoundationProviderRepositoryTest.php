@@ -19,8 +19,8 @@ class FoundationProviderRepositoryTest extends TestCase
         $app = Double::for(Application::class);
 
         $repo = Double::for(ProviderRepository::class)->passthru(new ProviderRepository($app, Double::for(Filesystem::class), [__DIR__.'/services.php']));
-        $repo->expects('loadManifest')->andReturn(['eager' => ['foo'], 'deferred' => ['deferred'], 'providers' => ['providers'], 'when' => []]);
-        $repo->expects('shouldRecompile')->andReturn(false);
+        $repo->expects('loadManifest')->returns(['eager' => ['foo'], 'deferred' => ['deferred'], 'providers' => ['providers'], 'when' => []]);
+        $repo->expects('shouldRecompile')->returns(false);
 
         $app->expects('register')->with('foo');
         $app->expects('addDeferredServices')->with(['deferred']);
@@ -34,21 +34,21 @@ class FoundationProviderRepositoryTest extends TestCase
 
         $repo = Double::for(ProviderRepository::class)->passthru(new ProviderRepository($app, Double::for(Filesystem::class), [__DIR__.'/services.php']));
 
-        $repo->expects('loadManifest')->andReturn(['eager' => [], 'deferred' => ['deferred']]);
-        $repo->expects('shouldRecompile')->andReturn(true);
+        $repo->expects('loadManifest')->returns(['eager' => [], 'deferred' => ['deferred']]);
+        $repo->expects('shouldRecompile')->returns(true);
 
         // foo mock is just a deferred provider
         $fooMock = Double::for(ServiceProvider::class);
-        $repo->expects('createProvider')->with('foo')->andReturn($fooMock);
-        $fooMock->expects('isDeferred')->andReturn(true);
-        $fooMock->expects('provides')->andReturn(['foo.provides1', 'foo.provides2']);
-        $fooMock->expects('when')->andReturn([]);
+        $repo->expects('createProvider')->with('foo')->returns($fooMock);
+        $fooMock->expects('isDeferred')->returns(true);
+        $fooMock->expects('provides')->returns(['foo.provides1', 'foo.provides2']);
+        $fooMock->expects('when')->returns([]);
 
         // bar mock is added to eagers since it's not reserved
         $barMock = Double::for(ServiceProvider::class);
-        $repo->expects('createProvider')->with('bar')->andReturn($barMock);
-        $barMock->expects('isDeferred')->andReturn(false);
-        $repo->expects('writeManifest')->andReturnUsing(function ($manifest) {
+        $repo->expects('createProvider')->with('bar')->returns($barMock);
+        $barMock->expects('isDeferred')->returns(false);
+        $repo->expects('writeManifest')->resolves(function ($manifest) {
             return $manifest;
         });
 
@@ -69,8 +69,8 @@ class FoundationProviderRepositoryTest extends TestCase
     public function testLoadManifestReturnsParsedJSON()
     {
         $files = Double::for(Filesystem::class);
-        $files->expects('exists')->with(__DIR__.'/services.php')->andReturn(true);
-        $files->expects('getRequire')->with(__DIR__.'/services.php')->andReturn($array = ['users' => ['dayle' => true], 'when' => []]);
+        $files->expects('exists')->with(__DIR__.'/services.php')->returns(true);
+        $files->expects('getRequire')->with(__DIR__.'/services.php')->returns($array = ['users' => ['dayle' => true], 'when' => []]);
         $repo = new ProviderRepository(Double::for(ApplicationContract::class), $files, __DIR__.'/services.php');
 
         $this->assertEquals($array, $repo->loadManifest());
@@ -93,7 +93,7 @@ class FoundationProviderRepositoryTest extends TestCase
         $this->expectExceptionMessageMatches('/^The (.*) directory must be present and writable.$/');
 
         $files = Double::for(Filesystem::class);
-        $files->shouldReceive('replace')->never();
+        $files->expects('replace')->never();
         $repo = new ProviderRepository(Double::for(ApplicationContract::class), $files, __DIR__.'/cache/services.php');
 
         $repo->writeManifest(['foo']);

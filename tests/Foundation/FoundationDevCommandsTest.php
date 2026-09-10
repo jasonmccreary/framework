@@ -324,7 +324,7 @@ class FoundationDevCommandsTest extends TestCase
         File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
 
         $provider = Double::for('alias:Laravel\Pail\PailServiceProvider');
-        $provider->shouldReceive('register');
+        $provider->allows('register');
 
         Application::getInstance()->register($provider);
 

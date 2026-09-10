@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Console\Application;
 use Illuminate\Console\Attributes\Aliases;
@@ -40,13 +41,13 @@ class CommandTest extends TestCase
         $input = new ArrayInput([]);
         $output = new NullOutput;
         $outputStyle = Double::for(OutputStyle::class);
-        $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(Double::for(Factory::class));
+        $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->returns($outputStyle);
+        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->returns(Double::for(Factory::class));
 
-        $application->expects('call')->with([$command, 'handle'])->andReturnUsing(function () use ($command, $application) {
+        $application->expects('call')->with([$command, 'handle'])->resolves(function () use ($command, $application) {
             $commandCalled = Double::for(Command::class);
 
-            $application->expects('make')->with(Command::class)->andReturn($commandCalled);
+            $application->expects('make')->with(Command::class)->returns($commandCalled);
 
             $commandCalled->expects('setApplication')->with(null);
             $commandCalled->expects('setLaravel')->with($application);
@@ -54,7 +55,7 @@ class CommandTest extends TestCase
 
             $command->call(Command::class);
         });
-        $application->shouldReceive('runningUnitTests')->andReturn(true);
+        $application->allows('runningUnitTests')->returns(true);
 
         $command->run($input, $output);
     }
@@ -155,10 +156,10 @@ class CommandTest extends TestCase
         ]);
         $output = new NullOutput;
         $outputStyle = Double::for(OutputStyle::class);
-        $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(Double::for(Factory::class));
-        $application->shouldReceive('runningUnitTests')->andReturn(true);
-        $application->expects('call')->with([$command, 'handle'])->andReturn(0);
+        $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->returns($outputStyle);
+        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->returns(Double::for(Factory::class));
+        $application->allows('runningUnitTests')->returns(true);
+        $application->expects('call')->with([$command, 'handle'])->returns(0);
 
         $command->run($input, $output);
 
@@ -180,7 +181,7 @@ class CommandTest extends TestCase
     public function testTheInputSetterOverwrite()
     {
         $input = Double::for(InputInterface::class);
-        $input->expects('hasArgument')->with('foo')->andReturn(false);
+        $input->expects('hasArgument')->with('foo')->returns(false);
 
         $command = new Command;
         $command->setInput($input);
@@ -256,9 +257,9 @@ class CommandTest extends TestCase
     public function testChoiceIsSingleSelectByDefault()
     {
         $output = Double::for(OutputStyle::class);
-        $output->expects('askQuestion')->withArgs(function (ChoiceQuestion $question) {
+        $output->expects('askQuestion')->with(Argument::satisfies(function (ChoiceQuestion $question) {
             return $question->isMultiselect() === false;
-        });
+        }));
 
         $command = new Command;
         $command->setOutput($output);
@@ -269,9 +270,9 @@ class CommandTest extends TestCase
     public function testChoiceWithMultiselect()
     {
         $output = Double::for(OutputStyle::class);
-        $output->expects('askQuestion')->withArgs(function (ChoiceQuestion $question) {
+        $output->expects('askQuestion')->with(Argument::satisfies(function (ChoiceQuestion $question) {
             return $question->isMultiselect() === true;
-        });
+        }));
 
         $command = new Command;
         $command->setOutput($output);

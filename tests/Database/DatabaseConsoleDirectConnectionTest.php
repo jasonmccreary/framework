@@ -22,10 +22,10 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
         $directConnection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->expects('getDefaultConnection')->andReturn('pgsql');
-        $resolver->expects('connection')->with('pgsql')->andReturn($baseConnection);
-        $baseConnection->expects('hasDirectConnection')->andReturn(true);
-        $resolver->expects('connection')->with('pgsql::direct')->andReturn($directConnection);
+        $resolver->expects('getDefaultConnection')->returns('pgsql');
+        $resolver->expects('connection')->with('pgsql')->returns($baseConnection);
+        $baseConnection->expects('hasDirectConnection')->returns(true);
+        $resolver->expects('connection')->with('pgsql::direct')->returns($directConnection);
 
         $this->assertSame($directConnection, $command->resolve($resolver, null));
     }
@@ -36,8 +36,8 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
         $connection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->expects('connection')->with('sqlite')->andReturn($connection);
-        $connection->expects('hasDirectConnection')->andReturn(false);
+        $resolver->expects('connection')->with('sqlite')->returns($connection);
+        $connection->expects('hasDirectConnection')->returns(false);
 
         $this->assertSame($connection, $command->resolve($resolver, 'sqlite'));
     }
@@ -48,8 +48,8 @@ class DatabaseConsoleDirectConnectionTest extends TestCase
         $connection = Double::for(Connection::class);
         $command = new DatabaseConsoleDirectConnectionTestCommand;
 
-        $resolver->expects('connection')->with('pgsql::write')->andReturn($connection);
-        $connection->expects('hasDirectConnection')->andReturn(true);
+        $resolver->expects('connection')->with('pgsql::write')->returns($connection);
+        $connection->expects('hasDirectConnection')->returns(true);
 
         $this->assertSame($connection, $command->resolve($resolver, 'pgsql::write'));
     }

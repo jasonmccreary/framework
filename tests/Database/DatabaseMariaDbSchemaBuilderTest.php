@@ -16,11 +16,11 @@ class DatabaseMariaDbSchemaBuilderTest extends TestCase
     {
         $connection = Double::for(Connection::class);
         $grammar = Double::for(MariaDbGrammar::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
         $builder = new MariaDbBuilder($connection);
-        $grammar->expects('compileTableExists')->andReturn('sql');
-        $connection->expects('getTablePrefix')->andReturn('prefix_');
-        $connection->expects('scalar')->with('sql')->andReturn(1);
+        $grammar->expects('compileTableExists')->returns('sql');
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('scalar')->with('sql')->returns(1);
 
         $this->assertTrue($builder->hasTable('table'));
     }
@@ -30,13 +30,13 @@ class DatabaseMariaDbSchemaBuilderTest extends TestCase
         $connection = Double::for(Connection::class);
         $grammar = Double::for(MariaDbGrammar::class);
         $processor = Double::for(MariaDbProcessor::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
-        $connection->expects('getPostProcessor')->andReturn($processor);
-        $grammar->expects('compileColumns')->with(null, 'prefix_table')->andReturn('sql');
-        $processor->expects('processColumns')->andReturn([['name' => 'column']]);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('getPostProcessor')->returns($processor);
+        $grammar->expects('compileColumns')->with(null, 'prefix_table')->returns('sql');
+        $processor->expects('processColumns')->returns([['name' => 'column']]);
         $builder = new MariaDbBuilder($connection);
-        $connection->expects('getTablePrefix')->andReturn('prefix_');
-        $connection->expects('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'column']]);
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('selectFromWriteConnection')->with('sql')->returns([['name' => 'column']]);
 
         $this->assertEquals(['column'], $builder->getColumnListing('table'));
     }

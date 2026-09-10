@@ -28,16 +28,14 @@ class FailoverQueueTest extends TestCase
         ]);
 
         $redis = Double::for('stdClass');
-        $queue->expects('connection')->with('redis')->andReturn($redis);
+        $queue->expects('connection')->with('redis')->returns($redis);
 
         $sync = Double::for('stdClass');
-        $queue->expects('connection')->with('sync')->andReturn($sync);
+        $queue->expects('connection')->with('sync')->returns($sync);
 
         $events->expects('dispatch');
 
-        $redis->expects('push')->andReturnUsing(
-            fn () => throw new \Exception('error')
-        );
+        $redis->expects('push')->resolves(fn () => throw new \Exception('error'));
 
         $sync->expects('push');
 
@@ -50,7 +48,7 @@ class FailoverQueueTest extends TestCase
         $failover = new FailoverQueue($queue, Double::for(Dispatcher::class), ['sync']);
 
         $sync = Double::for('stdClass');
-        $queue->expects('connection')->times(3)->with('sync')->andReturn($sync);
+        $queue->expects('connection')->times(3)->with('sync')->returns($sync);
 
         $sync->expects('later')->with(15, Mockery::type(FailoverJobWithDelayAttribute::class), '', null);
         $sync->expects('later')->with(30, Mockery::type(FailoverJobWithDelayProperty::class), '', null);

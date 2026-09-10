@@ -34,15 +34,15 @@ class FoundationHelpersTest extends TestCase
         cache(['foo' => 'bar'], 1);
 
         // 3. cache('foo');
-        $cache->expects('get')->with('foo', null)->andReturn('bar');
+        $cache->expects('get')->with('foo', null)->returns('bar');
         $this->assertSame('bar', cache('foo'));
 
         // 4. cache('foo', null);
-        $cache->expects('get')->with('foo', null)->andReturn('bar');
+        $cache->expects('get')->with('foo', null)->returns('bar');
         $this->assertSame('bar', cache('foo', null));
 
         // 5. cache('baz', 'default');
-        $cache->expects('get')->with('baz', 'default')->andReturn('default');
+        $cache->expects('get')->with('baz', 'default')->returns('default');
         $this->assertSame('default', cache('baz', 'default'));
     }
 
@@ -51,7 +51,7 @@ class FoundationHelpersTest extends TestCase
         $app = new Application;
         $app['events'] = $dispatcher = Double::for(Dispatcher::class);
 
-        $dispatcher->expects('dispatch')->with('a', 'b', 'c')->andReturn('foo');
+        $dispatcher->expects('dispatch')->with('a', 'b', 'c')->returns('foo');
         $this->assertSame('foo', event('a', 'b', 'c'));
     }
 
@@ -59,8 +59,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = Double::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -75,8 +75,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = Double::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
         mix('unversioned.css');
@@ -91,8 +91,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = Double::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         $manifest = $this->makeManifest();
 
@@ -114,8 +114,8 @@ class FoundationHelpersTest extends TestCase
     {
         $app = new Application;
         $app['config'] = Double::for(Repository::class);
-        $app['config']->shouldReceive('get')->with('app.mix_url');
-        $app['config']->shouldReceive('get')->with('app.mix_hot_proxy_url');
+        $app['config']->allows('get')->with('app.mix_url');
+        $app['config']->allows('get')->with('app.mix_hot_proxy_url');
 
         mkdir($directory = __DIR__.'/mix');
         $manifest = $this->makeManifest('mix');

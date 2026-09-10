@@ -38,7 +38,7 @@ class ListenerTest extends TestCase
     {
         $this->app->singleton('db.transactions', function () {
             $transactionManager = Double::for(DatabaseTransactionsManager::class);
-            $transactionManager->expects('addCallback')->andReturn(null);
+            $transactionManager->expects('addCallback')->returns(null);
 
             return $transactionManager;
         });

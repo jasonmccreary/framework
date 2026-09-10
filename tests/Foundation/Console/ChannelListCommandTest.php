@@ -43,7 +43,7 @@ class ChannelListCommandTest extends TestCase
         $laravel = new FoundationApplication(__DIR__);
 
         $broadcaster = Double::for(BroadcasterContract::class);
-        $broadcaster->expects('getChannels')->andReturn(new Collection($channels));
+        $broadcaster->expects('getChannels')->returns(new Collection($channels));
 
         $laravel->instance(BroadcasterContract::class, $broadcaster);
 

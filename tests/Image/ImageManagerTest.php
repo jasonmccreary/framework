@@ -100,14 +100,10 @@ class ImageManagerTest extends TestCase
         $path = $file->getRealPath();
 
         $filesystem = Double::for(Filesystem::class);
-        $filesystem->expects('get')
-            ->with($path)
-            ->andReturn(file_get_contents($path));
+        $filesystem->expects('get')->with($path)->returns(file_get_contents($path));
 
         $app = $this->makeApp([]);
-        $app->expects('make')
-            ->with(Filesystem::class)
-            ->andReturn($filesystem);
+        $app->expects('make')->with(Filesystem::class)->returns($filesystem);
 
         $manager = new ImageManager($app);
         $image = $manager->fromPath($path);
@@ -119,7 +115,7 @@ class ImageManagerTest extends TestCase
     public function test_from_path_is_lazy()
     {
         $filesystem = Double::for(Filesystem::class);
-        $filesystem->shouldNotReceive('get');
+        $filesystem->expects('get')->never();
 
         $app = $this->makeApp([]);
 
@@ -134,19 +130,13 @@ class ImageManagerTest extends TestCase
         $contents = $this->fakeImageContents();
 
         $disk = Double::for(\stdClass::class);
-        $disk->expects('get')
-            ->with('images/avatar.jpg')
-            ->andReturn($contents);
+        $disk->expects('get')->with('images/avatar.jpg')->returns($contents);
 
         $filesystem = Double::for(FilesystemFactory::class);
-        $filesystem->expects('disk')
-            ->with('public')
-            ->andReturn($disk);
+        $filesystem->expects('disk')->with('public')->returns($disk);
 
         $app = $this->makeApp([]);
-        $app->expects('make')
-            ->with(FilesystemFactory::class)
-            ->andReturn($filesystem);
+        $app->expects('make')->with(FilesystemFactory::class)->returns($filesystem);
 
         $manager = new ImageManager($app);
         $image = $manager->fromStorage('images/avatar.jpg', 'public');
@@ -160,19 +150,13 @@ class ImageManagerTest extends TestCase
         $contents = $this->fakeImageContents();
 
         $disk = Double::for(\stdClass::class);
-        $disk->expects('get')
-            ->with('images/avatar.jpg')
-            ->andReturn($contents);
+        $disk->expects('get')->with('images/avatar.jpg')->returns($contents);
 
         $filesystem = Double::for(FilesystemFactory::class);
-        $filesystem->expects('disk')
-            ->with('public')
-            ->andReturn($disk);
+        $filesystem->expects('disk')->with('public')->returns($disk);
 
         $app = $this->makeApp([]);
-        $app->expects('make')
-            ->with(FilesystemFactory::class)
-            ->andReturn($filesystem);
+        $app->expects('make')->with(FilesystemFactory::class)->returns($filesystem);
 
         $manager = new ImageManager($app);
         $image = $manager->fromStorage('images/avatar.jpg', ImageDiskStub::Public);
@@ -184,7 +168,7 @@ class ImageManagerTest extends TestCase
     public function test_from_storage_is_lazy()
     {
         $filesystem = Double::for(FilesystemFactory::class);
-        $filesystem->shouldNotReceive('disk');
+        $filesystem->expects('disk')->never();
 
         $app = $this->makeApp([]);
 
@@ -289,9 +273,7 @@ class ImageManagerTest extends TestCase
         ]);
 
         $app = $this->makeApp([]);
-        $app->shouldReceive('make')
-            ->with(HttpFactory::class)
-            ->andReturn($http);
+        $app->allows('make')->with(HttpFactory::class)->returns($http);
 
         $manager = new ImageManager($app);
         $image = $manager->fromUrl('https://example.com/photo.jpg');
@@ -344,9 +326,7 @@ class ImageManagerTest extends TestCase
         ]);
 
         $app = $this->makeApp([]);
-        $app->expects('make')
-            ->with(HttpFactory::class)
-            ->andReturn($http);
+        $app->expects('make')->with(HttpFactory::class)->returns($http);
 
         $manager = new ImageManager($app);
         $image = $manager->fromUrl('https://example.com/photo.jpg');
@@ -363,9 +343,7 @@ class ImageManagerTest extends TestCase
         ]);
 
         $app = $this->makeApp([]);
-        $app->expects('make')
-            ->with(HttpFactory::class)
-            ->andReturn($http);
+        $app->expects('make')->with(HttpFactory::class)->returns($http);
 
         $manager = new ImageManager($app);
         $image = $manager->fromUrl('https://example.com/missing.jpg');
@@ -380,7 +358,7 @@ class ImageManagerTest extends TestCase
     public function test_from_url_is_lazy()
     {
         $http = Double::for(HttpFactory::class);
-        $http->shouldNotReceive('get');
+        $http->expects('get')->never();
 
         $app = $this->makeApp([]);
 
@@ -540,9 +518,9 @@ class ImageManagerTest extends TestCase
 
         $configRepo = new Repository($config);
 
-        $app->shouldReceive('make')->with('config')->andReturn($configRepo)->byDefault();
-        $app->shouldReceive('offsetGet')->with('config')->andReturn($configRepo);
-        $app->shouldReceive('offsetExists')->andReturn(true);
+        $app->allows('make')->with('config')->returns($configRepo);
+        $app->allows('offsetGet')->with('config')->returns($configRepo);
+        $app->allows('offsetExists')->returns(true);
 
         return $app;
     }

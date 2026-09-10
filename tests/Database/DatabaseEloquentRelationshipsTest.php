@@ -433,12 +433,12 @@ class MockedConnectionModel extends Model
     {
         $mock = Double::for(Connection::class);
         $grammar = Double::for(Grammar::class);
-        $mock->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $grammar->shouldReceive('getBitwiseOperators')->andReturn([]);
+        $mock->allows('getQueryGrammar')->returns($grammar);
+        $grammar->allows('getBitwiseOperators')->returns([]);
         $processor = Double::for(Processor::class);
-        $mock->shouldReceive('getPostProcessor')->andReturn($processor);
-        $mock->shouldReceive('getName')->andReturn('name');
-        $mock->shouldReceive('query')->andReturnUsing(function () use ($mock, $grammar, $processor) {
+        $mock->allows('getPostProcessor')->returns($processor);
+        $mock->allows('getName')->returns('name');
+        $mock->allows('query')->resolves(function () use ($mock, $grammar, $processor) {
             return new BaseBuilder($mock, $grammar, $processor);
         });
 

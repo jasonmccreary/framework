@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -39,10 +40,7 @@ class ConfiguresPromptsTest extends TestCase
             }
         };
 
-        $this->runCommand($command, fn ($components) => $components
-            ->expects('choice')
-            ->with('Test', $expectedOptions, $expectedDefault)
-            ->andReturn($return)
+        $this->runCommand($command, fn ($components) => $components->expects('choice')->with('Test', $expectedOptions, $expectedDefault)->returns($return)
         );
 
         $this->assertSame($expectedReturn, $command->answer);
@@ -80,10 +78,7 @@ class ConfiguresPromptsTest extends TestCase
             }
         };
 
-        $this->runCommand($command, fn ($components) => $components
-            ->expects('choice')
-            ->with('Test', $expectedOptions, $expectedDefault, null, true)
-            ->andReturn($return)
+        $this->runCommand($command, fn ($components) => $components->expects('choice')->with('Test', $expectedOptions, $expectedDefault, null, true)->returns($return)
         );
 
         $this->assertSame($expectedReturn, $command->answer);
@@ -113,12 +108,12 @@ class ConfiguresPromptsTest extends TestCase
         $command->setLaravel($application);
 
         $outputStyle = Double::for(OutputStyle::class);
-        $application->expects('make')->withArgs(fn ($abstract) => $abstract === OutputStyle::class)->andReturn($outputStyle);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === OutputStyle::class))->returns($outputStyle);
         $factory = Double::for(Factory::class);
-        $application->expects('make')->withArgs(fn ($abstract) => $abstract === Factory::class)->andReturn($factory);
-        $application->shouldReceive('runningUnitTests')->andReturn(false);
-        $application->expects('call')->with([$command, 'handle'])->andReturnUsing(fn ($callback) => call_user_func($callback));
-        $outputStyle->expects('newLinesWritten')->andReturn(1);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === Factory::class))->returns($factory);
+        $application->allows('runningUnitTests')->returns(false);
+        $application->expects('call')->with([$command, 'handle'])->resolves(fn ($callback) => call_user_func($callback));
+        $outputStyle->expects('newLinesWritten')->returns(1);
 
         $expectations($factory);
 

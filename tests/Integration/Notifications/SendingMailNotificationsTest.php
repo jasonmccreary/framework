@@ -28,7 +28,7 @@ class SendingMailNotificationsTest extends TestCase
     {
         $this->mailFactory = Double::for(MailFactory::class);
         $this->mailer = Double::for(Mailer::class);
-        $this->mailFactory->shouldReceive('mailer')->andReturn($this->mailer);
+        $this->mailFactory->allows('mailer')->returns($this->mailer);
         $this->markdown = Double::for(Markdown::class);
 
         $app->extend(Markdown::class, function () {
@@ -66,9 +66,9 @@ class SendingMailNotificationsTest extends TestCase
             'email' => 'taylor@laravel.com',
         ]);
 
-        $this->markdown->expects('theme')->times(2)->with('default')->andReturn($this->markdown);
-        $this->markdown->expects('render')->andReturn('htmlContent');
-        $this->markdown->expects('renderText')->andReturn('textContent');
+        $this->markdown->expects('theme')->times(2)->with('default')->returns($this->markdown);
+        $this->markdown->expects('render')->returns('htmlContent');
+        $this->markdown->expects('renderText')->returns('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
             $message = Double::for(Message::class);
@@ -104,9 +104,9 @@ class SendingMailNotificationsTest extends TestCase
             'email' => 'taylor@laravel.com',
         ]);
 
-        $this->markdown->expects('theme')->times(2)->with('my-custom-theme')->andReturn($this->markdown);
-        $this->markdown->expects('render')->andReturn('htmlContent');
-        $this->markdown->expects('renderText')->andReturn('textContent');
+        $this->markdown->expects('theme')->times(2)->with('my-custom-theme')->returns($this->markdown);
+        $this->markdown->expects('render')->returns('htmlContent');
+        $this->markdown->expects('renderText')->returns('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
             $message = Double::for(Message::class);
@@ -178,9 +178,9 @@ class SendingMailNotificationsTest extends TestCase
             'name' => 'Taylor Otwell',
         ]);
 
-        $this->markdown->expects('theme')->times(2)->with('default')->andReturn($this->markdown);
-        $this->markdown->expects('render')->andReturn('htmlContent');
-        $this->markdown->expects('renderText')->andReturn('textContent');
+        $this->markdown->expects('theme')->times(2)->with('default')->returns($this->markdown);
+        $this->markdown->expects('render')->returns('htmlContent');
+        $this->markdown->expects('renderText')->returns('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
             $message = Double::for(Message::class);
@@ -216,9 +216,9 @@ class SendingMailNotificationsTest extends TestCase
             'email' => 'taylor@laravel.com',
         ]);
 
-        $this->markdown->expects('theme')->with('default')->times(2)->andReturn($this->markdown);
-        $this->markdown->expects('render')->andReturn('htmlContent');
-        $this->markdown->expects('renderText')->andReturn('textContent');
+        $this->markdown->expects('theme')->with('default')->times(2)->returns($this->markdown);
+        $this->markdown->expects('render')->returns('htmlContent');
+        $this->markdown->expects('renderText')->returns('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
             $message = Double::for(Message::class);
@@ -244,9 +244,9 @@ class SendingMailNotificationsTest extends TestCase
             'email' => 'taylor@laravel.com',
         ]);
 
-        $this->markdown->expects('theme')->with('default')->times(2)->andReturn($this->markdown);
-        $this->markdown->expects('render')->andReturn('htmlContent');
-        $this->markdown->expects('renderText')->andReturn('textContent');
+        $this->markdown->expects('theme')->with('default')->times(2)->returns($this->markdown);
+        $this->markdown->expects('render')->returns('htmlContent');
+        $this->markdown->expects('renderText')->returns('textContent');
 
         $this->setMailerSendAssertions($notification, $user, function ($closure) {
             $message = Double::for(Message::class);

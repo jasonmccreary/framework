@@ -142,10 +142,10 @@ class DatabaseEloquentAsVectorCastTest extends TestCase
     {
         $connection = Double::for(Connection::class);
         $grammar = new $grammar($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
+        $connection->allows('getQueryGrammar')->returns($grammar);
 
         $resolver = Double::for(ConnectionResolverInterface::class);
-        $resolver->shouldReceive('connection')->andReturn($connection);
+        $resolver->allows('connection')->returns($connection);
 
         Model::setConnectionResolver($resolver);
 
