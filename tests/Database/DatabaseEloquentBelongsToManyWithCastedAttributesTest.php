@@ -73,7 +73,13 @@ class DatabaseEloquentBelongsToManyWithCastedAttributesTest extends TestCase
         $related->allows('qualifyColumn');
         $builder->allows('join');
         $builder->allows('where');
-        $builder->allows('getQuery')->returns(Mockery::mock(QueryBuilder::class, ['getGrammar' => Mockery::mock(Grammar::class, ['isExpression' => false])]));
+        $grammar = Double::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->allows('getGrammar')->returns($grammar);
+
+        $builder->allows('getQuery')->returns($queryBuilder);
 
         return new BelongsToMany(
             $builder,

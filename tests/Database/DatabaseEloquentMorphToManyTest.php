@@ -129,7 +129,10 @@ class DatabaseEloquentMorphToManyTest extends TestCase
         $grammar = Double::for(Grammar::class);
         $grammar->allows('isExpression')->with(Mockery::type(Expression::class))->returns(true);
         $grammar->allows('isExpression')->with(Mockery::type('string'))->returns(false);
-        $builder->allows('getQuery')->returns(Mockery::mock(QueryBuilder::class, ['getGrammar' => $grammar]));
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->allows('getGrammar')->returns($grammar);
+
+        $builder->allows('getQuery')->returns($queryBuilder);
 
         return [
             $builder,

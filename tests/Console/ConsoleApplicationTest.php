@@ -133,8 +133,11 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallFullyStringCommandLine()
     {
+        $applicationContract = Double::for(ApplicationContract::class);
+        $applicationContract->allows('version')->returns('6.0');
+
         $artisan = new Application(
-            $app = Mockery::mock(ApplicationContract::class, ['version' => '6.0']),
+            $app = $applicationContract,
             new EventsDispatcher($app),
             'testing'
         );
@@ -300,8 +303,10 @@ class ConsoleApplicationTest extends TestCase
 
     protected function getMockConsole(array $methods)
     {
-        $app = Mockery::mock(ApplicationContract::class, ['version' => '6.0']);
-        $events = Mockery::mock(Dispatcher::class, ['dispatch' => null]);
+        $app = Double::for(ApplicationContract::class);
+        $app->allows('version')->returns('6.0');
+        $events = Double::for(Dispatcher::class);
+        $events->allows('dispatch')->returns(null);
 
         return $this->getMockBuilder(Application::class)->onlyMethods($methods)->setConstructorArgs([
             $app, $events, 'test-version',

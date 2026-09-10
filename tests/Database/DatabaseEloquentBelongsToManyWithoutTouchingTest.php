@@ -34,7 +34,13 @@ class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
             $parent->expects('getAttribute')->with('id')->returns(1);
             $builder->expects('getModel')->returns($related);
             $builder->expects('where');
-            $builder->expects('getQuery')->times(2)->returns(Mockery::mock(QueryBuilder::class, ['getGrammar' => Mockery::mock(Grammar::class, ['isExpression' => false])]));
+            $grammar = Double::for(Grammar::class);
+            $grammar->allows('isExpression')->returns(false);
+
+            $queryBuilder = Double::for(QueryBuilder::class);
+            $queryBuilder->allows('getGrammar')->returns($grammar);
+
+            $builder->expects('getQuery')->times(2)->returns($queryBuilder);
             $relation = new BelongsToMany($builder, $parent, 'article_users', 'user_id', 'article_id', 'id', 'id');
             $builder->expects('update')->never();
 

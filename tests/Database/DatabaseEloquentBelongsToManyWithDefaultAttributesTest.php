@@ -54,7 +54,10 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
 
         $mockQueryBuilder = Double::for(QueryBuilder::class);
         $builder->allows('getQuery')->returns($mockQueryBuilder);
-        $mockQueryBuilder->allows('getGrammar')->returns(Mockery::mock(Grammar::class, ['isExpression' => false]));
+        $grammar = Double::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $mockQueryBuilder->allows('getGrammar')->returns($grammar);
 
         return [
             $builder,

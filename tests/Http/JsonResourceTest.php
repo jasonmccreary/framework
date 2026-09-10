@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Http;
 
+use JMac\Testing\Double;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
@@ -35,7 +36,10 @@ class JsonResourceTest extends TestCase
         $model = new class extends Model {
         };
 
-        $resource = Mockery::mock(JsonResource::class, ['resource' => $model])
+        $jsonResource2 = Double::for(JsonResource::class);
+        $jsonResource2->allows('resource')->returns($model);
+
+        $resource = $jsonResource2
             ->makePartial()
             ->expects('jsonSerialize')->andReturn(['foo' => 'bar'])
             ->getMock();
@@ -52,7 +56,10 @@ class JsonResourceTest extends TestCase
         $model = new class extends Model {
         };
 
-        $resource = Mockery::mock(JsonResource::class, ['resource' => $model])
+        $jsonResource = Double::for(JsonResource::class);
+        $jsonResource->allows('resource')->returns($model);
+
+        $resource = $jsonResource
             ->makePartial()
             ->expects('jsonSerialize')->times(3)->andReturn(['foo' => 'bar', 'bar' => 'foo', 'number' => 123])
             ->getMock();
