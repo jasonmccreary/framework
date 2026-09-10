@@ -2,16 +2,17 @@
 
 namespace Illuminate\Tests\Foundation\Exceptions\Renderer;
 
-use JMac\Testing\Double;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Exceptions\Renderer\Listener;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 
 class ListenerTest extends TestCase
 {
     public function test_queries_returns_expected_shape_after_query_executed()
     {
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
 
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->with(['foo'])->returns(['foo']);
@@ -44,7 +45,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->times(150)->returns('testing');
         $connection->expects('prepareBindings')->times(100)->resolves(fn ($b) => $b);
 
@@ -63,7 +64,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 
@@ -79,7 +80,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 
@@ -103,7 +104,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 
@@ -119,7 +120,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 
@@ -136,7 +137,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 
@@ -152,7 +153,7 @@ class ListenerTest extends TestCase
     {
         $listener = new Listener();
 
-        $connection = Double::for(\stdClass::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getName')->returns('testing');
         $connection->expects('prepareBindings')->resolves(fn ($b) => $b);
 

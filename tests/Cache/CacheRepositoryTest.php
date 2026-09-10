@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use ArrayIterator;
 use BadMethodCallException;
 use DateInterval;
@@ -25,6 +23,8 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -394,7 +394,7 @@ class CacheRepositoryTest extends TestCase
         $store = Double::for(ArrayStore::class);
         $repo = new Repository($store);
 
-        $taggedCache = Double::for(\stdClass::class);
+        $taggedCache = Double::for(TaggedCache::class);
         $taggedCache->expects('setDefaultCacheTime');
         $store->expects('tags')->with(['foo', 'bar', 'baz'])->returns($taggedCache);
         $repo->tags('foo', 'bar', 'baz');

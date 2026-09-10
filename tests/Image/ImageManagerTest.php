@@ -2,14 +2,15 @@
 
 namespace Illuminate\Tests\Image;
 
-use JMac\Testing\Double;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
+use Illuminate\Contracts\Filesystem\Filesystem as Disk;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Image\Driver;
 use Illuminate\Contracts\Image\Transformation;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Client\Factory as HttpFactory;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Image\Image;
@@ -17,6 +18,7 @@ use Illuminate\Image\ImageException;
 use Illuminate\Image\ImageManager;
 use Illuminate\Image\ImagePipeline;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 
 class ImageManagerTest extends TestCase
@@ -128,7 +130,7 @@ class ImageManagerTest extends TestCase
     {
         $contents = $this->fakeImageContents();
 
-        $disk = Double::for(\stdClass::class);
+        $disk = Double::for(Disk::class);
         $disk->expects('get')->with('images/avatar.jpg')->returns($contents);
 
         $filesystem = Double::for(FilesystemFactory::class);
@@ -148,7 +150,7 @@ class ImageManagerTest extends TestCase
     {
         $contents = $this->fakeImageContents();
 
-        $disk = Double::for(\stdClass::class);
+        $disk = Double::for(Disk::class);
         $disk->expects('get')->with('images/avatar.jpg')->returns($contents);
 
         $filesystem = Double::for(FilesystemFactory::class);
@@ -356,7 +358,7 @@ class ImageManagerTest extends TestCase
 
     public function test_from_url_is_lazy()
     {
-        $http = Double::for(HttpFactory::class);
+        $http = Double::for(PendingRequest::class);
         $http->expects('get')->never();
 
         $app = $this->makeApp([]);
@@ -450,7 +452,8 @@ class ImageManagerTest extends TestCase
                 return $this;
             }
         };
-        $transformation = new class implements Transformation {
+        $transformation = new class implements Transformation
+        {
             //
         };
         $callback = fn () => null;
@@ -491,7 +494,8 @@ class ImageManagerTest extends TestCase
                 return $this;
             }
         };
-        $transformation = new class implements Transformation {
+        $transformation = new class implements Transformation
+        {
             //
         };
         $callback = fn () => null;

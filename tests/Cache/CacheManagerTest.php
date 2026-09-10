@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Cache;
 
-use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\NullStore;
@@ -10,9 +9,11 @@ use Illuminate\Cache\StorageStore;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Events\Dispatcher as Event;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -109,7 +110,7 @@ class CacheManagerTest extends TestCase
     {
         $disk = new ArrayFilesystem;
 
-        $filesystem = Double::for(\stdClass::class);
+        $filesystem = Double::for(Factory::class);
         $filesystem->expects('disk')->with('s3')->returns($disk);
 
         $app = $this->getApp([

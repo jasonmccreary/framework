@@ -2,16 +2,17 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Aws\Command;
 use Aws\Exception\AwsException;
+use Aws\Result;
 use Aws\Ses\SesClient;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Transport\SesTransport;
 use Illuminate\View\Factory;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Header\MetadataHeader;
@@ -59,7 +60,7 @@ class MailSesTransportTest extends TestCase
         $message->getHeaders()->addTextHeader('X-Ses-List-Management-Options', 'contactListName=TestList;topicName=TestTopic');
 
         $client = Double::for(SesClient::class);
-        $sesResult = Double::for(\stdClass::class);
+        $sesResult = Double::for(Result::class);
         $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
         $client->expects('sendRawEmail')->with(Argument::satisfies(function ($arg) {
                 return $arg['Source'] === 'myself@example.com' &&

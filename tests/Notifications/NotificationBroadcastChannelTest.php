@@ -2,14 +2,15 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Channels\BroadcastChannel;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 
 class NotificationBroadcastChannelTest extends TestCase
@@ -18,7 +19,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new NotificationBroadcastChannelTestNotification;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Argument::type(BroadcastNotificationCreated::class));
@@ -30,7 +31,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomChannelsTestNotification;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -45,7 +46,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomEventNameTestNotification;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -60,7 +61,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomEventNameTestNotification;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)
@@ -75,7 +76,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new TestNotificationBroadCastedNow;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $events = Double::for(Dispatcher::class);
         $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
@@ -89,7 +90,7 @@ class NotificationBroadcastChannelTest extends TestCase
     {
         $notification = new CustomBroadcastWithTestNotification;
         $notification->id = 1;
-        $notifiable = Double::for(\stdClass::class);
+        $notifiable = Double::for(NotifiableUser::class);
 
         $event = new BroadcastNotificationCreated(
             $notifiable, $notification, $notification->toArray($notifiable)

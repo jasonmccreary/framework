@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\Queue;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Redis\Factory;
 use Illuminate\Queue\Attributes\Delay;
@@ -14,6 +12,8 @@ use Illuminate\Redis\Connections\PhpRedisClusterConnection;
 use Illuminate\Redis\Connections\PredisClusterConnection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
@@ -454,7 +454,9 @@ class QueueRedisQueueTest extends TestCase
     public function testAllQueueNamesStripsClusterBraces()
     {
         $redis = Double::for(Factory::class);
-        $redis->expects('connection->keys')->andReturn(['queues:{default}', 'queues:{default}:delayed', 'queues:{emails}']);
+        $connection = Double::for(PhpRedisClusterConnection::class);
+        $connection->expects('keys')->returns(['queues:{default}', 'queues:{default}:delayed', 'queues:{emails}']);
+        $redis->expects('connection')->returns($connection);
         $queue = new TestableRedisQueue($redis, 'default');
 
         $this->assertSame(['default', 'emails'], $queue->testAllQueueNames()->all());
@@ -465,7 +467,7 @@ class QueueRedisQueueTest extends TestCase
     {
         $redis = Double::for(Factory::class);
         $connection = Double::for(PhpRedisClusterConnection::class);
-        $client = Double::for(\stdClass::class);
+        $client = Double::for(\Redis::class);
 
         $redis->expects('connection')->returns($connection);
         $connection->expects('client')->returns($client);

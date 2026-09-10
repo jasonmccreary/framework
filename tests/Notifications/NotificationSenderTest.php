@@ -2,20 +2,21 @@
 
 namespace Illuminate\Tests\Notifications;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\ChannelManager;
+use Illuminate\Notifications\Channels\MailChannel;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Events\NotificationSending;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\NotificationSender;
 use Illuminate\Queue\Attributes\Queue;
+use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\HttpTransportException;
 use Symfony\Component\Mailer\Exception\TransportException;
@@ -25,7 +26,7 @@ class NotificationSenderTest extends TestCase
 {
     public function test_it_can_send_queued_notifications_with_a_string_via()
     {
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->returns(app());
         $manager->expects('resolveQueueFromQueueRoute')->returns(null);
@@ -42,7 +43,7 @@ class NotificationSenderTest extends TestCase
 
     public function test_it_can_send_queued_notifications_with_an_array_via()
     {
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->times(2)->returns(app());
         $bus = Double::for(BusDispatcher::class);
@@ -91,7 +92,7 @@ class NotificationSenderTest extends TestCase
 
     public function test_it_can_send_queued_notifications_through_middleware()
     {
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $bus = Double::for(BusDispatcher::class);
         $bus->expects('dispatch')->with(Argument::satisfies(function ($job) {
@@ -110,7 +111,7 @@ class NotificationSenderTest extends TestCase
 
     public function test_it_can_send_queued_multi_channel_notifications_through_different_middleware()
     {
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->times(3)->returns(app());
         $manager->expects('resolveQueueFromQueueRoute')->times(3)->returns(null);
@@ -202,7 +203,7 @@ class NotificationSenderTest extends TestCase
 
         $notifiable = new AnonymousNotifiable;
         $manager = Double::for(ChannelManager::class);
-        $driver = Double::for(\stdClass::class);
+        $driver = Double::for(MailChannel::class);
         $manager->expects('driver')->returns($driver);
         $response = Double::for(ResponseInterface::class);
         $driver->expects('send')->throws(new HttpTransportException('Transport error', $response));
@@ -224,11 +225,11 @@ class NotificationSenderTest extends TestCase
     {
         $notifiable = new AnonymousNotifiable;
         $manager = Double::for(ChannelManager::class);
-        $driver = Double::for(\stdClass::class);
+        $driver = Double::for(MailChannel::class);
         $manager->expects('driver')->returns($driver);
-        $driver->expects('send')->withArgs(function ($notifiable, $notification) {
+        $driver->expects('send')->with(Argument::any(), Argument::satisfies(function ($notification) {
             return $notification->channelData === 'default';
-        });
+        }));
         $bus = Double::for(BusDispatcher::class);
 
         $events = Double::for(EventDispatcher::class);
@@ -255,7 +256,7 @@ class NotificationSenderTest extends TestCase
 
         $notification->onQueue('manual-queue');
 
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->returns(app());
         $manager->expects('resolveConnectionFromQueueRoute')->returns(null);
@@ -285,7 +286,7 @@ class NotificationSenderTest extends TestCase
             }
         };
 
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->returns(app());
         $manager->expects('resolveConnectionFromQueueRoute')->returns(null);
@@ -320,7 +321,7 @@ class NotificationSenderTest extends TestCase
             }
         };
 
-        $notifiable = Double::for(Notifiable::class);
+        $notifiable = Double::for(NotifiableUser::class);
         $manager = Double::for(ChannelManager::class);
         $manager->expects('getContainer')->returns(app());
         $manager->expects('resolveConnectionFromQueueRoute')->returns(null);

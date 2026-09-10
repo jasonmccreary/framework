@@ -2,16 +2,17 @@
 
 namespace Illuminate\Tests\Mail;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Aws\Command;
 use Aws\Exception\AwsException;
+use Aws\Result;
 use Aws\SesV2\SesV2Client;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Transport\SesV2Transport;
 use Illuminate\View\Factory;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Header\MetadataHeader;
@@ -59,7 +60,7 @@ class MailSesV2TransportTest extends TestCase
         $message->getHeaders()->addTextHeader('X-SES-LIST-MANAGEMENT-OPTIONS', 'contactListName=TestList;topicName=TestTopic');
 
         $client = Double::for(SesV2Client::class);
-        $sesResult = Double::for(\stdClass::class);
+        $sesResult = Double::for(Result::class);
         $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
         $client->expects('sendEmail')->with(Argument::satisfies(function ($arg) {
                 return $arg['Source'] === 'myself@example.com' &&
@@ -82,7 +83,7 @@ class MailSesV2TransportTest extends TestCase
         $message->getHeaders()->addTextHeader('X-SES-TENANT-NAME', 'my-tenant');
 
         $client = Double::for(SesV2Client::class);
-        $sesResult = Double::for(\stdClass::class);
+        $sesResult = Double::for(Result::class);
         $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
         $client->expects('sendEmail')->with(Argument::satisfies(function ($arg) {
                 return $arg['TenantName'] === 'my-tenant';
@@ -100,7 +101,7 @@ class MailSesV2TransportTest extends TestCase
         $message->to('me@example.com');
 
         $client = Double::for(SesV2Client::class);
-        $sesResult = Double::for(\stdClass::class);
+        $sesResult = Double::for(Result::class);
         $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
         $client->expects('sendEmail')->with(Argument::satisfies(function ($arg) {
                 return ! array_key_exists('TenantName', $arg);

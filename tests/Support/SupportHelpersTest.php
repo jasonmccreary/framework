@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Support;
 
-use JMac\Testing\Double;
 use ArrayAccess;
 use ArrayIterator;
 use Carbon\CarbonInterval;
@@ -19,6 +18,7 @@ use Illuminate\Support\Stringable;
 use Illuminate\Tests\Support\Fixtures\IntBackedEnum;
 use Illuminate\Tests\Support\Fixtures\StringBackedEnum;
 use IteratorAggregate;
+use JMac\Testing\Double;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
@@ -830,7 +830,7 @@ class SupportHelpersTest extends TestCase
             $object->id = 2;
         })->id);
 
-        $mock = Double::for(\stdClass::class);
+        $mock = Double::for(SupportTestTapClass::class);
         $mock->expects('foo')->returns('bar');
         $this->assertEquals($mock, tap($mock)->foo());
     }
@@ -2264,5 +2264,13 @@ class SupportLazyClassWithArrayParameter
         public array $first,
     ) {
         self::$constructorCalled = true;
+    }
+}
+
+class SupportTestTapClass
+{
+    public function foo()
+    {
+        //
     }
 }
