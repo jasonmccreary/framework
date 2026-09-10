@@ -133,7 +133,17 @@ class DatabaseEloquentHasOneTest extends TestCase
         $created = Double::for(Model::class);
         $created->expects('getAttribute')->with($relation->getForeignKeyName())->returns($relation->getParentKey());
 
-        $relation->getRelated()->expects('forceCreate')->with($attributes)->returns($created);
+        $query = Double::for(Builder::class);
+        $query->expects('forceCreate')->with($attributes)->returns($created);
+        $related = $relation->getRelated();
+        $related->allows('newQuery')->returns($query);
+        // Model::__call() forwards undeclared methods (like forceCreate) to
+        // newQuery() via forwardCallTo() — but forwardCallTo() is itself a
+        // proxied method on this double, so it never runs for real. Stub it
+        // to forward to $query directly instead.
+        $related->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $query->{$method}(...$parameters)
+        );
 
         $this->assertEquals($created, $relation->forceCreate(['name' => 'taylor']));
         $this->assertEquals(1, $created->getAttribute('foreign_key'));
@@ -154,7 +164,7 @@ class DatabaseEloquentHasOneTest extends TestCase
         $relation = $this->getRelation();
         $relation->getParent()->expects('getKeyName')->returns('id');
         $relation->getParent()->expects('getKeyType')->returns('int');
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('table.foreign_key', [1, 2]);
+        $relation->getQuery()->getQuery()->expects('whereIntegerInRaw')->with('table.foreign_key', [1, 2]);
         $model1 = new EloquentHasOneModelStub;
         $model1->id = 1;
         $model2 = new EloquentHasOneModelStub;
@@ -209,10 +219,18 @@ class DatabaseEloquentHasOneTest extends TestCase
         $builder->expects('getQuery')->returns($baseQuery);
         $builder->expects('getQuery')->returns($parentQuery);
 
-        $builder->expects('select')->with(Argument::type(Expression::class))->returns($builder);
+        // select()/whereColumn()/setBindings() are all forwarded via Eloquent
+        // Builder's real __call(), which always `return $this;` regardless of
+        // what forwardCallTo() itself returns (chainable-builder semantics) —
+        // and forwardCallTo() is itself a proxied method on this bare double,
+        // so it never runs for real either way. Stub it directly per method.
+        $builder->expects('forwardCallTo')->with(Argument::any(), 'select', Argument::any())
+            ->resolves(function ($object, $method, $parameters) {
+                $this->assertInstanceOf(Expression::class, $parameters[0]);
+            });
         $relation->getParent()->expects('qualifyColumn')->returns('table.id');
-        $builder->expects('whereColumn')->with('table.id', '=', 'table.foreign_key')->returns($baseQuery);
-        $baseQuery->expects('setBindings')->with([], 'select');
+        $builder->expects('forwardCallTo')->with(Argument::any(), 'whereColumn', ['table.id', '=', 'table.foreign_key']);
+        $builder->expects('forwardCallTo')->with(Argument::any(), 'setBindings', [[], 'select']);
 
         $relation->getRelationExistenceCountQuery($builder, $builder);
     }
@@ -319,9 +337,20 @@ class DatabaseEloquentHasOneTest extends TestCase
 
     protected function getRelation()
     {
-        $this->builder = Double::for(Builder::class);
-        $this->builder->allows('whereNotNull')->with('table.foreign_key');
+        $queryBuilder = Double::for(BaseBuilder::class);
+        $queryBuilder->allows('whereNotNull')->with('table.foreign_key');
+        $this->builder = Double::for(new Builder($queryBuilder));
         $this->builder->allows('where')->with('table.foreign_key', '=', 1);
+        $this->builder->allows('getQuery')->returns($queryBuilder);
+        // Eloquent Builder's own __call() forwards undeclared methods (e.g.
+        // whereIntegerInRaw) to the underlying query builder via forwardCallTo() —
+        // but forwardCallTo() is itself a proxied method on this double, so it
+        // never runs for real and $this->query is never populated (Double::for()
+        // doesn't run the real constructor). Stub it to forward to $queryBuilder
+        // directly instead.
+        $this->builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $this->related = Double::for(Model::class);
         $this->builder->allows('getModel')->returns($this->related);
         $this->parent = Double::for(Model::class);
