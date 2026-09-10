@@ -2,8 +2,6 @@
 
 namespace Illuminate\Tests\View;
 
-use JMac\Testing\Matching\Argument;
-use JMac\Testing\Double;
 use Closure;
 use ErrorException;
 use Illuminate\Container\Container;
@@ -23,9 +21,10 @@ use Illuminate\View\Factory;
 use Illuminate\View\View;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
-use stdClass;
 
 class ViewFactoryTest extends TestCase
 {
@@ -54,7 +53,7 @@ class ViewFactoryTest extends TestCase
     public function testExistsPassesAndFailsViews()
     {
         $factory = $this->getFactory();
-        $factory->getFinder()->expects('find')->with('foo')->throws(InvalidArgumentException::class);
+        $factory->getFinder()->expects('find')->with('foo')->throws(new InvalidArgumentException);
         $factory->getFinder()->expects('find')->with('bar')->returns('path.php');
 
         $this->assertFalse($factory->exists('foo'));
@@ -77,7 +76,7 @@ class ViewFactoryTest extends TestCase
 
         $factory = $this->getFactory();
         $factory->getFinder()->expects('find')->times(2)->with('view')->returns('path.php');
-        $factory->getFinder()->expects('find')->with('bar')->throws(InvalidArgumentException::class);
+        $factory->getFinder()->expects('find')->with('bar')->throws(new InvalidArgumentException);
         $engine = Double::for(Engine::class);
         $factory->getEngineResolver()->expects('resolve')->with('php')->returns($engine);
         $factory->getFinder()->expects('addExtension')->with('php');
@@ -100,8 +99,8 @@ class ViewFactoryTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $factory = $this->getFactory();
-        $factory->getFinder()->expects('find')->with('view')->throws(InvalidArgumentException::class);
-        $factory->getFinder()->expects('find')->with('bar')->throws(InvalidArgumentException::class);
+        $factory->getFinder()->expects('find')->with('view')->throws(new InvalidArgumentException);
+        $factory->getFinder()->expects('find')->with('bar')->throws(new InvalidArgumentException);
         $engine = Double::for(Engine::class);
         $factory->getFinder()->expects('addExtension')->with('php');
         $factory->addExtension('php', 'php');
@@ -110,13 +109,21 @@ class ViewFactoryTest extends TestCase
 
     public function testRenderEachCreatesViewForEachItemInArray()
     {
-        $factory = Double::for(Factory::class)->passthru(new Factory(...$this->getFactoryArgs()));
         $mockView1 = Double::for(ViewContract::class);
-        $factory->expects('make')->with('foo', ['key' => 'bar', 'value' => 'baz'])->returns($mockView1);
-        $mockView2 = Double::for(ViewContract::class);
-        $factory->expects('make')->with('foo', ['key' => 'breeze', 'value' => 'boom'])->returns($mockView2);
         $mockView1->expects('render')->returns('dayle');
+        $mockView2 = Double::for(ViewContract::class);
         $mockView2->expects('render')->returns('rees');
+
+        $factory = new class(...$this->getFactoryArgs()) extends Factory
+        {
+            public $views = [];
+
+            public function make($view, $data = [], $mergeData = [])
+            {
+                return array_shift($this->views);
+            }
+        };
+        $factory->views = [$mockView1, $mockView2];
 
         $result = $factory->renderEach('foo', ['bar' => 'baz', 'breeze' => 'boom'], 'value');
 
@@ -125,10 +132,19 @@ class ViewFactoryTest extends TestCase
 
     public function testEmptyViewsCanBeReturnedFromRenderEach()
     {
-        $factory = Double::for(Factory::class)->passthru(new Factory(...$this->getFactoryArgs()));
         $mockView = Double::for(ViewContract::class);
-        $factory->expects('make')->with('foo')->returns($mockView);
         $mockView->expects('render')->returns('empty');
+
+        $factory = new class(...$this->getFactoryArgs()) extends Factory
+        {
+            public $view;
+
+            public function make($view, $data = [], $mergeData = [])
+            {
+                return $this->view;
+            }
+        };
+        $factory->view = $mockView;
 
         $this->assertSame('empty', $factory->renderEach('view', [], 'iterator', 'foo'));
     }
@@ -472,7 +488,7 @@ class ViewFactoryTest extends TestCase
         $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $container = Double::for(Container::class);
         $factory->setContainer($container);
-        $composer = Double::for(stdClass::class);
+        $composer = Double::for(ViewFactoryTestFooComposer::class);
         $container->expects('make')->with('FooComposer')->returns($composer);
         $composer->expects('compose')->with('view')->returns('composed');
         $callback = $factory->composer('foo', 'FooComposer');
@@ -487,7 +503,7 @@ class ViewFactoryTest extends TestCase
         $factory->getDispatcher()->expects('listen')->with('composing: foo', Argument::type(Closure::class));
         $container = Double::for(Container::class);
         $factory->setContainer($container);
-        $composer = Double::for(stdClass::class);
+        $composer = Double::for(ViewFactoryTestFooComposer::class);
         $container->expects('make')->with('FooComposer')->returns($composer);
         $composer->expects('doComposer')->with('view')->returns('composed');
         $callback = $factory->composer('foo', 'FooComposer@doComposer');
@@ -503,7 +519,7 @@ class ViewFactoryTest extends TestCase
         $dispatcher = Double::for(DispatcherContract::class);
         $factory->setDispatcher($dispatcher);
 
-        $dispatcher->shouldReceive('listen', Argument::any())->once();
+        $dispatcher->expects('listen')->times(1);
 
         $view->expects('name')->returns('name');
 
@@ -1090,5 +1106,18 @@ class ViewFactoryTest extends TestCase
             Double::for(ViewFinderInterface::class),
             Double::for(DispatcherContract::class),
         ];
+    }
+}
+
+class ViewFactoryTestFooComposer
+{
+    public function compose()
+    {
+        //
+    }
+
+    public function doComposer()
+    {
+        //
     }
 }
