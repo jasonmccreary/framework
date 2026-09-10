@@ -2350,7 +2350,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('where')->with($keyName, '=', Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('where')->with($keyName, '=', Argument::satisfies(function ($argument) {
             return $argument === null;
         }));
 
@@ -2391,7 +2391,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('where')->with($keyName, '=', Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('where')->with($keyName, '=', Argument::satisfies(function ($argument) {
             return $argument === '1';
         }));
 
@@ -2420,7 +2420,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('where')->with($keyName, '!=', Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('where')->with($keyName, '!=', Argument::satisfies(function ($argument) {
             return $argument === null;
         }));
 
@@ -2475,7 +2475,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('where')->with($keyName, '!=', Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('where')->with($keyName, '!=', Argument::satisfies(function ($argument) {
             return $argument === '1';
         }));
 
@@ -2568,7 +2568,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('where')->with($keyName, '!=', Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('where')->with($keyName, '!=', Argument::satisfies(function ($argument) {
             return $argument === '1';
         }));
 
@@ -2584,7 +2584,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('whereNotIn')->with($keyName, Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('whereNotIn')->with($keyName, Argument::satisfies(function ($argument) {
             return $argument === [1, 2];
         }));
 
@@ -2608,7 +2608,7 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder = $this->getBuilder()->setModel($model);
         $keyName = $model->getQualifiedKeyName();
 
-        $builder->getQuery()->expects('whereNotIn')->with($keyName, Mockery::on(function ($argument) {
+        $builder->getQuery()->expects('whereNotIn')->with($keyName, Argument::satisfies(function ($argument) {
             return $argument === [1, 2];
         }));
 

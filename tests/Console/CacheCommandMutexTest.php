@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
@@ -132,7 +133,7 @@ class CacheCommandMutexTest extends TestCase
 
     private function acquireLockExpectations(MockInterface $lock, bool $acquiresSuccessfully): void
     {
-        $lock->expects('lock')->with(Mockery::type('string'), Mockery::type('int'))->returns($lock);
+        $lock->expects('lock')->with(Argument::type('string'), Argument::type('int'))->returns($lock);
 
         $lock->expects('get')->returns($acquiresSuccessfully);
     }

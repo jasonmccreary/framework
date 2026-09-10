@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Events;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Error;
 use Exception;
@@ -731,7 +732,7 @@ class EventsDispatcherTest extends TestCase
         Container::setInstance($container);
 
         try {
-            $events->expects('dispatch')->with(Mockery::on(function ($event) {
+            $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
                     $this->assertInstanceOf(DispatchableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);

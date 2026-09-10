@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation\Bootstrap;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Error;
 use ErrorException;
@@ -78,7 +79,7 @@ class HandleExceptionsTest extends TestCase
         $logger->expects('channel')->with('deprecations')->returns($logger);
         $logger->expects('warning')->with(
             'str_contains(): Passing null to parameter #2 ($needle) of type string is deprecated',
-            Mockery::on(function (array $context) {
+            Argument::satisfies(function (array $context) {
                 $exception = $context['exception'] ?? null;
 
                 return $exception instanceof \ErrorException
@@ -166,7 +167,7 @@ class HandleExceptionsTest extends TestCase
         $logger->expects('channel')->with('deprecations')->returns($logger);
         $logger->expects('warning')->with(
             'str_contains(): Passing null to parameter #2 ($needle) of type string is deprecated',
-            Mockery::on(function (array $context) {
+            Argument::satisfies(function (array $context) {
                 $exception = $context['exception'] ?? null;
 
                 return $exception instanceof \ErrorException

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Cache;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Events\CacheFlushed;
@@ -313,7 +314,7 @@ class CacheEventsTest extends TestCase
 
     protected function assertEventMatches($eventClass, $properties = [])
     {
-        return Mockery::on(function ($event) use ($eventClass, $properties) {
+        return Argument::satisfies(function ($event) use ($eventClass, $properties) {
             if (! $event instanceof $eventClass) {
                 return false;
             }

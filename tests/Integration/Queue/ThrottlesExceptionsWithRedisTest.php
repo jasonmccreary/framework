@@ -127,7 +127,7 @@ class ThrottlesExceptionsWithRedisTest extends TestCase
         $this->spy(ExceptionHandler::class)
             ->expects('report')
             ->times(2)
-            ->with(Mockery::type(RuntimeException::class));
+            ->with(Argument::type(RuntimeException::class));
 
         $job = new class
         {

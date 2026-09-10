@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Queue;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Exception;
 use Illuminate\Container\Container;
@@ -38,10 +39,10 @@ class QueueBeanstalkdJobTest extends TestCase
         $handler = Double::for(BeanstalkdJobTestFailedTest::class);
         $job->getContainer()->expects('make')->with('foo')->returns($handler);
         $job->getPheanstalk()->expects('delete')->with($job->getPheanstalkJob())->returns($job->getPheanstalk());
-        $handler->expects('failed')->with(['data'], Mockery::type(Exception::class), 'test-uuid', Mockery::type(Job::class));
+        $handler->expects('failed')->with(['data'], Argument::type(Exception::class), 'test-uuid', Argument::type(Job::class));
         $events = Double::for(Dispatcher::class);
         $job->getContainer()->expects('make')->with(Dispatcher::class)->returns($events);
-        $events->expects('dispatch')->with(Mockery::type(JobFailed::class))->returns(null);
+        $events->expects('dispatch')->with(Argument::type(JobFailed::class))->returns(null);
 
         $job->fail(new Exception);
     }

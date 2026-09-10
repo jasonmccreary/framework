@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
@@ -56,7 +57,7 @@ class BusPendingBatchTest extends TestCase
         $storedBatch = Double::for(Batch::class);
         $repository->expects('store')->with($pendingBatch)->returns($storedBatch);
         $batch = Double::for(Batch::class);
-        $storedBatch->expects('add')->with(Mockery::type(Collection::class))->returns($batch);
+        $storedBatch->expects('add')->with(Argument::type(Collection::class))->returns($batch);
 
         $container->instance(BatchRepository::class, $repository);
 
@@ -220,7 +221,7 @@ class BusPendingBatchTest extends TestCase
         $storedBatch = Double::for(Batch::class);
         $repository->expects('store')->with($pendingBatch)->returns($storedBatch);
         $batch = Double::for(Batch::class);
-        $storedBatch->expects('add')->with(Mockery::type(Collection::class))->returns($batch);
+        $storedBatch->expects('add')->with(Argument::type(Collection::class))->returns($batch);
 
         $container->instance(BatchRepository::class, $repository);
 

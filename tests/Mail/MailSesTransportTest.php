@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Mail;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Aws\Command;
 use Aws\Exception\AwsException;
@@ -61,7 +62,7 @@ class MailSesTransportTest extends TestCase
         $client = Double::for(SesClient::class);
         $sesResult = Double::for(\stdClass::class);
         $sesResult->expects('get')->with('MessageId')->returns('ses-message-id');
-        $client->expects('sendRawEmail')->with(Mockery::on(function ($arg) {
+        $client->expects('sendRawEmail')->with(Argument::satisfies(function ($arg) {
                 return $arg['Source'] === 'myself@example.com' &&
                     $arg['Destinations'] === ['me@example.com', 'you@example.com'] &&
                     $arg['ListManagementOptions'] === ['ContactListName' => 'TestList', 'TopicName' => 'TestTopic'] &&

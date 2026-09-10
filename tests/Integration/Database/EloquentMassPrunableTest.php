@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\MassPrunable;
@@ -56,7 +57,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
         app('events')
             ->expects('dispatch')
             ->times(2)
-            ->with(Mockery::type(ModelsPruned::class));
+            ->with(Argument::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['name' => 'foo'];
@@ -75,7 +76,7 @@ class EloquentMassPrunableTest extends DatabaseTestCase
         app('events')
             ->expects('dispatch')
             ->times(3)
-            ->with(Mockery::type(ModelsPruned::class));
+            ->with(Argument::type(ModelsPruned::class));
 
         collect(range(1, 5000))->map(function ($id) {
             return ['deleted_at' => Carbon::now()];

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Notifications;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\Mail\Mailable;
@@ -290,7 +291,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            Mockery::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
@@ -322,7 +323,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            Mockery::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);
@@ -354,7 +355,7 @@ class SendingMailNotificationsTest extends TestCase
                 '__laravel_notification' => get_class($notification),
                 '__laravel_notification_queued' => false,
             ]),
-            Mockery::on(function ($closure) {
+            Argument::satisfies(function ($closure) {
                 $message = Double::for(Message::class);
 
                 $message->expects('to')->with(['taylor@laravel.com']);

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
@@ -43,8 +44,8 @@ class SeedCommandTest extends TestCase
         $container->expects('environment')->returns('testing');
         $container->allows('runningUnitTests')->returns('true');
         $container->expects('make')->with('DatabaseSeeder')->returns($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
-        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
+        $container->expects('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -80,8 +81,8 @@ class SeedCommandTest extends TestCase
         $container->expects('environment')->returns('testing');
         $container->allows('runningUnitTests')->returns('true');
         $container->expects('make')->with('DatabaseSeeder')->returns($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
-        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
+        $container->expects('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -124,8 +125,8 @@ class SeedCommandTest extends TestCase
         $container->expects('environment')->returns('testing');
         $container->allows('runningUnitTests')->returns('true');
         $container->expects('make')->with(UserWithoutModelEventsSeeder::class)->returns($seeder);
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
-        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
+        $container->expects('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);
@@ -153,8 +154,8 @@ class SeedCommandTest extends TestCase
         $container = Double::for(Container::class);
         $container->expects('call');
         $container->allows('runningUnitTests')->returns('true');
-        $container->expects('make')->with(OutputStyle::class, Mockery::any())->returns($outputStyle);
-        $container->expects('make')->with(Factory::class, Mockery::any())->returns(new Factory($outputStyle));
+        $container->expects('make')->with(OutputStyle::class, Argument::any())->returns($outputStyle);
+        $container->expects('make')->with(Factory::class, Argument::any())->returns(new Factory($outputStyle));
 
         $command = new SeedCommand($resolver);
         $command->setLaravel($container);

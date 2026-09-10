@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use DateTime;
 use ErrorException;
@@ -279,7 +280,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection(['getName'], $pdo);
         $connection->method('getName')->willReturn('name');
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(TransactionBeginning::class));
+        $events->expects('dispatch')->with(Argument::type(TransactionBeginning::class));
         $connection->setEventDispatcher($events);
         $connection->beginTransaction();
     }
@@ -290,7 +291,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection(['getName'], $pdo);
         $connection->method('getName')->willReturn('name');
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(TransactionCommitted::class));
+        $events->expects('dispatch')->with(Argument::type(TransactionCommitted::class));
         $connection->setEventDispatcher($events);
         $connection->commit();
     }
@@ -302,8 +303,8 @@ class DatabaseConnectionTest extends TestCase
         $connection->method('getName')->willReturn('name');
         $connection->method('transactionLevel')->willReturn(1);
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(TransactionCommitting::class));
-        $events->expects('dispatch')->with(Mockery::type(TransactionCommitted::class));
+        $events->expects('dispatch')->with(Argument::type(TransactionCommitting::class));
+        $events->expects('dispatch')->with(Argument::type(TransactionCommitted::class));
         $connection->setEventDispatcher($events);
         $connection->commit();
     }
@@ -315,7 +316,7 @@ class DatabaseConnectionTest extends TestCase
         $connection->method('getName')->willReturn('name');
         $connection->beginTransaction();
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(TransactionRolledBack::class));
+        $events->expects('dispatch')->with(Argument::type(TransactionRolledBack::class));
         $connection->setEventDispatcher($events);
         $connection->rollBack();
     }
@@ -552,7 +553,7 @@ class DatabaseConnectionTest extends TestCase
         $connection = $this->getMockConnection();
         $connection->logQuery('foo', [], time());
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(QueryExecuted::class));
+        $events->expects('dispatch')->with(Argument::type(QueryExecuted::class));
         $connection->setEventDispatcher($events);
         $connection->logQuery('foo', [], null);
     }

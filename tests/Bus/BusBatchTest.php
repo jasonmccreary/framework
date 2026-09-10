@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Bus;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batch;
@@ -146,7 +147,7 @@ class BusBatchTest extends TestCase
         $connection = Double::for(QueueContract::class);
         $queue->expects('connection')->with('test-connection')->returns($connection);
 
-        $connection->expects('bulk')->with(Mockery::on(function ($args) use ($job, $secondJob) {
+        $connection->expects('bulk')->with(Argument::satisfies(function ($args) use ($job, $secondJob) {
             return
                 $args[0] == $job &&
                 $args[1] == $secondJob &&
@@ -275,11 +276,11 @@ class BusBatchTest extends TestCase
 
         $batch = $batch->add([$job]);
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($batch) {
             return $event instanceof BatchFinished && $event->batch === $batch;
         }));
 
@@ -311,11 +312,11 @@ class BusBatchTest extends TestCase
 
         $batch = $batch->add([$job, $secondJob]);
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof BatchFinished;
         }));
 
@@ -348,7 +349,7 @@ class BusBatchTest extends TestCase
 
         $batch = $batch->add([$job, $secondJob]);
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) use ($batch) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($batch) {
             return $event instanceof BatchStarted && $event->batch === $batch;
         }));
 
@@ -537,7 +538,7 @@ class BusBatchTest extends TestCase
 
         $exception = new RuntimeException('Something went wrong.');
 
-        $events->expects('dispatch')->with(Mockery::on(function ($event) use ($batch, $exception) {
+        $events->expects('dispatch')->with(Argument::satisfies(function ($event) use ($batch, $exception) {
             return $event instanceof BatchCanceled
                 && $event->batch->id === $batch->id
                 && $event->exception === $exception;
@@ -614,7 +615,7 @@ class BusBatchTest extends TestCase
         $connection = Double::for(QueueContract::class);
         $queue->expects('connection')->with('test-connection')->returns($connection);
 
-        $connection->expects('bulk')->with(Mockery::on(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
+        $connection->expects('bulk')->with(Argument::satisfies(function ($args) use ($chainHeadJob, $secondJob, $thirdJob) {
             return
                 $args[0] == $chainHeadJob
                 && serialize($secondJob) == $args[0]->chained[0]
@@ -652,7 +653,7 @@ class BusBatchTest extends TestCase
         $connection = Double::for(QueueContract::class);
         $queue->expects('connection')->with('test-connection')->returns($connection);
 
-        $connection->expects('bulk')->with(Mockery::on(function ($args) {
+        $connection->expects('bulk')->with(Argument::satisfies(function ($args) {
             return true;
         }), '', null);
 

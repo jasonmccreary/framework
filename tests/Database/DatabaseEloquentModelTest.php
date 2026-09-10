@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use DateTime;
 use DateTimeImmutable;
@@ -917,7 +918,7 @@ class DatabaseEloquentModelTest extends TestCase
         $query = Double::for(Builder::class);
         $model->expects($this->once())->method('newModelQuery')->willReturn($query);
         $events = Double::for(Dispatcher::class);
-        $events->expects('until')->with(Mockery::type(EloquentModelSavingEventStub::class))->returns(false);
+        $events->expects('until')->with(Argument::type(EloquentModelSavingEventStub::class))->returns(false);
         $model::setEventDispatcher($events);
         $model->exists = true;
 
@@ -2710,7 +2711,7 @@ class DatabaseEloquentModelTest extends TestCase
         $model = new EloquentModelStub;
 
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with('eloquent.replicating: '.get_class($model), Mockery::on(function ($m) use ($model) {
+        $events->expects('dispatch')->with('eloquent.replicating: '.get_class($model), Argument::satisfies(function ($m) use ($model) {
             return $model->is($m);
         }));
         $model::setEventDispatcher($events);

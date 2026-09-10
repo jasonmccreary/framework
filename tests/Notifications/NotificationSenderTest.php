@@ -211,7 +211,7 @@ class NotificationSenderTest extends TestCase
 
         $events = Double::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
+        $events->expects('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof NotificationFailed && $event->data['exception'] instanceof TransportException;
         }));
@@ -234,7 +234,7 @@ class NotificationSenderTest extends TestCase
 
         $events = Double::for(EventDispatcher::class);
         $events->expects('listen');
-        $events->expects('until')->with(Mockery::type(NotificationSending::class))->returns(true);
+        $events->expects('until')->with(Argument::type(NotificationSending::class))->returns(true);
         $events->expects('dispatch');
 
         $sender = new NotificationSender($manager, $bus, $events);

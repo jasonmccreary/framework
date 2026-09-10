@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Console\View;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components;
@@ -86,7 +87,7 @@ class ComponentsTest extends TestCase
     {
         $output = Double::for(OutputStyle::class);
 
-        $output->expects('askQuestion')->with(Mockery::type(ChoiceQuestion::class))->returns('a');
+        $output->expects('askQuestion')->with(Argument::type(ChoiceQuestion::class))->returns('a');
 
         $result = (new Components\Choice($output))->render('Question?', ['a', 'b']);
         $this->assertSame('a', $result);

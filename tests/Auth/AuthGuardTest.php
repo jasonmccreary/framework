@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Auth;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Events\Attempting;
@@ -96,9 +97,9 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->resolves(function ($callback) use ($timebox) {
             return $callback($timebox);
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Failed::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class))->never();
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Failed::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class))->never();
         $guard->getProvider()->expects('retrieveByCredentials')->with(['foo']);
         $guard->getProvider()->expects('rehashPasswordIfRequired')->never();
         $guard->attempt(['foo']);
@@ -113,8 +114,8 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->andReturnUsing(function ($callback, $microseconds) use ($timebox) {
             return $callback($timebox->expects('returnEarly')->getMock());
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class));
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class));
         $user = $this->createStub(Authenticatable::class);
         $guard->getProvider()->expects('retrieveByCredentials')->returns($user);
         $guard->getProvider()->expects('validateCredentials')->with($user, ['foo'])->returns(true);
@@ -132,9 +133,9 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->resolves(function ($callback, $microseconds) use ($timebox) {
             return $callback($timebox);
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Failed::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class))->never();
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Failed::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class))->never();
         $mock->getProvider()->expects('retrieveByCredentials')->returns(null);
         $mock->getProvider()->expects('rehashPasswordIfRequired')->never();
         $this->assertFalse($mock->attempt(['foo']));
@@ -150,11 +151,11 @@ class AuthGuardTest extends TestCase
             return $callback($timebox->shouldReceive('returnEarly')->getMock());
         });
         $user = Double::for(Authenticatable::class);
-        $events->expects('dispatch')->times(3)->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Login::class));
-        $events->expects('dispatch')->with(Mockery::type(Authenticated::class));
-        $events->expects('dispatch')->times(2)->with(Mockery::type(Validated::class));
-        $events->expects('dispatch')->times(2)->with(Mockery::type(Failed::class));
+        $events->expects('dispatch')->times(3)->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Login::class));
+        $events->expects('dispatch')->with(Argument::type(Authenticated::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(Validated::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(Failed::class));
         $mock->expects($this->once())->method('getName')->willReturn('foo');
         $user->expects('getAuthIdentifier')->returns('bar');
         $mock->getSession()->expects('put')->with('foo', 'bar');
@@ -196,8 +197,8 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->andReturnUsing(function ($callback, $microseconds) use ($timebox) {
             return $callback($timebox->expects('returnEarly')->getMock());
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class));
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class));
         $user = $this->createStub(Authenticatable::class);
         $guard->getProvider()->expects('retrieveByCredentials')->returns($user);
         $guard->getProvider()->expects('validateCredentials')->with($user, ['foo'])->returns(true);
@@ -217,8 +218,8 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->andReturnUsing(function ($callback, $microseconds) use ($timebox) {
             return $callback($timebox->expects('returnEarly')->getMock());
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class));
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class));
         $user = $this->createStub(Authenticatable::class);
         $guard->getProvider()->expects('retrieveByCredentials')->returns($user);
         $guard->getProvider()->expects('validateCredentials')->with($user, ['foo'])->returns(true);
@@ -259,8 +260,8 @@ class AuthGuardTest extends TestCase
         $events = Double::for(Dispatcher::class);
         $mock->setDispatcher($events);
         $user = Double::for(Authenticatable::class);
-        $events->expects('dispatch')->with(Mockery::type(Login::class));
-        $events->expects('dispatch')->with(Mockery::type(Authenticated::class));
+        $events->expects('dispatch')->with(Argument::type(Login::class));
+        $events->expects('dispatch')->with(Argument::type(Authenticated::class));
         $mock->expects($this->once())->method('getName')->willReturn('foo');
         $user->expects('getAuthIdentifier')->returns('bar');
         $mock->getSession()->expects('put')->with('foo', 'bar');
@@ -277,9 +278,9 @@ class AuthGuardTest extends TestCase
         $timebox->expects('call')->resolves(function ($callback, $microseconds) use ($timebox) {
             return $callback($timebox);
         });
-        $events->expects('dispatch')->with(Mockery::type(Attempting::class));
-        $events->expects('dispatch')->with(Mockery::type(Failed::class));
-        $events->expects('dispatch')->with(Mockery::type(Validated::class))->never();
+        $events->expects('dispatch')->with(Argument::type(Attempting::class));
+        $events->expects('dispatch')->with(Argument::type(Failed::class));
+        $events->expects('dispatch')->with(Argument::type(Validated::class))->never();
         $guard->getProvider()->expects('retrieveByCredentials')->with(['foo'])->returns(null);
         $guard->getProvider()->expects('rehashPasswordIfRequired')->never();
         $guard->attempt(['foo']);
@@ -299,7 +300,7 @@ class AuthGuardTest extends TestCase
         $user = Double::for(Authenticatable::class);
         $guard = $this->getGuard();
         $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(Authenticated::class));
+        $events->expects('dispatch')->with(Argument::type(Authenticated::class));
         $guard->setDispatcher($events);
         $guard->setUser($user);
     }
@@ -427,9 +428,9 @@ class AuthGuardTest extends TestCase
         $mock->setDispatcher($events);
         $user = Double::for(Authenticatable::class);
         $user->expects('getRememberToken')->returns(null);
-        $events->expects('dispatch')->with(Mockery::type(Authenticated::class));
+        $events->expects('dispatch')->with(Argument::type(Authenticated::class));
         $mock->setUser($user);
-        $events->expects('dispatch')->with(Mockery::type(Logout::class));
+        $events->expects('dispatch')->with(Argument::type(Logout::class));
         $mock->logout();
     }
 
@@ -494,9 +495,9 @@ class AuthGuardTest extends TestCase
         $events = Double::for(Dispatcher::class);
         $mock->setDispatcher($events);
         $user = Double::for(Authenticatable::class);
-        $events->expects('dispatch')->with(Mockery::type(Authenticated::class));
+        $events->expects('dispatch')->with(Argument::type(Authenticated::class));
         $mock->setUser($user);
-        $events->expects('dispatch')->with(Mockery::type(CurrentDeviceLogout::class));
+        $events->expects('dispatch')->with(Argument::type(CurrentDeviceLogout::class));
         $mock->logoutCurrentDevice();
     }
 

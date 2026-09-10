@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Foundation;
 
+use JMac\Testing\Matching\Argument;
 use JMac\Testing\Double;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -29,7 +30,7 @@ class FoundationApplicationTest extends TestCase
         $app['translator'] = $trans = Double::for(Translator::class);
         $trans->expects('setLocale')->with('foo');
         $app['events'] = $events = Double::for(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::on(function (LocaleUpdated $event) {
+        $events->expects('dispatch')->with(Argument::satisfies(function (LocaleUpdated $event) {
             return $event->locale === 'foo' && $event->previousLocale === 'bar';
         }));
 
