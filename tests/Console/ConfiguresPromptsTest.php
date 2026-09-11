@@ -107,9 +107,9 @@ class ConfiguresPromptsTest extends TestCase
         $command->setLaravel($application);
 
         $outputStyle = Double::for(OutputStyle::class);
-        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === OutputStyle::class))->returns($outputStyle);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === OutputStyle::class), Argument::any())->returns($outputStyle);
         $factory = Double::for(Factory::class);
-        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === Factory::class))->returns($factory);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === Factory::class), Argument::any())->returns($factory);
         $application->allows('runningUnitTests')->returns(false);
         $application->expects('call')->with([$command, 'handle'])->resolves(fn ($callback) => call_user_func($callback));
         $outputStyle->expects('newLinesWritten')->returns(1);
