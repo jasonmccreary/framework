@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Tests\TestCase;
 use JMac\Testing\Double;
@@ -35,12 +36,21 @@ class DatabaseEloquentRelationTest extends TestCase
 
     public function testTouchMethodUpdatesRelatedTimestamps()
     {
-        $builder = Double::for(Builder::class);
+        // whereNotNull() is forwarded via Eloquent Builder's own __call() to the
+        // underlying query builder via forwardCallTo() — but forwardCallTo() is
+        // itself a proxied method on a Double, so it never runs for real. Wire
+        // $builder to a real query-builder double and stub forwardCallTo to
+        // forward for real.
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull');
+        $builder = Double::for(new Builder($queryBuilder));
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $parent = Double::for(Model::class);
         $parent->expects('getAttribute')->with('id')->returns(1);
         $related = Double::for(EloquentNoTouchingModelStub::class)->passthru();
         $builder->expects('getModel')->returns($related);
-        $builder->expects('whereNotNull');
         $builder->expects('where');
         $builder->expects('withoutGlobalScopes')->returns($builder);
         $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
@@ -64,12 +74,16 @@ class DatabaseEloquentRelationTest extends TestCase
         Model::withoutTouching(function () use ($related) {
             $this->assertTrue($related::isIgnoringTouch());
 
-            $builder = Double::for(Builder::class);
+            $queryBuilder = Double::for(QueryBuilder::class);
+            $queryBuilder->expects('whereNotNull');
+            $builder = Double::for(new Builder($queryBuilder));
+            $builder->allows('forwardCallTo')->resolves(
+                fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+            );
             $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->returns(1);
             $builder->expects('getModel')->returns($related);
-            $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
             $builder->expects('update')->never();
@@ -95,24 +109,32 @@ class DatabaseEloquentRelationTest extends TestCase
             $this->assertTrue($related::isIgnoringTouch());
             $this->assertFalse($anotherRelated::isIgnoringTouch());
 
-            $builder = Double::for(Builder::class);
+            $queryBuilder = Double::for(QueryBuilder::class);
+            $queryBuilder->expects('whereNotNull');
+            $builder = Double::for(new Builder($queryBuilder));
+            $builder->allows('forwardCallTo')->resolves(
+                fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+            );
             $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->returns(1);
             $builder->expects('getModel')->returns($related);
-            $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
             $builder->expects('update')->never();
 
             $relation->touch();
 
-            $anotherBuilder = Double::for(Builder::class);
+            $anotherQueryBuilder = Double::for(QueryBuilder::class);
+            $anotherQueryBuilder->expects('whereNotNull');
+            $anotherBuilder = Double::for(new Builder($anotherQueryBuilder));
+            $anotherBuilder->allows('forwardCallTo')->resolves(
+                fn ($object, $method, $parameters) => $anotherQueryBuilder->{$method}(...$parameters)
+            );
             $anotherParent = Double::for(Model::class);
 
             $anotherParent->expects('getAttribute')->with('id')->returns(2);
             $anotherBuilder->expects('getModel')->returns($anotherRelated);
-            $anotherBuilder->expects('whereNotNull');
             $anotherBuilder->expects('where');
             $anotherBuilder->expects('withoutGlobalScopes')->returns($anotherBuilder);
             $anotherRelation = new HasOne($anotherBuilder, $anotherParent, 'foreign_key', 'id');
@@ -144,24 +166,32 @@ class DatabaseEloquentRelationTest extends TestCase
             $this->assertTrue($related::isIgnoringTouch());
             $this->assertTrue($relatedChild::isIgnoringTouch());
 
-            $builder = Double::for(Builder::class);
+            $queryBuilder = Double::for(QueryBuilder::class);
+            $queryBuilder->expects('whereNotNull');
+            $builder = Double::for(new Builder($queryBuilder));
+            $builder->allows('forwardCallTo')->resolves(
+                fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+            );
             $parent = Double::for(Model::class);
 
             $parent->expects('getAttribute')->with('id')->returns(1);
             $builder->expects('getModel')->returns($related);
-            $builder->expects('whereNotNull');
             $builder->expects('where');
             $relation = new HasOne($builder, $parent, 'foreign_key', 'id');
             $builder->expects('update')->never();
 
             $relation->touch();
 
-            $anotherBuilder = Double::for(Builder::class);
+            $anotherQueryBuilder = Double::for(QueryBuilder::class);
+            $anotherQueryBuilder->expects('whereNotNull');
+            $anotherBuilder = Double::for(new Builder($anotherQueryBuilder));
+            $anotherBuilder->allows('forwardCallTo')->resolves(
+                fn ($object, $method, $parameters) => $anotherQueryBuilder->{$method}(...$parameters)
+            );
             $anotherParent = Double::for(Model::class);
 
             $anotherParent->expects('getAttribute')->with('id')->returns(2);
             $anotherBuilder->expects('getModel')->returns($relatedChild);
-            $anotherBuilder->expects('whereNotNull');
             $anotherBuilder->expects('where');
             $anotherRelation = new HasOne($anotherBuilder, $anotherParent, 'foreign_key', 'id');
             $anotherBuilder->expects('update')->never();
