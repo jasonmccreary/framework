@@ -59,8 +59,11 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     protected function getHasManyRelation(): HasMany
     {
         $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.foreign_key');
         $builder = Double::for(new Builder($queryBuilder));
-        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = Double::for(Model::class);
         $builder->expects('getModel')->returns($related);
@@ -73,8 +76,11 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
     protected function getHasOneRelation(): HasOne
     {
         $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.foreign_key');
         $builder = Double::for(new Builder($queryBuilder));
-        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.foreign_key', '=', 1);
         $related = Double::for(Model::class);
         $builder->expects('getModel')->returns($related);
