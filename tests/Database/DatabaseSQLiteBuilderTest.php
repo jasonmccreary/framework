@@ -8,8 +8,8 @@ use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseSQLiteBuilderTest extends TestCase
 {
@@ -31,7 +31,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
 
     public function testCreateDatabase()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);
@@ -51,7 +51,7 @@ class DatabaseSQLiteBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $connection->expects('getSchemaGrammar');
 
         $builder = new SQLiteBuilder($connection);

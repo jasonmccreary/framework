@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Foundation\Http;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Http\HtmlDumper;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionClass;
 use stdClass;
 use Symfony\Component\VarDumper\Caster\ReflectionCaster;

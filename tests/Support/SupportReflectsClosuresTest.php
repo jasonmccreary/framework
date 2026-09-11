@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Support;
 
 use Closure;
 use Illuminate\Support\Traits\ReflectsClosures;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 
 class SupportReflectsClosuresTest extends TestCase

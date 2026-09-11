@@ -43,14 +43,15 @@ use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use JsonSerializable;
-use Mockery;
 use OutOfBoundsException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
@@ -2449,9 +2450,9 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSent()
     {
-        $events = Mockery::mock(Dispatcher::class);
-        $events->expects('dispatch')->times(5)->with(Mockery::type(RequestSending::class));
-        $events->expects('dispatch')->times(5)->with(Mockery::type(ResponseReceived::class));
+        $events = Double::for(Dispatcher::class);
+        $events->expects('dispatch')->times(5)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2465,9 +2466,9 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredWhenARequestIsSentAsync()
     {
-        $events = Mockery::mock(Dispatcher::class);
-        $events->expects('dispatch')->times(5)->with(Mockery::type(RequestSending::class));
-        $events->expects('dispatch')->times(5)->with(Mockery::type(ResponseReceived::class));
+        $events = Double::for(Dispatcher::class);
+        $events->expects('dispatch')->times(5)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(5)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake();
@@ -2484,9 +2485,9 @@ class HttpClientTest extends TestCase
 
     public function testTheRequestSendingAndResponseReceivedEventsAreFiredForEveryRetry()
     {
-        $events = Mockery::mock(Dispatcher::class);
-        $events->expects('dispatch')->times(2)->with(Mockery::type(RequestSending::class));
-        $events->expects('dispatch')->times(2)->with(Mockery::type(ResponseReceived::class));
+        $events = Double::for(Dispatcher::class);
+        $events->expects('dispatch')->times(2)->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->times(2)->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake([
@@ -2522,9 +2523,9 @@ class HttpClientTest extends TestCase
 
     public function testClonedClientsWorkSuccessfullyWithTheRequestObject()
     {
-        $events = Mockery::mock(Dispatcher::class);
-        $events->expects('dispatch')->with(Mockery::type(RequestSending::class));
-        $events->expects('dispatch')->with(Mockery::type(ResponseReceived::class));
+        $events = Double::for(Dispatcher::class);
+        $events->expects('dispatch')->with(Argument::type(RequestSending::class));
+        $events->expects('dispatch')->with(Argument::type(ResponseReceived::class));
 
         $factory = new Factory($events);
         $factory->fake(['example.com' => $factory::response('foo', 200)]);

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Filesystem;
 
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 
 use function Illuminate\Filesystem\join_paths;
 

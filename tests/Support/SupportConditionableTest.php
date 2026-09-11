@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Traits\Conditionable;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportConditionableTest extends TestCase
 {

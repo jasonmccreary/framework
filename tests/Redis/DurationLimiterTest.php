@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Redis;
 use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Limiters\DurationLimiter;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Throwable;
 
 class DurationLimiterTest extends TestCase

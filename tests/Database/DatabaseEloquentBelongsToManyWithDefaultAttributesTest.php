@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\Grammars\Grammar;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
 {
@@ -23,37 +23,40 @@ class DatabaseEloquentBelongsToManyWithDefaultAttributesTest extends TestCase
         $relation = $this->getMockBuilder(BelongsToMany::class)->onlyMethods(['touchIfTouching'])->setConstructorArgs($this->getRelationArguments())->getMock();
         $relation->withPivotValue(['is_admin' => 1]);
 
-        $query = Mockery::mock(QueryBuilder::class);
-        $query->expects('from')->with('club_user')->andReturn($query);
-        $query->expects('insert')->with([['club_id' => 1, 'user_id' => 1, 'is_admin' => 1]])->andReturn(true);
-        $relation->getQuery()->getQuery()->expects('newQuery')->andReturn($query);
+        $query = Double::for(QueryBuilder::class);
+        $query->expects('from')->with('club_user')->returns($query);
+        $query->expects('insert')->with([['club_id' => 1, 'user_id' => 1, 'is_admin' => 1]])->returns(true);
+        $relation->getQuery()->getQuery()->expects('newQuery')->returns($query);
 
         $relation->attach(1);
     }
 
     public function getRelationArguments()
     {
-        $parent = Mockery::mock(Model::class);
-        $parent->shouldReceive('getKey')->andReturn(1);
-        $parent->shouldReceive('getCreatedAtColumn')->andReturn('created_at');
-        $parent->shouldReceive('getUpdatedAtColumn')->andReturn('updated_at');
-        $parent->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $parent = Double::for(Model::class);
+        $parent->allows('getKey')->returns(1);
+        $parent->allows('getCreatedAtColumn')->returns('created_at');
+        $parent->allows('getUpdatedAtColumn')->returns('updated_at');
+        $parent->allows('getAttribute')->with('id')->returns(1);
 
-        $builder = Mockery::mock(Builder::class);
-        $related = Mockery::mock(Model::class);
-        $builder->shouldReceive('getModel')->andReturn($related);
+        $builder = Double::for(Builder::class);
+        $related = Double::for(Model::class);
+        $builder->allows('getModel')->returns($related);
 
-        $related->shouldReceive('getTable')->andReturn('users');
-        $related->shouldReceive('getKeyName')->andReturn('id');
-        $related->shouldReceive('qualifyColumn')->with('id')->andReturn('users.id');
+        $related->allows('getTable')->returns('users');
+        $related->allows('getKeyName')->returns('id');
+        $related->allows('qualifyColumn')->with('id')->returns('users.id');
 
         $builder->expects('join')->with('club_user', 'users.id', '=', 'club_user.user_id');
         $builder->expects('where')->with('club_user.club_id', '=', 1);
         $builder->expects('where')->with('club_user.is_admin', '=', 1, 'and');
 
-        $mockQueryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder->shouldReceive('getQuery')->andReturn($mockQueryBuilder);
-        $mockQueryBuilder->shouldReceive('getGrammar')->andReturn(Mockery::mock(Grammar::class, ['isExpression' => false]));
+        $mockQueryBuilder = Double::for(QueryBuilder::class);
+        $builder->allows('getQuery')->returns($mockQueryBuilder);
+        $grammar = Double::for(Grammar::class);
+        $grammar->allows('isExpression')->returns(false);
+
+        $mockQueryBuilder->allows('getGrammar')->returns($grammar);
 
         return [
             $builder,

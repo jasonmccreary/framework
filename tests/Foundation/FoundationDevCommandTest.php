@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Foundation;
 
 use Illuminate\Foundation\DevCommand;
 use Illuminate\Foundation\DevCommandColor;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationDevCommandTest extends TestCase
 {

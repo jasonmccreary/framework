@@ -6,8 +6,9 @@ use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Mail\MailManager;
 use Illuminate\Mail\Transport\ResendTransport;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Resend\Contracts\Client;
 use Resend\Email as ResendEmail;
 use Resend\Service\Email as EmailService;
@@ -48,12 +49,11 @@ class MailResendTransportTest extends TestCase
         $email->sender('myself@example.com');
         $email->to('me@example.com');
 
-        $client = Mockery::mock(Client::class);
-        $emailService = Mockery::mock(EmailService::class);
+        $client = Double::for(Client::class);
+        $emailService = Double::for(EmailService::class);
         $client->emails = $emailService;
 
-        $emailService->expects('send')
-            ->andReturn(ResendEmail::from([
+        $emailService->expects('send')->returns(ResendEmail::from([
                 'id' => 'resend_id_test',
                 'from' => 'myself@example.com',
                 'to' => 'me@example.com',

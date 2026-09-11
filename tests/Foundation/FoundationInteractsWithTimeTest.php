@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Foundation;
 
 use Illuminate\Foundation\Testing\Concerns\InteractsWithTime;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationInteractsWithTimeTest extends TestCase
 {

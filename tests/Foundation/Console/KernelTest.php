@@ -7,7 +7,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Foundation\Events\Terminating;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionClass;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\StringInput;

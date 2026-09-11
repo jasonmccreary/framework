@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\NamespacedItemResolver;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportNamespacedItemResolverTest extends TestCase
 {

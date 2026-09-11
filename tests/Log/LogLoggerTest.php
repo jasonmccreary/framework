@@ -7,19 +7,19 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Log\Logger;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger as Monolog;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class LogLoggerTest extends TestCase
 {
     public function testMethodsPassErrorAdditionsToMonolog()
     {
-        $monolog = Mockery::mock(Monolog::class);
-        $monolog->expects('isHandling')->with('error')->andReturn(true);
+        $monolog = Double::for(Monolog::class);
+        $monolog->expects('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', []);
         $writer = new Logger($monolog);
 
@@ -28,11 +28,11 @@ class LogLoggerTest extends TestCase
 
     public function testContextIsAddedToAllSubsequentLogs()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz']);
 
-        $monolog->expects('isHandling')->with('error')->andReturn(true);
+        $monolog->expects('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', ['bar' => 'baz']);
 
         $writer->error('foo');
@@ -40,12 +40,12 @@ class LogLoggerTest extends TestCase
 
     public function testContextIsFlushed()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz']);
         $writer->withoutContext();
 
-        $monolog->expects('isHandling')->with('error')->andReturn(true);
+        $monolog->expects('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', []);
 
         $writer->error('foo');
@@ -53,12 +53,12 @@ class LogLoggerTest extends TestCase
 
     public function testContextKeysCanBeRemovedForSubsequentLogs()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
         $writer->withContext(['bar' => 'baz', 'forget' => 'me']);
         $writer->withoutContext(['forget']);
 
-        $monolog->expects('isHandling')->with('error')->andReturn(true);
+        $monolog->expects('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', ['bar' => 'baz']);
 
         $writer->error('foo');
@@ -66,8 +66,8 @@ class LogLoggerTest extends TestCase
 
     public function testLoggerFiresEventsDispatcher()
     {
-        $monolog = Mockery::mock(Monolog::class);
-        $monolog->expects('isHandling')->with('error')->andReturn(true);
+        $monolog = Double::for(Monolog::class);
+        $monolog->expects('isHandling')->with('error')->returns(true);
         $monolog->expects('error')->with('foo', []);
         $writer = new Logger($monolog, $events = new Dispatcher);
 
@@ -93,7 +93,7 @@ class LogLoggerTest extends TestCase
     {
         $this->expectExceptionObject(new RuntimeException('Events dispatcher has not been set.'));
 
-        $writer = new Logger(Mockery::mock(Monolog::class));
+        $writer = new Logger(Double::for(Monolog::class));
         $writer->listen(function () {
             //
         });
@@ -101,8 +101,8 @@ class LogLoggerTest extends TestCase
 
     public function testListenShortcut()
     {
-        $events = Mockery::mock(DispatcherContract::class);
-        $writer = new Logger(Mockery::mock(Monolog::class), $events);
+        $events = Double::for(DispatcherContract::class);
+        $writer = new Logger(Double::for(Monolog::class), $events);
 
         $callback = function () {
             return 'success';
@@ -114,14 +114,14 @@ class LogLoggerTest extends TestCase
 
     public function testComplexContextManipulation()
     {
-        $monolog = Mockery::mock(Monolog::class);
+        $monolog = Double::for(Monolog::class);
         $writer = new Logger($monolog);
 
         $writer->withContext(['user_id' => 123, 'action' => 'login']);
         $writer->withContext(['ip' => '127.0.0.1', 'timestamp' => '1986-10-29']);
         $writer->withoutContext(['timestamp']);
 
-        $monolog->expects('isHandling')->with('info')->andReturn(true);
+        $monolog->expects('isHandling')->with('info')->returns(true);
         $monolog->expects('info')->with('User action', [
             'user_id' => 123,
             'action' => 'login',

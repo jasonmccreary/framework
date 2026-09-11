@@ -22,8 +22,8 @@ use Illuminate\Image\Transformations\Resize;
 use Illuminate\Image\Transformations\Rotate;
 use Illuminate\Image\Transformations\Scale;
 use Illuminate\Image\Transformations\Sharpen;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 #[RequiresPhpExtension('imagick')]
 class ImagickDriverTest extends TestCase

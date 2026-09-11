@@ -15,9 +15,9 @@ use Illuminate\Queue\Attributes\Connection;
 use Illuminate\Queue\Attributes\Delay;
 use Illuminate\Queue\Attributes\Queue as QueueAttribute;
 use Illuminate\Support\Testing\Fakes\QueueFake;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mockery;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
 class MailableQueuedTest extends TestCase
@@ -286,7 +286,7 @@ class MailableQueuedTest extends TestCase
 
     protected function getMocks()
     {
-        return ['smtp', Mockery::mock(Factory::class), Mockery::mock(TransportInterface::class)];
+        return ['smtp', Double::for(Factory::class), Double::for(TransportInterface::class)];
     }
 }
 

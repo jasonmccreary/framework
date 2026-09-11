@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation\Console;
 
 use Illuminate\Foundation\Console\CliDumper;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionClass;
 use stdClass;
 use Symfony\Component\Console\Output\BufferedOutput;

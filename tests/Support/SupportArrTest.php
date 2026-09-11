@@ -17,9 +17,9 @@ use Illuminate\Tests\Support\Fixtures\TestJsonSerializeObject;
 use Illuminate\Tests\Support\Fixtures\TestJsonSerializeWithScalarValueObject;
 use Illuminate\Tests\Support\Fixtures\TestStringBackedEnum;
 use Illuminate\Tests\Support\Fixtures\TestTraversableAndJsonSerializableObject;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use WeakMap;
 

@@ -9,9 +9,10 @@ use Illuminate\Contracts\Routing\BindingRegistrar;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteBinding;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BroadcasterTest extends TestCase
@@ -60,8 +61,8 @@ class BroadcasterTest extends TestCase
         // Test Explicit Binding...
         $container = new Container;
         Container::setInstance($container);
-        $binder = Mockery::mock(BindingRegistrar::class);
-        $binder->expects('getBindingCallback')->times(2)->with('model')->andReturn(function () {
+        $binder = Double::for(BindingRegistrar::class);
+        $binder->expects('getBindingCallback')->times(2)->with('model')->returns(function () {
             return 'bound';
         });
         $container->instance(BindingRegistrar::class, $binder);
@@ -83,10 +84,10 @@ class BroadcasterTest extends TestCase
     {
         $container = new Container;
         Container::setInstance($container);
-        $binder = Mockery::mock(BindingRegistrar::class);
+        $binder = Double::for(BindingRegistrar::class);
         $callback = RouteBinding::forModel($container, BroadcasterTestEloquentModelStub::class);
 
-        $binder->expects('getBindingCallback')->times(2)->with('model')->andReturn($callback);
+        $binder->expects('getBindingCallback')->times(2)->with('model')->returns($callback);
         $container->instance(BindingRegistrar::class, $binder);
         $callback = function ($user, $model) {
             //
@@ -198,10 +199,8 @@ class BroadcasterTest extends TestCase
             //
         });
 
-        $request = Mockery::mock(Request::class);
-        $request->expects('user')
-            ->withNoArgs()
-            ->andReturn(new DummyUser);
+        $request = Double::for(Request::class);
+        $request->expects('user')->with(Argument::none())->returns(new DummyUser);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -215,10 +214,8 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = Mockery::mock(Request::class);
-        $request->expects('user')
-            ->with('myguard')
-            ->andReturn(new DummyUser);
+        $request = Double::for(Request::class);
+        $request->expects('user')->with('myguard')->returns(new DummyUser);
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -235,15 +232,13 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard2', 'myguard1']]);
 
-        $request = Mockery::mock(Request::class);
-        $request->expects('user')
-            ->with('myguard1')
-            ->andReturn(null);
+        $request = Double::for(Request::class);
+        $request->expects('user')->with('myguard1')->returns(null);
         $request->expects('user')
             ->times(2)
             ->with('myguard2')
-            ->andReturn(new DummyUser)
-            ->ordered('user');
+            ->returns(new DummyUser)
+            ->ordered();
 
         $this->assertInstanceOf(
             DummyUser::class,
@@ -262,12 +257,9 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => 'myguard']);
 
-        $request = Mockery::mock(Request::class);
-        $request->expects('user')
-            ->with('myguard')
-            ->andReturn(null);
-        $request->shouldNotReceive('user')
-            ->withNoArgs();
+        $request = Double::for(Request::class);
+        $request->expects('user')->with('myguard')->returns(null);
+        $request->expects('user')->with(Argument::none())->never();
 
         $this->broadcaster->retrieveUser($request, 'somechannel');
     }
@@ -278,15 +270,10 @@ class BroadcasterTest extends TestCase
             //
         }, ['guards' => ['myguard1', 'myguard2']]);
 
-        $request = Mockery::mock(Request::class);
-        $request->expects('user')
-            ->with('myguard1')
-            ->andReturn(null);
-        $request->expects('user')
-            ->with('myguard2')
-            ->andReturn(null);
-        $request->shouldNotReceive('user')
-            ->withNoArgs();
+        $request = Double::for(Request::class);
+        $request->expects('user')->with('myguard1')->returns(null);
+        $request->expects('user')->with('myguard2')->returns(null);
+        $request->expects('user')->with(Argument::none())->never();
 
         $this->broadcaster->retrieveUser($request, 'somechannel');
     }

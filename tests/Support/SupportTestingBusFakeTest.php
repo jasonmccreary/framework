@@ -11,10 +11,10 @@ use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Illuminate\Support\Testing\Fakes\BatchRepositoryFake;
 use Illuminate\Support\Testing\Fakes\BusFake;
 use Illuminate\Support\Testing\Fakes\PendingBatchFake;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingBusFakeTest extends TestCase
 {
@@ -23,14 +23,14 @@ class SupportTestingBusFakeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->fake = new BusFake(Mockery::mock(QueueingDispatcher::class));
+        $this->fake = new BusFake(Double::for(QueueingDispatcher::class));
     }
 
     public function testItUsesCustomBusRepository()
     {
         $busRepository = new BatchRepositoryFake;
 
-        $fake = new BusFake(Mockery::mock(QueueingDispatcher::class), [], $busRepository);
+        $fake = new BusFake(Double::for(QueueingDispatcher::class), [], $busRepository);
 
         $this->assertNull($fake->findBatch('non-existent-batch'));
 
@@ -607,15 +607,15 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testAssertDispatchedWithIgnoreClass()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
         $dispatcher->expects('dispatch')->with($job);
         $dispatcher->expects('dispatchNow')->with($job, null);
 
         $otherJob = new OtherBusJobStub;
-        $dispatcher->shouldReceive('dispatch')->never()->with($otherJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($otherJob, null);
+        $dispatcher->expects('dispatch')->never()->with($otherJob);
+        $dispatcher->expects('dispatchNow')->never()->with($otherJob, null);
 
         $fake = new BusFake($dispatcher, OtherBusJobStub::class);
 
@@ -631,19 +631,19 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testDispatchedFakingOnlyGivenJobs()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
-        $dispatcher->shouldReceive('dispatch')->never()->with($job);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($job, null);
+        $dispatcher->expects('dispatch')->never()->with($job);
+        $dispatcher->expects('dispatchNow')->never()->with($job, null);
 
         $otherJob = new OtherBusJobStub;
         $dispatcher->expects('dispatch')->with($otherJob);
         $dispatcher->expects('dispatchNow')->with($otherJob, null);
 
         $thirdJob = new ThirdJob;
-        $dispatcher->shouldReceive('dispatch')->never()->with($thirdJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($thirdJob, null);
+        $dispatcher->expects('dispatch')->never()->with($thirdJob);
+        $dispatcher->expects('dispatchNow')->never()->with($thirdJob, null);
 
         $fake = (new BusFake($dispatcher))->except(OtherBusJobStub::class);
 
@@ -663,7 +663,7 @@ class SupportTestingBusFakeTest extends TestCase
 
     public function testAssertDispatchedWithIgnoreCallback()
     {
-        $dispatcher = Mockery::mock(QueueingDispatcher::class);
+        $dispatcher = Double::for(QueueingDispatcher::class);
 
         $job = new BusJobStub;
         $dispatcher->expects('dispatch')->with($job);
@@ -674,8 +674,8 @@ class SupportTestingBusFakeTest extends TestCase
         $dispatcher->expects('dispatchNow')->with($otherJob, null);
 
         $anotherJob = new OtherBusJobStub(1);
-        $dispatcher->shouldReceive('dispatch')->never()->with($anotherJob);
-        $dispatcher->shouldReceive('dispatchNow')->never()->with($anotherJob, null);
+        $dispatcher->expects('dispatch')->never()->with($anotherJob);
+        $dispatcher->expects('dispatchNow')->never()->with($anotherJob, null);
 
         $fake = new BusFake($dispatcher, [
             function ($command) {
@@ -792,7 +792,7 @@ class SupportTestingBusFakeTest extends TestCase
     {
         $batchRepository = new BatchRepositoryFake;
 
-        $fake = new BusFake(Mockery::mock(QueueingDispatcher::class), [], $batchRepository);
+        $fake = new BusFake(Double::for(QueueingDispatcher::class), [], $batchRepository);
 
         $batch = $fake->batch([])->dispatch();
 

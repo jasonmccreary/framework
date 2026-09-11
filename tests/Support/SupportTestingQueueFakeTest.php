@@ -4,16 +4,17 @@ namespace Illuminate\Tests\Support;
 
 use BadMethodCallException;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Foundation\Application;
 use Illuminate\Queue\Attributes\Delay;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Queue\Jobs\InspectedJob;
-use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingQueueFakeTest extends TestCase
 {
@@ -65,10 +66,10 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = Mockery::mock(QueueManager::class);
-        $manager->expects('push')->withArgs(function ($passedJob) use ($job) {
+        $manager = Double::for(Queue::class);
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }), Argument::any(), Argument::any());
 
         $fake = new QueueFake(new Application, JobToFakeStub::class, $manager);
 
@@ -421,10 +422,10 @@ class SupportTestingQueueFakeTest extends TestCase
     {
         $job = new JobStub;
 
-        $manager = Mockery::mock(QueueManager::class);
-        $manager->expects('push')->withArgs(function ($passedJob) use ($job) {
+        $manager = Double::for(Queue::class);
+        $manager->expects('push')->with(Argument::satisfies(function ($passedJob) use ($job) {
             return $passedJob === $job;
-        });
+        }), Argument::any(), Argument::any());
 
         $fake = (new QueueFake(new Application, [], $manager))->except(JobStub::class);
 
@@ -488,10 +489,8 @@ class SupportTestingQueueFakeTest extends TestCase
         $job = new JobStub;
         $steps = [];
 
-        $manager = Mockery::mock(QueueManager::class);
-        $manager->expects('push')->withArgs(function ($passedJob, $passedData, $passedQueue) use ($job) {
-            return $passedJob === $job && $passedData === ['foo' => 'bar'] && $passedQueue === 'redis';
-        });
+        $manager = Double::for(Queue::class);
+        $manager->expects('push')->with($job, ['foo' => 'bar'], 'redis');
 
         $fake = (new QueueFake(new Application, [], $manager))
             ->except(JobStub::class)

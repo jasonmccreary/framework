@@ -7,7 +7,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ValidatedInput;
 use Illuminate\Tests\Support\Fixtures\StringBackedEnum;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class ValidatedInputTest extends TestCase
 {

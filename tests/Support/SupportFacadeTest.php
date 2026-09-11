@@ -4,9 +4,9 @@ namespace Illuminate\Tests\Support;
 
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class SupportFacadeTest extends TestCase
@@ -20,8 +20,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeCallsUnderlyingApplication()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = Mockery::mock(stdClass::class)]);
-        $mock->expects('bar')->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = Double::for(stdClass::class)]);
+        $mock->expects('bar')->returns('baz');
         FacadeStub::setFacadeApplication($app);
         $this->assertSame('baz', FacadeStub::bar());
     }
@@ -79,8 +79,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeResolvesAgainAfterClearingSpecific()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = Mockery::mock(stdClass::class)]);
-        $mock->expects('bar')->times(3)->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = Double::for(stdClass::class)]);
+        $mock->expects('bar')->times(3)->returns('baz');
 
         // Resolve for the first time
         FacadeStub::setFacadeApplication($app);
@@ -98,8 +98,8 @@ class SupportFacadeTest extends TestCase
     public function testFacadeResolvesAgainAfterClearingAll()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => $mock = Mockery::mock(stdClass::class)]);
-        $mock->expects('bar')->times(2)->andReturn('baz');
+        $app->setAttributes(['foo' => $mock = Double::for(stdClass::class)]);
+        $mock->expects('bar')->times(2)->returns('baz');
 
         // Resolve for the first time
         FacadeStub::setFacadeApplication($app);

@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Support;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Process\Process;
 
 use function Illuminate\Support\php_binary;
@@ -61,10 +61,10 @@ class SupportComposerTest extends TestCase
     {
         $directory = __DIR__;
 
-        $files = Mockery::mock(Filesystem::class);
-        $files->expects('exists')->with($directory.'/composer.phar')->andReturn($customComposerPhar);
+        $files = Double::for(Filesystem::class);
+        $files->expects('exists')->with($directory.'/composer.phar')->returns($customComposerPhar);
 
-        $process = Mockery::mock(Process::class);
+        $process = Double::for(Process::class);
         $process->expects('run');
 
         $composer = $this->getMockBuilder(Composer::class)

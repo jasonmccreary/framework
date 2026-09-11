@@ -10,8 +10,9 @@ use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\Attributes\FailOnTimeout;
 use Illuminate\Support\Collection;
 use Illuminate\Tests\Notifications\Fixtures\Models\NotifiableUser;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class NotificationSendQueuedNotificationTest extends TestCase
 {
@@ -19,12 +20,12 @@ class NotificationSendQueuedNotificationTest extends TestCase
     {
         $notification = new TestNotification;
         $job = new SendQueuedNotifications('notifiables', $notification);
-        $manager = Mockery::mock(ChannelManager::class);
-        $manager->expects('sendNow')->withArgs(function ($notifiables, $notification, $channels) {
-            return $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']
-                && $notification instanceof TestNotification
-                && $channels === null;
-        });
+        $manager = Double::for(ChannelManager::class);
+        $manager->expects('sendNow')->with(
+            Argument::satisfies(fn ($notifiables) => $notifiables instanceof Collection && $notifiables->toArray() === ['notifiables']),
+            Argument::type(TestNotification::class),
+            null,
+        );
         $job->handle($manager);
     }
 

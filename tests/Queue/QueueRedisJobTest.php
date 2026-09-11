@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Queue;
 use Illuminate\Container\Container;
 use Illuminate\Queue\Jobs\RedisJob;
 use Illuminate\Queue\RedisQueue;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class QueueRedisJobTest extends TestCase
@@ -14,8 +14,8 @@ class QueueRedisJobTest extends TestCase
     public function testFireProperlyCallsTheJobHandler()
     {
         $job = $this->getJob();
-        $handler = Mockery::mock(stdClass::class);
-        $job->getContainer()->expects('make')->with('foo')->andReturn($handler);
+        $handler = Double::for(stdClass::class);
+        $job->getContainer()->expects('make')->with('foo')->returns($handler);
         $handler->expects('fire')->with($job, ['data']);
 
         $job->fire();
@@ -42,8 +42,8 @@ class QueueRedisJobTest extends TestCase
     protected function getJob()
     {
         return new RedisJob(
-            Mockery::mock(Container::class),
-            Mockery::mock(RedisQueue::class),
+            Double::for(Container::class),
+            Double::for(RedisQueue::class),
             json_encode(['job' => 'foo', 'data' => ['data'], 'attempts' => 1]),
             json_encode(['job' => 'foo', 'data' => ['data'], 'attempts' => 2]),
             'connection-name',

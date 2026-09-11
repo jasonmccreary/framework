@@ -20,8 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Tests\Database\Fixtures\Models\Money\Price;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use ReflectionClass;
 
 class DatabaseEloquentFactoryTest extends TestCase
@@ -32,8 +32,8 @@ class DatabaseEloquentFactoryTest extends TestCase
         $container->singleton(Generator::class, function ($app, $parameters) {
             return \Faker\Factory::create('en_US');
         });
-        $app = Mockery::mock(Application::class);
-        $app->shouldReceive('getNamespace')->andReturn('App\\');
+        $app = Double::for(Application::class);
+        $app->allows('getNamespace')->returns('App\\');
         $container->instance(Application::class, $app);
 
         $db = new DB;
@@ -727,8 +727,8 @@ class DatabaseEloquentFactoryTest extends TestCase
 
     public function test_resolve_nested_model_name_from_factory()
     {
-        $app = Mockery::mock(Application::class);
-        $app->shouldReceive('getNamespace')->andReturn('Illuminate\\Tests\\Database\\Fixtures\\');
+        $app = Double::for(Application::class);
+        $app->allows('getNamespace')->returns('Illuminate\\Tests\\Database\\Fixtures\\');
         Container::getInstance()->instance(Application::class, $app);
 
         Factory::useNamespace('Illuminate\\Tests\\Database\\Fixtures\\Factories\\');
@@ -740,8 +740,8 @@ class DatabaseEloquentFactoryTest extends TestCase
 
     public function test_resolve_non_app_nested_model_factories()
     {
-        $app = Mockery::mock(Application::class);
-        $app->shouldReceive('getNamespace')->andReturn('Foo\\');
+        $app = Double::for(Application::class);
+        $app->allows('getNamespace')->returns('Foo\\');
         Container::getInstance()->instance(Application::class, $app);
 
         Factory::useNamespace('Factories\\');

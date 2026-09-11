@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Console;
 
 use Illuminate\Console\Signals;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SignalsTest extends TestCase
 {

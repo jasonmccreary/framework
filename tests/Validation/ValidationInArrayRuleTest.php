@@ -2,11 +2,11 @@
 
 namespace Illuminate\Tests\Validation;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Validator;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 
 class ValidationInArrayRuleTest extends TestCase
 {

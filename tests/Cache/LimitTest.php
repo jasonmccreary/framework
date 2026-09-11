@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Cache;
 
 use Illuminate\Cache\RateLimiting\GlobalLimit;
 use Illuminate\Cache\RateLimiting\Limit;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class LimitTest extends TestCase
 {

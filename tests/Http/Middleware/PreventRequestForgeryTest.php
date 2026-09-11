@@ -10,8 +10,8 @@ use Illuminate\Http\Exceptions\OriginMismatchException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class PreventRequestForgeryTest extends TestCase
 {
@@ -130,8 +130,8 @@ class PreventRequestForgeryTest extends TestCase
             $server
         );
 
-        $session = Mockery::mock(Session::class);
-        $session->shouldReceive('token')->andReturn('test-token');
+        $session = Double::for(Session::class);
+        $session->allows('token')->returns('test-token');
         $request->setLaravelSession($session);
 
         return $request;
@@ -140,8 +140,8 @@ class PreventRequestForgeryTest extends TestCase
     protected function createMiddleware()
     {
         return new PreventRequestForgeryTestStub(
-            Mockery::mock(Application::class),
-            Mockery::mock(Encrypter::class)
+            Double::for(Application::class),
+            Double::for(Encrypter::class)
         );
     }
 }

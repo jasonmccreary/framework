@@ -2,13 +2,13 @@
 
 namespace Illuminate\Tests\Integration\Foundation\Exceptions;
 
+use JMac\Testing\Double;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\ExceptionRenderer;
 use Illuminate\Foundation\Exceptions\Renderer\Listener;
 use Illuminate\Foundation\Exceptions\Renderer\Renderer;
 use Illuminate\Foundation\Providers\FoundationServiceProvider;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithConfig;
 use Orchestra\Testbench\TestCase;
 use RuntimeException;
@@ -99,11 +99,11 @@ class RendererTest extends TestCase
         $this->app->forgetInstance(ExceptionRenderer::class);
         $this->assertFalse($this->app->bound(ExceptionRenderer::class));
 
-        $listener = Mockery::mock(Listener::class);
-        $listener->shouldReceive('registerListeners')->never();
+        $listener = Double::for(Listener::class);
+        $listener->expects('registerListeners')->never();
 
         $this->app->instance(Listener::class, $listener);
-        Event::swap(Mockery::mock(Dispatcher::class));
+        Event::swap(Double::for(Dispatcher::class));
 
         $provider = $this->app->getProvider(FoundationServiceProvider::class);
         $provider->boot();
@@ -124,11 +124,11 @@ class RendererTest extends TestCase
 
         $this->assertTrue($this->app->bound(ExceptionRenderer::class));
 
-        $listener = Mockery::mock(Listener::class);
-        $listener->shouldReceive('registerListeners')->never();
+        $listener = Double::for(Listener::class);
+        $listener->expects('registerListeners')->never();
 
         $this->app->instance(Listener::class, $listener);
-        Event::swap(Mockery::mock(Dispatcher::class));
+        Event::swap(Double::for(Dispatcher::class));
 
         $provider = $this->app->getProvider(FoundationServiceProvider::class);
         $provider->boot();
@@ -140,11 +140,11 @@ class RendererTest extends TestCase
         $this->app->forgetInstance(ExceptionRenderer::class);
         $this->assertFalse($this->app->bound(ExceptionRenderer::class));
 
-        $listener = Mockery::mock(Listener::class);
+        $listener = Double::for(Listener::class);
         $listener->expects('registerListeners');
 
         $this->app->instance(Listener::class, $listener);
-        Event::swap(Mockery::mock(Dispatcher::class));
+        Event::swap(Double::for(Dispatcher::class));
 
         $provider = $this->app->getProvider(FoundationServiceProvider::class);
         $provider->boot();

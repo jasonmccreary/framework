@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\View;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Engines\PhpEngine;
-use PHPUnit\Framework\TestCase;
 
 class ViewPhpEngineTest extends TestCase
 {

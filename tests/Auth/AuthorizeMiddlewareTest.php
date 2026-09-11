@@ -16,8 +16,8 @@ use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContrac
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Router;
 use Illuminate\Tests\Auth\Fixtures\AbilitiesEnum;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 include_once 'Fixtures/Enums.php';
@@ -319,7 +319,7 @@ class AuthorizeMiddlewareTest extends TestCase
 
     public function testModelInstanceAsParameter()
     {
-        $instance = Mockery::mock(Model::class);
+        $instance = Double::for(Model::class);
 
         $this->gate()->define('success', function ($user, $model) use ($instance) {
             $this->assertSame($model, $instance);
@@ -327,7 +327,7 @@ class AuthorizeMiddlewareTest extends TestCase
             return true;
         });
 
-        $request = Mockery::mock(Request::class);
+        $request = Double::for(Request::class);
 
         $next = function () {
             //

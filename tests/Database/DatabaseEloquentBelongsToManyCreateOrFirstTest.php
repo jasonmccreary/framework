@@ -14,10 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
 {
@@ -36,18 +37,14 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             'SQLite',
             [456],
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()->expects('insert')->with(
-            'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $source->getConnection()->expects('insert')->with('insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
-        $source->getConnection()->expects('insert')->with(
-            'insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
-            [456, 123],
-        )->andReturnTrue();
+        $source->getConnection()->expects('insert')->with('insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
+            [456, 123])->returns(true);
 
         $result = $source->related()->createOrFirst(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -68,32 +65,24 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $source->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $source->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $source->getConnection()
-            ->expects('select')
-            ->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+        $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
+            'id' => 456,
+            'attr' => 'foo',
+            'val' => 'bar',
+            'created_at' => '2023-01-01 00:00:00',
+            'updated_at' => '2023-01-01 00:00:00',
+        ]]);
 
-        $source->getConnection()->expects('insert')->with(
-            'insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
-            [456, 123],
-        )->andReturnTrue();
+        $source->getConnection()->expects('insert')->with('insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
+            [456, 123])->returns(true);
 
         $result = $source->related()->createOrFirst(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -116,26 +105,21 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-                'pivot_source_id' => 123,
-                'pivot_related_id' => 456,
-            ]]);
+                [])->returns([[
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                    'pivot_source_id' => 123,
+                    'pivot_related_id' => 456,
+                ]]);
 
         $result = $source->related()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -161,53 +145,39 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "related_table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $source->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $source->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $source->getConnection()
-            ->expects('select')
-            ->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+        $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
+            'id' => 456,
+            'attr' => 'foo',
+            'val' => 'bar',
+            'created_at' => '2023-01-01 00:00:00',
+            'updated_at' => '2023-01-01 00:00:00',
+        ]]);
 
         $sql = 'insert into "pivot_table" ("related_id", "source_id") values (?, ?)';
         $bindings = [456, 123];
 
-        $source->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $source->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 false,
-                [],
-            )
-            ->andReturn([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-                'pivot_source_id' => 123,
-                'pivot_related_id' => 456,
-            ]]);
+                [])->returns([[
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                    'pivot_source_id' => 123,
+                    'pivot_related_id' => 456,
+                ]]);
 
         $result = $source->related()->createOrFirst(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -233,42 +203,27 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select * from "related_table" where ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1',
                 ['foo'],
                 true,
-                [],
-            )
-            ->andReturn([[
-                'id' => 456,
-                'attr' => 'foo',
-                'val' => 'bar',
-                'created_at' => '2023-01-01 00:00:00',
-                'updated_at' => '2023-01-01 00:00:00',
-            ]]);
+                [])->returns([[
+                    'id' => 456,
+                    'attr' => 'foo',
+                    'val' => 'bar',
+                    'created_at' => '2023-01-01 00:00:00',
+                    'updated_at' => '2023-01-01 00:00:00',
+                ]]);
 
-        $source->getConnection()
-            ->expects('insert')
-            ->with(
-                'insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
-                [456, 123],
-            )
-            ->andReturnTrue();
+        $source->getConnection()->expects('insert')->with('insert into "pivot_table" ("related_id", "source_id") values (?, ?)',
+                [456, 123])->returns(true);
 
         $result = $source->related()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -288,8 +243,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Mockery::mock(BelongsToMany::class)->makePartial();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -304,10 +260,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->exists = true;
                 $instance->wasRecentlyCreated = false;
                 $instance->syncOriginal();
-                $relation
-                    ->expects('createOrFirst')
-                    ->with(['attr' => 'foo'], ['val' => 'bar'], [], true)
-                    ->andReturn($instance);
+                $relation->expects('createOrFirst')->with(['attr' => 'foo'], ['val' => 'bar'], [], true)->returns($instance);
 
                 return $relation;
             }
@@ -318,28 +271,18 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select "related_table".*, "pivot_table"."source_id" as "pivot_source_id", "pivot_table"."related_id" as "pivot_related_id" from "related_table" inner join "pivot_table" on "related_table"."id" = "pivot_table"."related_id" where "pivot_table"."source_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
-        $source->getConnection()
-            ->expects('select')
-            ->with(
-                'select * from "related_table" where ("attr" = ?) limit 1',
+        $source->getConnection()->expects('select')->with('select * from "related_table" where ("attr" = ?) limit 1',
                 ['foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
         $result = $source->related()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertEquals([
@@ -361,8 +304,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Mockery::mock(BelongsToMany::class)->makePartial();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -373,10 +317,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->exists = true;
                 $instance->wasRecentlyCreated = true;
                 $instance->syncOriginal();
-                $relation
-                    ->expects('firstOrCreate')
-                    ->with(['attr' => 'foo'], ['val' => 'baz'], [], true)
-                    ->andReturn($instance);
+                $relation->expects('firstOrCreate')->with(['attr' => 'foo'], ['val' => 'baz'], [], true)->returns($instance);
 
                 return $relation;
             }
@@ -403,8 +344,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Mockery::mock(BelongsToMany::class)->makePartial();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -415,10 +357,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->exists = true;
                 $instance->wasRecentlyCreated = false;
                 $instance->syncOriginal();
-                $relation
-                    ->expects('firstOrCreate')
-                    ->with(['attr' => 'foo'], ['val' => 'baz'], [], true)
-                    ->andReturn($instance);
+                $relation->expects('firstOrCreate')->with(['attr' => 'foo'], ['val' => 'baz'], [], true)->returns($instance);
 
                 return $relation;
             }
@@ -428,16 +367,11 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()
-            ->expects('update')
-            ->with(
-                'update "related_table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 456],
-            )
-            ->andReturn(1);
+        $source->getConnection()->expects('update')->with('update "related_table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 456])->returns(1);
 
         $result = $source->related()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertEquals([
@@ -455,8 +389,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Mockery::mock(BelongsToMany::class)->makePartial();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -469,13 +404,13 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
-                    ->withArgs(function ($attributes, $values, $joining, $touch) {
-                        return $attributes === ['attr' => 'foo']
-                            && $values instanceof Closure
-                            && $joining === []
-                            && $touch === true;
-                    })
-                    ->andReturn($instance);
+                    ->with(
+                        ['attr' => 'foo'],
+                        Argument::satisfies(fn ($values) => $values instanceof Closure),
+                        [],
+                        true,
+                    )
+                    ->returns($instance);
 
                 return $relation;
             }
@@ -505,8 +440,9 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         {
             protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName = null): BelongsToMany
             {
-                $relation = Mockery::mock(BelongsToMany::class)->makePartial();
-                $relation->__construct(...func_get_args());
+                $relation = Double::for(BelongsToMany::class)->passthru(
+                    new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName)
+                );
                 $instance = new BelongsToManyCreateOrFirstTestRelatedModel([
                     'id' => 456,
                     'attr' => 'foo',
@@ -519,13 +455,13 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
-                    ->withArgs(function ($attributes, $values, $joining, $touch) {
-                        return $attributes === ['attr' => 'foo']
-                            && $values instanceof Closure
-                            && $joining === []
-                            && $touch === true;
-                    })
-                    ->andReturn($instance);
+                    ->with(
+                        ['attr' => 'foo'],
+                        Argument::satisfies(fn ($values) => $values instanceof Closure),
+                        [],
+                        true,
+                    )
+                    ->returns($instance);
 
                 return $relation;
             }
@@ -535,16 +471,11 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             [$source, new BelongsToManyCreateOrFirstTestRelatedModel()],
             'SQLite',
         );
-        $source->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $source->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $source->getConnection()->allows('transactionLevel')->returns(0);
+        $source->getConnection()->allows('getName')->returns('sqlite');
 
-        $source->getConnection()
-            ->expects('update')
-            ->with(
-                'update "related_table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 456],
-            )
-            ->andReturn(1);
+        $source->getConnection()->expects('update')->with('update "related_table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 456])->returns(1);
 
         $callCount = 0;
         $result = $source->related()->updateOrCreate(['attr' => 'foo'], function () use (&$callCount) {
@@ -572,15 +503,17 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = Mockery::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = Double::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new BaseBuilder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $resolver = Mockery::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $connection->allows('getDatabaseName')->returns('database');
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         foreach ($models as $model) {
             /** @var Model $model */
@@ -588,11 +521,11 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
             $class::setConnectionResolver($resolver);
         }
 
-        $pdo = Mockery::mock(PDO::class);
-        $connection->shouldReceive('getPdo')->andReturn($pdo);
+        $pdo = Double::for(PDO::class);
+        $connection->allows('getPdo')->returns($pdo);
 
         foreach ($lastInsertIds as $id) {
-            $pdo->expects('lastInsertId')->andReturn($id);
+            $pdo->expects('lastInsertId')->returns($id);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Lottery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 
 class LotteryTest extends TestCase

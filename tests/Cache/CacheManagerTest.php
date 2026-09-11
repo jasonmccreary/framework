@@ -9,11 +9,12 @@ use Illuminate\Cache\StorageStore;
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Events\Dispatcher as Event;
 use Illuminate\Tests\Cache\Fixtures\ArrayFilesystem;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class CacheManagerTest extends TestCase
@@ -109,8 +110,8 @@ class CacheManagerTest extends TestCase
     {
         $disk = new ArrayFilesystem;
 
-        $filesystem = Mockery::mock();
-        $filesystem->expects('disk')->with('s3')->andReturn($disk);
+        $filesystem = Double::for(Factory::class);
+        $filesystem->expects('disk')->with('s3')->returns($disk);
 
         $app = $this->getApp([
             'cache' => [
@@ -268,17 +269,11 @@ class CacheManagerTest extends TestCase
 
     public function testForgetDriver()
     {
-        $cacheManager = Mockery::mock(CacheManager::class)
-            ->shouldAllowMockingProtectedMethods()
-            ->makePartial();
+        $cacheManager = Double::for(CacheManager::class)->passthru();
 
-        $cacheManager->expects('resolve')
-            ->withArgs(['array'])
-            ->times(4)
-            ->andReturn(new ArrayStore);
+        $cacheManager->expects('resolve')->with('array')->times(4)->returns(new ArrayStore);
 
-        $cacheManager->expects('getDefaultDriver')
-            ->andReturn('array');
+        $cacheManager->expects('getDefaultDriver')->returns('array');
 
         foreach (['array', ['array'], null] as $option) {
             $cacheManager->store('array');

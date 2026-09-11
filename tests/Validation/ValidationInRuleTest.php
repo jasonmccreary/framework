@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Validation;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\Tests\Validation\Fixtures\IntegerStatus;
 use Illuminate\Tests\Validation\Fixtures\PureEnum;
 use Illuminate\Tests\Validation\Fixtures\StringStatus;
@@ -12,7 +13,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Validator;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
 
 include_once 'Fixtures/Enums.php';
 

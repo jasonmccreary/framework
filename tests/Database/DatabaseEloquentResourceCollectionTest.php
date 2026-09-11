@@ -11,8 +11,8 @@ use Illuminate\Tests\Database\Fixtures\Models\EloquentResourceTestResourceModelW
 use Illuminate\Tests\Database\Fixtures\Resources\EloquentResourceCollectionTestResource;
 use Illuminate\Tests\Database\Fixtures\Resources\EloquentResourceTestJsonResource;
 use Illuminate\Tests\Database\Fixtures\Resources\EloquentResourceTestJsonResourceCollection;
+use Illuminate\Tests\TestCase;
 use LogicException;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentResourceCollectionTest extends TestCase
 {

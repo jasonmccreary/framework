@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Redis;
 
 use Illuminate\Redis\Connectors\PredisConnector;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\EqualBackoff;
 use Predis\Retry\Strategy\ExponentialBackoff;

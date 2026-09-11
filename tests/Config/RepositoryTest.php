@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Config;
 
 use Illuminate\Config\Repository;
 use Illuminate\Support\Collection;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class RepositoryTest extends TestCase
 {

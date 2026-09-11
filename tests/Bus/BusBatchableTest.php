@@ -6,8 +6,8 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Bus\BatchRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Testing\Fakes\BatchFake;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class BusBatchableTest extends TestCase
 {
@@ -23,8 +23,8 @@ class BusBatchableTest extends TestCase
 
         Container::setInstance($container = new Container);
 
-        $repository = Mockery::mock(BatchRepository::class);
-        $repository->expects('find')->with('test-batch-id')->andReturn('test-batch');
+        $repository = Double::for(BatchRepository::class);
+        $repository->expects('find')->with('test-batch-id')->returns('test-batch');
         $container->instance(BatchRepository::class, $repository);
 
         $this->assertSame('test-batch', $class->batch());

@@ -17,12 +17,12 @@ use Illuminate\Support\Sleep;
 use Illuminate\Support\Stringable;
 use Illuminate\Tests\Support\Fixtures\IntBackedEnum;
 use Illuminate\Tests\Support\Fixtures\StringBackedEnum;
+use Illuminate\Tests\TestCase;
 use IteratorAggregate;
+use JMac\Testing\Double;
 use LogicException;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
 use stdClass;
@@ -47,8 +47,8 @@ class SupportHelpersTest extends TestCase
         $str = 'A \'quote\' is <b>bold</b>';
         $this->assertSame('A &#039;quote&#039; is &lt;b&gt;bold&lt;/b&gt;', e($str));
 
-        $html = Mockery::mock(Htmlable::class);
-        $html->expects('toHtml')->andReturn($str);
+        $html = Double::for(Htmlable::class);
+        $html->expects('toHtml')->returns($str);
         $this->assertEquals($str, e($html));
     }
 
@@ -830,8 +830,8 @@ class SupportHelpersTest extends TestCase
             $object->id = 2;
         })->id);
 
-        $mock = Mockery::mock();
-        $mock->expects('foo')->andReturn('bar');
+        $mock = Double::for(SupportTestTapClass::class);
+        $mock->expects('foo')->returns('bar');
         $this->assertEquals($mock, tap($mock)->foo());
     }
 
@@ -2264,5 +2264,13 @@ class SupportLazyClassWithArrayParameter
         public array $first,
     ) {
         self::$constructorCalled = true;
+    }
+}
+
+class SupportTestTapClass
+{
+    public function foo()
+    {
+        //
     }
 }

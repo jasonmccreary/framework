@@ -10,9 +10,9 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
 use Illuminate\Tests\Support\Fixtures\StringableObjectStub;
+use Illuminate\Tests\TestCase;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\ExtensionInterface;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\VarDumper\VarDumper;
 
 class SupportStringableTest extends TestCase

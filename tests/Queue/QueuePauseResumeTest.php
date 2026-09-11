@@ -4,6 +4,7 @@ namespace Illuminate\Tests\Queue;
 
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
+use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Queue\Console\Concerns\ParsesQueue;
 use Illuminate\Queue\Events\QueuePaused;
@@ -11,8 +12,8 @@ use Illuminate\Queue\Events\QueueResumed;
 use Illuminate\Queue\Events\QueuesPaused;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Carbon;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use RuntimeException;
 
 class QueuePauseResumeTest extends TestCase
@@ -30,8 +31,8 @@ class QueuePauseResumeTest extends TestCase
     protected function createManager($cache)
     {
         // Mock the cache facade to return our cache repository
-        $cacheMock = Mockery::mock();
-        $cacheMock->shouldReceive('store')->andReturn($cache);
+        $cacheMock = Double::for(CacheFactory::class);
+        $cacheMock->allows('store')->returns($cache);
 
         $app = [
             'config' => [

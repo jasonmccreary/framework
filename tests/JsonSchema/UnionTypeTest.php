@@ -5,8 +5,8 @@ namespace Illuminate\Tests\JsonSchema;
 use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Serializer;
 use Illuminate\JsonSchema\Types\UnionType;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class UnionTypeTest extends TestCase
 {

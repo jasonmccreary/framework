@@ -7,14 +7,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Stringable;
-use Mockery;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigratorTest extends TestCase
 {
     /**
-     * @var \Mockery\Mock
+     * @var \Symfony\Component\Console\Output\OutputInterface
      */
     private $output;
 
@@ -24,7 +25,7 @@ class MigratorTest extends TestCase
     {
         parent::setUp();
 
-        $this->output = Mockery::mock(OutputInterface::class);
+        $this->output = Double::for(OutputInterface::class);
         $this->subject = $this->app->make('migrator');
         $this->subject->setOutput($this->output);
         $this->subject->getRepository()->createRepository();
@@ -263,14 +264,12 @@ class MigratorTest extends TestCase
 
     protected function expectInfo($message): void
     {
-        $this->output->expects('writeln')->with(Mockery::on(
-            fn ($argument) => (new Stringable($argument))->contains($message),
-        ), Mockery::any());
+        $this->output->expects('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($message)), Argument::any());
     }
 
     protected function expectTwoColumnDetail($first, $second = null)
     {
-        $this->output->expects('writeln')->with(Mockery::on(function ($argument) use ($first, $second) {
+        $this->output->expects('writeln')->with(Argument::satisfies(function ($argument) use ($first, $second) {
             $result = (new Stringable($argument))->contains($first);
 
             if ($result && $second) {
@@ -278,34 +277,26 @@ class MigratorTest extends TestCase
             }
 
             return $result;
-        }), Mockery::any());
+        }), Argument::any());
     }
 
     protected function expectBulletList($elements): void
     {
-        $this->output->expects('writeln')->with(Mockery::on(function ($argument) use ($elements) {
+        $this->output->expects('writeln')->with(Argument::satisfies(function ($argument) use ($elements) {
             return array_all($elements, fn ($element) => (new Stringable($argument))->contains("⇂ $element"));
-        }), Mockery::any());
+        }), Argument::any());
     }
 
     protected function expectTask($description, $result): void
     {
         // Ignore dots...
-        $this->output->expects('write')->with(Mockery::on(
-            fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>']),
-        ), Mockery::any(), Mockery::any());
+        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['<fg=gray></>', '<fg=gray>.</>'])), Argument::any(), Argument::any());
 
         // Ignore duration...
-        $this->output->expects('write')->with(Mockery::on(
-            fn ($argument) => (new Stringable($argument))->contains(['ms</>']),
-        ), Mockery::any(), Mockery::any());
+        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains(['ms</>'])), Argument::any(), Argument::any());
 
-        $this->output->expects('write')->with(Mockery::on(
-            fn ($argument) => (new Stringable($argument))->contains($description),
-        ), Mockery::any(), Mockery::any());
+        $this->output->expects('write')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($description)), Argument::any(), Argument::any());
 
-        $this->output->expects('writeln')->with(Mockery::on(
-            fn ($argument) => (new Stringable($argument))->contains($result),
-        ), Mockery::any());
+        $this->output->expects('writeln')->with(Argument::satisfies(fn ($argument) => (new Stringable($argument))->contains($result)), Argument::any());
     }
 }

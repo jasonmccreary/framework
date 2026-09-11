@@ -7,8 +7,8 @@ use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Routing\Controller as RoutingController;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Route;
+use Illuminate\Tests\TestCase;
 use Override;
-use PHPUnit\Framework\TestCase;
 
 class RoutingControllerAttributeTest extends TestCase
 {

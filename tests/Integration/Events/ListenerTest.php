@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\Integration\Events;
 
+use JMac\Testing\Double;
 use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class ListenerTest extends TestCase
@@ -20,7 +20,7 @@ class ListenerTest extends TestCase
     public function testClassListenerRunsNormallyIfNoTransactions()
     {
         $this->app->singleton('db.transactions', function () {
-            $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
+            $transactionManager = Double::for(DatabaseTransactionsManager::class);
             $transactionManager->shouldNotReceive('addCallback')->once()->andReturn(null);
 
             return $transactionManager;
@@ -36,8 +36,8 @@ class ListenerTest extends TestCase
     public function testClassListenerDoesntRunInsideTransaction()
     {
         $this->app->singleton('db.transactions', function () {
-            $transactionManager = Mockery::mock(DatabaseTransactionsManager::class);
-            $transactionManager->expects('addCallback')->andReturn(null);
+            $transactionManager = Double::for(DatabaseTransactionsManager::class);
+            $transactionManager->expects('addCallback')->returns(null);
 
             return $transactionManager;
         });

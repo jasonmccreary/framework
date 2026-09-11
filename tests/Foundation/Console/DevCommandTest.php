@@ -7,8 +7,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Console\DevCommand;
 use Illuminate\Foundation\DevCommandMode;
 use Illuminate\Foundation\DevCommands;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Console\Input\ArrayInput;
 

@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class EloquentHasOneOrManyDeprecationTest extends TestCase
 {
@@ -28,7 +28,7 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
         $model2 = new HasOneOrManyDeprecationModelStub;
         $model2->id = null;
 
-        $relation->getRelated()->expects('newCollection')->andReturnUsing(function ($array) {
+        $relation->getRelated()->expects('newCollection')->resolves(function ($array) {
             return new Collection($array);
         });
 
@@ -58,28 +58,34 @@ class EloquentHasOneOrManyDeprecationTest extends TestCase
 
     protected function getHasManyRelation(): HasMany
     {
-        $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder = Mockery::mock(Builder::class, [$queryBuilder]);
-        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.foreign_key');
+        $builder = Double::for(new Builder($queryBuilder));
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.foreign_key', '=', 1);
-        $related = Mockery::mock(Model::class);
-        $builder->expects('getModel')->andReturn($related);
-        $parent = Mockery::mock(Model::class);
-        $parent->expects('getAttribute')->with('id')->andReturn(1);
+        $related = Double::for(Model::class);
+        $builder->expects('getModel')->returns($related);
+        $parent = Double::for(Model::class);
+        $parent->expects('getAttribute')->with('id')->returns(1);
 
         return new HasMany($builder, $parent, 'table.foreign_key', 'id');
     }
 
     protected function getHasOneRelation(): HasOne
     {
-        $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $builder = Mockery::mock(Builder::class, [$queryBuilder]);
-        $builder->expects('whereNotNull')->with('table.foreign_key');
+        $queryBuilder = Double::for(QueryBuilder::class);
+        $queryBuilder->expects('whereNotNull')->with('table.foreign_key');
+        $builder = Double::for(new Builder($queryBuilder));
+        $builder->allows('forwardCallTo')->resolves(
+            fn ($object, $method, $parameters) => $queryBuilder->{$method}(...$parameters)
+        );
         $builder->expects('where')->with('table.foreign_key', '=', 1);
-        $related = Mockery::mock(Model::class);
-        $builder->expects('getModel')->andReturn($related);
-        $parent = Mockery::mock(Model::class);
-        $parent->expects('getAttribute')->with('id')->andReturn(1);
+        $related = Double::for(Model::class);
+        $builder->expects('getModel')->returns($related);
+        $parent = Double::for(Model::class);
+        $parent->expects('getAttribute')->with('id')->returns(1);
 
         return new HasOne($builder, $parent, 'table.foreign_key', 'id');
     }

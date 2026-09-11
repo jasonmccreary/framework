@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Database\Eloquent\Casts\AsBinary;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\BinaryCodec;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Uid\Ulid;
 

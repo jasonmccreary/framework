@@ -13,11 +13,12 @@ use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithArrayInputPrompting;
 use Illuminate\Tests\Console\Fixtures\FakeCommandWithInputPrompting;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
 use Orchestra\Testbench\Foundation\Application as Testbench;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
@@ -38,8 +39,8 @@ class ConsoleApplicationTest extends TestCase
     public function testAddSetsLaravelInstance()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(Command::class);
-        $command->expects('setLaravel')->with(Mockery::type(ApplicationContract::class));
+        $command = Double::for(Command::class);
+        $command->expects('setLaravel')->with(Argument::type(ApplicationContract::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -49,8 +50,8 @@ class ConsoleApplicationTest extends TestCase
     public function testLaravelNotSetOnSymfonyCommands()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(SymfonyCommand::class);
-        $command->shouldReceive('setLaravel')->never();
+        $command = Double::for(SymfonyCommand::class);
+        $command->expects('setLaravel')->never();
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->add($command);
 
@@ -60,8 +61,8 @@ class ConsoleApplicationTest extends TestCase
     public function testResolveAddsCommandViaApplicationResolution()
     {
         $artisan = $this->getMockConsole(['addToParent']);
-        $command = Mockery::mock(SymfonyCommand::class);
-        $artisan->getLaravel()->expects('make')->with('foo')->andReturn(Mockery::mock(SymfonyCommand::class));
+        $command = Double::for(SymfonyCommand::class);
+        $artisan->getLaravel()->expects('make')->with('foo')->returns(Double::for(SymfonyCommand::class));
         $artisan->expects($this->once())->method('addToParent')->with($command)->willReturn($command);
         $result = $artisan->resolve('foo');
 
@@ -132,8 +133,11 @@ class ConsoleApplicationTest extends TestCase
 
     public function testCallFullyStringCommandLine()
     {
+        $applicationContract = Double::for(ApplicationContract::class);
+        $applicationContract->allows('version')->returns('6.0');
+
         $artisan = new Application(
-            $app = Mockery::mock(ApplicationContract::class, ['version' => '6.0']),
+            $app = $applicationContract,
             new EventsDispatcher($app),
             'testing'
         );
@@ -299,8 +303,10 @@ class ConsoleApplicationTest extends TestCase
 
     protected function getMockConsole(array $methods)
     {
-        $app = Mockery::mock(ApplicationContract::class, ['version' => '6.0']);
-        $events = Mockery::mock(Dispatcher::class, ['dispatch' => null]);
+        $app = Double::for(ApplicationContract::class);
+        $app->allows('version')->returns('6.0');
+        $events = Double::for(Dispatcher::class);
+        $events->allows('dispatch')->returns(null);
 
         return $this->getMockBuilder(Application::class)->onlyMethods($methods)->setConstructorArgs([
             $app, $events, 'test-version',

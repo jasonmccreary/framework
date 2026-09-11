@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Testing;
 
 use Illuminate\Container\Container;
 use Illuminate\Testing\ParallelTesting;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class ParallelTestingTest extends TestCase
 {

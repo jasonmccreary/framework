@@ -6,36 +6,36 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\MariaDbProcessor;
 use Illuminate\Database\Schema\Grammars\MariaDbGrammar;
 use Illuminate\Database\Schema\MariaDbBuilder;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseMariaDbSchemaBuilderTest extends TestCase
 {
     public function testHasTable()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(MariaDbGrammar::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(MariaDbGrammar::class);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
         $builder = new MariaDbBuilder($connection);
-        $grammar->expects('compileTableExists')->andReturn('sql');
-        $connection->expects('getTablePrefix')->andReturn('prefix_');
-        $connection->expects('scalar')->with('sql')->andReturn(1);
+        $grammar->expects('compileTableExists')->returns('sql');
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('scalar')->with('sql')->returns(1);
 
         $this->assertTrue($builder->hasTable('table'));
     }
 
     public function testGetColumnListing()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(MariaDbGrammar::class);
-        $processor = Mockery::mock(MariaDbProcessor::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
-        $connection->expects('getPostProcessor')->andReturn($processor);
-        $grammar->expects('compileColumns')->with(null, 'prefix_table')->andReturn('sql');
-        $processor->expects('processColumns')->andReturn([['name' => 'column']]);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(MariaDbGrammar::class);
+        $processor = Double::for(MariaDbProcessor::class);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('getPostProcessor')->returns($processor);
+        $grammar->expects('compileColumns')->with(null, 'prefix_table')->returns('sql');
+        $processor->expects('processColumns')->returns([['name' => 'column']]);
         $builder = new MariaDbBuilder($connection);
-        $connection->expects('getTablePrefix')->andReturn('prefix_');
-        $connection->expects('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'column']]);
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('selectFromWriteConnection')->with('sql')->returns([['name' => 'column']]);
 
         $this->assertEquals(['column'], $builder->getColumnListing('table'));
     }

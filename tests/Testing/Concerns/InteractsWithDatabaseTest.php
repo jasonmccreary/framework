@@ -7,8 +7,8 @@ use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class InteractsWithDatabaseTest extends TestCase
 {
@@ -135,19 +135,21 @@ class InteractsWithDatabaseTest extends TestCase
 
     protected function castAsJson($value, $grammar)
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$grammar.'Grammar';
         $grammar = new $grammarClass($connection);
 
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
+        $connection->allows('getQueryGrammar')->returns($grammar);
 
-        $connection->shouldReceive('raw')->andReturnUsing(function ($value) {
+        $connection->allows('raw')->resolves(function ($value) {
             return new Expression($value);
         });
 
-        $connection->shouldReceive('getPdo->quote')->andReturnUsing(function ($value) {
+        $pdo = Double::for(\PDO::class);
+        $pdo->allows('quote')->resolves(function ($value) {
             return "'".$value."'";
         });
+        $connection->allows('getPdo')->returns($pdo);
 
         DB::shouldReceive('connection')->with(null)->andReturn($connection);
 

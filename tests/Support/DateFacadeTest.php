@@ -9,8 +9,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\DateFactory;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Tests\Support\Fixtures\CustomDateClass;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class DateFacadeTest extends TestCase
 {

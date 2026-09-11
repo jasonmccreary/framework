@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Auth;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\Response;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class AuthAccessResponseTest extends TestCase
 {

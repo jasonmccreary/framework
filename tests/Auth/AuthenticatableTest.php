@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Auth;
 
 use Illuminate\Foundation\Auth\User;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class AuthenticatableTest extends TestCase
 {

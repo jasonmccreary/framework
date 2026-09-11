@@ -3,9 +3,9 @@
 namespace Illuminate\Tests\Http;
 
 use Illuminate\Http\Testing\FileFactory;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @link https://www.php.net/manual/en/function.gd-info.php

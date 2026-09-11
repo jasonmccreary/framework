@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Database;
 use Generator;
 use Illuminate\Database\MariaDbConnection;
 use Illuminate\Database\Schema\MariaDbSchemaState;
+use Illuminate\Tests\TestCase;
 use Pdo\Mysql;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 class DatabaseMariaDbSchemaStateTest extends TestCase

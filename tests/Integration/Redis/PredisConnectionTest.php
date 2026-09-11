@@ -2,10 +2,10 @@
 
 namespace Illuminate\Tests\Integration\Redis;
 
+use JMac\Testing\Double;
 use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Facades\Event;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithConfig;
 use Orchestra\Testbench\TestCase;
 use Predis\Client;
@@ -25,11 +25,11 @@ class PredisConnectionTest extends TestCase
         $command = 'ftSearch';
         $parameters = ['test', '*', (new SearchArguments())->dialect('3')->withScores()];
 
-        $client = Mockery::mock(Client::class);
+        $client = Double::for(Client::class);
         $predis = new PredisConnection($client);
         $predis->setEventDispatcher($event);
 
-        $client->expects($command)->with(...$parameters)->andReturnTrue();
+        $client->expects($command)->with(...$parameters)->returns(true);
 
         $this->assertTrue($predis->command($command, $parameters));
 

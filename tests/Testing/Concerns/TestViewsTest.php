@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\ParallelTesting as ParallelTestingFacade;
 use Illuminate\Testing\Concerns\TestViews;
 use Illuminate\Testing\ParallelTesting;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\BladeCompiler;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use ReflectionMethod;
 use ReflectionProperty;
 
@@ -85,7 +85,7 @@ class TestViewsTest extends TestCase
     public function testSwitchToCompiledViewPathUpdatesCompilerCachePath()
     {
         $container = Container::getInstance();
-        $compiler = new BladeCompiler(Mockery::mock(Filesystem::class), '/original/path');
+        $compiler = new BladeCompiler(Double::for(Filesystem::class), '/original/path');
 
         $container->instance('blade.compiler', $compiler);
 

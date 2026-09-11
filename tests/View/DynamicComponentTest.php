@@ -2,9 +2,9 @@
 
 namespace Illuminate\Tests\View;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 class DynamicComponentTest extends TestCase

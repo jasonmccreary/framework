@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Support;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Stringable;
 use Illuminate\Support\Uri;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class SupportUriTest extends TestCase
 {

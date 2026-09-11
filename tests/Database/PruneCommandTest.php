@@ -11,9 +11,10 @@ use Illuminate\Database\Events\ModelPruningStarting;
 use Illuminate\Database\Events\ModelsPruned;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -233,18 +234,18 @@ class PruneCommandTest extends TestCase
 
     public function testTheCommandDispatchesEvents()
     {
-        $dispatcher = Mockery::mock(DispatcherContract::class);
+        $dispatcher = Double::for(DispatcherContract::class);
 
-        $dispatcher->expects('dispatch')->withArgs(function ($event) {
+        $dispatcher->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return get_class($event) === ModelPruningStarting::class &&
                 $event->models === [Fixtures\Pruning\Models\PrunableTestModelWithPrunableRecords::class];
-        });
-        $dispatcher->expects('listen')->with(ModelsPruned::class, Mockery::type(Closure::class));
-        $dispatcher->expects('dispatch')->times(2)->with(Mockery::type(ModelsPruned::class));
-        $dispatcher->expects('dispatch')->withArgs(function ($event) {
+        }));
+        $dispatcher->expects('listen')->with(ModelsPruned::class, Argument::type(Closure::class));
+        $dispatcher->expects('dispatch')->times(2)->with(Argument::type(ModelsPruned::class));
+        $dispatcher->expects('dispatch')->with(Argument::satisfies(function ($event) {
             return get_class($event) === ModelPruningFinished::class &&
                 $event->models === [Fixtures\Pruning\Models\PrunableTestModelWithPrunableRecords::class];
-        });
+        }));
         $dispatcher->expects('forget')->with(ModelsPruned::class);
 
         Application::getInstance()->instance(DispatcherContract::class, $dispatcher);

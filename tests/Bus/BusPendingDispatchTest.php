@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Bus;
 
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use ReflectionClass;
 use stdClass;
 
@@ -27,7 +27,7 @@ class BusPendingDispatchTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->job = Mockery::mock(stdClass::class);
+        $this->job = Double::for(stdClass::class);
         $this->pendingDispatch = new PendingDispatchWithoutDestructor($this->job);
     }
 
@@ -101,7 +101,7 @@ class BusPendingDispatchTest extends TestCase
 
     public function testDynamicallyProxyMethods()
     {
-        $newJob = Mockery::mock(stdClass::class);
+        $newJob = Double::for(stdClass::class);
         $this->job->expects('appendToChain')->with($newJob);
         $this->pendingDispatch->appendToChain($newJob);
     }
@@ -115,14 +115,14 @@ class BusPendingDispatchTest extends TestCase
 
     public function testWhenMethodOfConditionableTraitWithFalse()
     {
-        $this->job->shouldReceive('delay')->never();
+        $this->job->expects('delay')->never();
 
         $this->pendingDispatch->when(false, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }
 
     public function testUnlessMethodOfConditionableTraitWithTrue()
     {
-        $this->job->shouldReceive('delay')->never();
+        $this->job->expects('delay')->never();
 
         $this->pendingDispatch->unless(true, fn ($pendingDispatch) => $pendingDispatch->delay(300));
     }

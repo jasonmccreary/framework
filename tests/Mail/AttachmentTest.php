@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Mail;
 
 use Illuminate\Mail\Attachment;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 class AttachmentTest extends TestCase
 {

@@ -26,8 +26,9 @@ use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Queue\WorkerStopReason;
 use Illuminate\Support\Carbon;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use RuntimeException;
 
 class QueueWorkerTest extends TestCase
@@ -38,8 +39,8 @@ class QueueWorkerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->events = Mockery::spy(Dispatcher::class);
-        $this->exceptionHandler = Mockery::spy(ExceptionHandler::class);
+        $this->events = Double::for(Dispatcher::class);
+        $this->exceptionHandler = Double::for(ExceptionHandler::class);
 
         Container::setInstance($container = new Container);
 
@@ -57,10 +58,10 @@ class QueueWorkerTest extends TestCase
         $worker = $this->getWorker('default', ['queue' => [$job = new WorkerFakeJob]]);
         $worker->runNextJob('default', 'queue', new WorkerOptions);
         $this->assertTrue($job->fired);
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobPopping::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobPopped::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessing::class))->once();
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobPopping::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobPopped::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
     }
 
     public function testJobPoppingEvent()
@@ -69,11 +70,11 @@ class QueueWorkerTest extends TestCase
         $worker->runNextJob('default', 'queue', new WorkerOptions);
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) {
             return $event instanceof JobPopping
                 && $event->connectionName === 'default'
                 && $event->queue === 'queue';
-        }))->once();
+        }))->times(1);
     }
 
     public function testWorkerCanWorkUntilQueueIsEmpty()
@@ -92,9 +93,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessing::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessed::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(2);
     }
 
     public function testWorkerStopsWhenQueueIsEmptyForConfiguredSeconds()
@@ -109,9 +110,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertSame(0, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -137,9 +138,9 @@ class QueueWorkerTest extends TestCase
         $this->assertSame(0, $status);
         $this->assertSame(16, $worker->currentTime);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(WorkerIdle::class))->twice();
+        $this->events->received('dispatch')->with(Argument::type(WorkerIdle::class))->times(2);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -163,9 +164,9 @@ class QueueWorkerTest extends TestCase
         $this->assertFalse($secondJob->fired);
         $this->assertSame(12, $status);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessing::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessing::class))->times(1);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
     }
 
     public function testWorkerMemoryExceededWhenMemoryIsZero()
@@ -218,7 +219,7 @@ class QueueWorkerTest extends TestCase
 
         $worker->runNextJob('default', 'queue', $this->workerOptions());
 
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
+        $this->exceptionHandler->received('report')->with($e);
     }
 
     public function testWorkerSleepsWhenQueueIsEmpty()
@@ -241,9 +242,9 @@ class QueueWorkerTest extends TestCase
 
         $this->assertEquals(10, $job->releaseAfter);
         $this->assertFalse($job->deleted);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfExceptionHandlerSaysItShouldntRetry()
@@ -268,7 +269,7 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobReleasedAfterException::class)]);
+        $this->events->received('dispatch')->with(Argument::type(JobReleasedAfterException::class))->never();
     }
 
     public function testExceptionIsNotReportedIfReportJobExceptionsIsDisabled()
@@ -285,8 +286,8 @@ class QueueWorkerTest extends TestCase
             $worker = $this->getWorker('default', ['queue' => [$job]]);
             $worker->runNextJob('default', 'queue', $this->workerOptions(['backoff' => 10]));
 
-            $this->exceptionHandler->shouldNotHaveReceived('report');
-            $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
+            $this->exceptionHandler->received('report')->never();
+            $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
         } finally {
             Worker::$reportJobExceptions = true;
         }
@@ -310,9 +311,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsNotReleasedIfItHasExpired()
@@ -340,9 +341,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertEquals($e, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with($e);
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with($e);
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfItHasAlreadyExceededMaxAttempts()
@@ -359,9 +360,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertInstanceOf(MaxAttemptsExceededException::class, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with(Mockery::type(MaxAttemptsExceededException::class));
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with(Argument::type(MaxAttemptsExceededException::class));
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobIsFailedIfItHasAlreadyExpired()
@@ -384,9 +385,9 @@ class QueueWorkerTest extends TestCase
         $this->assertNull($job->releaseAfter);
         $this->assertTrue($job->deleted);
         $this->assertInstanceOf(MaxAttemptsExceededException::class, $job->failedWith);
-        $this->exceptionHandler->shouldHaveReceived('report')->with(Mockery::type(MaxAttemptsExceededException::class));
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobExceptionOccurred::class))->once();
-        $this->events->shouldNotHaveReceived('dispatch', [Mockery::type(JobProcessed::class)]);
+        $this->exceptionHandler->received('report')->with(Argument::type(MaxAttemptsExceededException::class));
+        $this->events->received('dispatch')->with(Argument::type(JobExceptionOccurred::class))->times(1);
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->never();
     }
 
     public function testJobBasedMaxRetries()
@@ -463,7 +464,7 @@ class QueueWorkerTest extends TestCase
         $job->delete();
         $worker->runNextJob('default', 'queue', $this->workerOptions());
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobProcessed::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobProcessed::class))->times(1);
         $this->assertFalse($job->hasFailed());
         $this->assertFalse($job->isReleased());
         $this->assertTrue($job->isDeleted());
@@ -480,7 +481,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertTrue($job->isReleased());
         $this->assertFalse($job->isDeleted());
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(JobReleased::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(JobReleased::class))->times(1);
     }
 
     public function testWorkerPicksJobUsingCustomCallbacks()
@@ -529,7 +530,7 @@ class QueueWorkerTest extends TestCase
         $this->assertTrue($firstJob->fired);
         $this->assertTrue($secondJob->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::type(WorkerStarting::class))->once();
+        $this->events->received('dispatch')->with(Argument::type(WorkerStarting::class))->times(1);
     }
 
     public function testWorkerIdleIsDispatched()
@@ -541,12 +542,12 @@ class QueueWorkerTest extends TestCase
 
         $worker->daemon('default', 'queue', $workerOptions);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerIdle
                 && $event->connectionName === 'default'
                 && $event->queue === 'queue'
                 && $event->workerOptions === $workerOptions;
-        }))->once();
+        }))->times(1);
     }
 
     public function testWorkerStoppingIsDispatched()
@@ -564,7 +565,7 @@ class QueueWorkerTest extends TestCase
         $this->assertTrue($firstJob->fired);
         $this->assertTrue($secondJob->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -592,7 +593,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -621,7 +622,7 @@ class QueueWorkerTest extends TestCase
 
         $this->assertTrue($job->fired);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($workerOptions) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($workerOptions) {
             return $event instanceof WorkerStopping
                 && $event->status === 0
                 && $event->workerOptions === $workerOptions
@@ -640,13 +641,13 @@ class QueueWorkerTest extends TestCase
         $worker = $this->getWorker('default', ['queue' => [$job]]);
         $worker->runNextJob('default', 'queue', $this->workerOptions(['backoff' => 10]));
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($job, $e) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($job, $e) {
             return $event instanceof JobReleasedAfterException
                 && $event->connectionName === 'default'
                 && $event->job === $job
                 && $event->backoff === 10
                 && $event->exception === $e;
-        }))->once();
+        }))->times(1);
     }
 
     public function testInterruptibleJobIsNotifiedOnSignal()
@@ -661,8 +662,8 @@ class QueueWorkerTest extends TestCase
             }
         };
 
-        $handler = Mockery::mock(CallQueuedHandler::class);
-        $handler->expects('getRunningCommand')->andReturn($interruptible);
+        $handler = Double::for(CallQueuedHandler::class);
+        $handler->expects('getRunningCommand')->returns($interruptible);
 
         $worker = $this->getWorker('default', ['queue' => []]);
         $job = new WorkerFakeJob;
@@ -684,8 +685,8 @@ class QueueWorkerTest extends TestCase
             }
         };
 
-        $handler = Mockery::mock(CallQueuedHandler::class);
-        $handler->expects('getRunningCommand')->andReturn($interruptible);
+        $handler = Double::for(CallQueuedHandler::class);
+        $handler->expects('getRunningCommand')->returns($interruptible);
 
         $worker = $this->getWorker('default', ['queue' => []]);
         $job = new WorkerFakeJob;
@@ -695,12 +696,12 @@ class QueueWorkerTest extends TestCase
         $worker->currentJob = $job;
         $worker->notifyJobOfSignal(15);
 
-        $this->events->shouldHaveReceived('dispatch')->with(Mockery::on(function ($event) use ($job) {
+        $this->events->received('dispatch')->with(Argument::satisfies(function ($event) use ($job) {
             return $event instanceof JobInterrupted
                 && $event->connectionName === 'default'
                 && $event->job === $job
                 && $event->signal === 15;
-        }))->once();
+        }))->times(1);
     }
 
     /**

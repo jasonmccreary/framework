@@ -8,7 +8,7 @@ use Illuminate\Support\Reflector;
 use Illuminate\Support\Testing\Fakes\BusFake;
 use Illuminate\Support\Testing\Fakes\MailFake;
 use Illuminate\Support\Testing\Fakes\PendingMailFake;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use ReflectionClass;
 
 class SupportReflectorTest extends TestCase

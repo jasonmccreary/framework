@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Cookie;
 
 use ArgumentCountError;
 use Illuminate\Cookie\CookieJar;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 use Symfony\Component\HttpFoundation\Cookie;
 

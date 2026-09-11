@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Queue;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Illuminate\Queue\QueueManager;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use stdClass;
 
 class QueueManagerTest extends TestCase
@@ -18,14 +18,14 @@ class QueueManagerTest extends TestCase
                 'queue.default' => 'sync',
                 'queue.connections.sync' => ['driver' => 'sync'],
             ],
-            'encrypter' => $encrypter = Mockery::mock(Encrypter::class),
+            'encrypter' => $encrypter = Double::for(Encrypter::class),
         ];
 
         $manager = new QueueManager($app);
-        $connector = Mockery::mock(ConnectorInterface::class);
-        $queue = Mockery::mock(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $connector = Double::for(ConnectorInterface::class);
+        $queue = Double::for(stdClass::class);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
@@ -41,14 +41,14 @@ class QueueManagerTest extends TestCase
                 'queue.default' => 'sync',
                 'queue.connections.foo' => ['driver' => 'bar'],
             ],
-            'encrypter' => $encrypter = Mockery::mock(Encrypter::class),
+            'encrypter' => $encrypter = Double::for(Encrypter::class),
         ];
 
         $manager = new QueueManager($app);
-        $connector = Mockery::mock(ConnectorInterface::class);
-        $queue = Mockery::mock(stdClass::class);
-        $queue->expects('setConnectionName')->with('foo')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'bar'])->andReturn($queue);
+        $connector = Double::for(ConnectorInterface::class);
+        $queue = Double::for(stdClass::class);
+        $queue->expects('setConnectionName')->with('foo')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'bar'])->returns($queue);
         $manager->addConnector('bar', function () use ($connector) {
             return $connector;
         });
@@ -63,14 +63,14 @@ class QueueManagerTest extends TestCase
             'config' => [
                 'queue.default' => 'null',
             ],
-            'encrypter' => $encrypter = Mockery::mock(Encrypter::class),
+            'encrypter' => $encrypter = Double::for(Encrypter::class),
         ];
 
         $manager = new QueueManager($app);
-        $connector = Mockery::mock(ConnectorInterface::class);
-        $queue = Mockery::mock(stdClass::class);
-        $queue->expects('setConnectionName')->with('null')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'null'])->andReturn($queue);
+        $connector = Double::for(ConnectorInterface::class);
+        $queue = Double::for(stdClass::class);
+        $queue->expects('setConnectionName')->with('null')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'null'])->returns($queue);
         $manager->addConnector('null', function () use ($connector) {
             return $connector;
         });
@@ -86,14 +86,14 @@ class QueueManagerTest extends TestCase
                 'queue.default' => 'sync',
                 'queue.connections.sync' => ['driver' => 'sync'],
             ],
-            'encrypter' => $encrypter = Mockery::mock(Encrypter::class),
+            'encrypter' => $encrypter = Double::for(Encrypter::class),
         ];
 
         $manager = new QueueManager($app);
-        $connector = Mockery::mock(ConnectorInterface::class);
-        $queue = Mockery::mock(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $connector = Double::for(ConnectorInterface::class);
+        $queue = Double::for(stdClass::class);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });
@@ -109,14 +109,14 @@ class QueueManagerTest extends TestCase
                 'queue.default' => 'sync',
                 'queue.connections.sync' => ['driver' => 'sync'],
             ],
-            'encrypter' => $encrypter = Mockery::mock(Encrypter::class),
+            'encrypter' => $encrypter = Double::for(Encrypter::class),
         ];
 
         $manager = new QueueManager($app);
-        $connector = Mockery::mock(ConnectorInterface::class);
-        $queue = Mockery::mock(stdClass::class);
-        $queue->expects('setConnectionName')->with('sync')->andReturnSelf();
-        $connector->expects('connect')->with(['driver' => 'sync'])->andReturn($queue);
+        $connector = Double::for(ConnectorInterface::class);
+        $queue = Double::for(stdClass::class);
+        $queue->expects('setConnectionName')->with('sync')->returns($queue);
+        $connector->expects('connect')->with(['driver' => 'sync'])->returns($queue);
         $manager->addConnector('sync', function () use ($connector) {
             return $connector;
         });

@@ -13,9 +13,9 @@ use Illuminate\Tests\Routing\Fixtures\CategoryBackedEnum;
 use Illuminate\Tests\Routing\Fixtures\IntegerEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteDomainEnum;
 use Illuminate\Tests\Routing\Fixtures\RouteNameEnum;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use Stringable;
 
 include_once 'Fixtures/Enums.php';
@@ -29,7 +29,7 @@ class RouteRegistrarTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->router = new Router(Mockery::mock(Dispatcher::class), Container::getInstance());
+        $this->router = new Router(Double::for(Dispatcher::class), Container::getInstance());
     }
 
     public function testMiddlewareFluentRegistration()

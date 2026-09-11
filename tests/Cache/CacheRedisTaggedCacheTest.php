@@ -5,9 +5,9 @@ namespace Illuminate\Tests\Cache;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\RedisTagSet;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class CacheRedisTaggedCacheTest extends TestCase
 {
@@ -18,14 +18,14 @@ class CacheRedisTaggedCacheTest extends TestCase
 
         $store->expects($storeMethod)
             ->with($itemKey, ...$storeArguments)
-            ->once()
-            ->globally()->ordered()
-            ->andReturn($result);
+            ->times(1)
+            ->ordered()
+            ->returns($result);
 
         $tags->expects('addEntry')
             ->with($itemKey, ...$tagArguments)
-            ->once()
-            ->globally()->ordered();
+            ->times(1)
+            ->ordered();
 
         $this->assertSame($result, $cache->{$method}('key', ...$arguments));
     }
@@ -46,10 +46,7 @@ class CacheRedisTaggedCacheTest extends TestCase
     {
         [$cache, $store, $tags, $itemKey] = $this->getCache();
 
-        $store->expects($storeMethod)
-            ->with($itemKey, ...$storeArguments)
-            ->once()
-            ->andReturn(false);
+        $store->expects($storeMethod)->with($itemKey, ...$storeArguments)->returns(false);
 
         $tags->expects('addEntry')->never();
 
@@ -69,10 +66,10 @@ class CacheRedisTaggedCacheTest extends TestCase
 
     private function getCache(): array
     {
-        $store = Mockery::mock(RedisStore::class);
-        $tags = Mockery::mock(RedisTagSet::class);
-        $tags->allows('getNamespace')->andReturn('namespace');
-        $tags->allows('getNames')->andReturn([]);
+        $store = Double::for(RedisStore::class);
+        $tags = Double::for(RedisTagSet::class);
+        $tags->allows('getNamespace')->returns('namespace');
+        $tags->allows('getNames')->returns([]);
 
         return [
             new RedisTaggedCache($store, $tags),

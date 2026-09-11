@@ -22,8 +22,9 @@ use Illuminate\Cache\Events\WritingManyKeys;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Events\Dispatcher;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class CacheEventsTest extends TestCase
 {
@@ -212,8 +213,8 @@ class CacheEventsTest extends TestCase
     public function testForgetDoesTriggerFailedEventOnFailure()
     {
         $dispatcher = $this->getDispatcher();
-        $store = Mockery::mock(Store::class);
-        $store->expects('forget')->andReturn(false);
+        $store = Double::for(Store::class);
+        $store->expects('forget')->returns(false);
         $repository = new Repository($store);
         $repository->setEventDispatcher($dispatcher);
 
@@ -265,8 +266,8 @@ class CacheEventsTest extends TestCase
         $dispatcher = $this->getDispatcher();
 
         // Create a store that fails to flush
-        $failingStore = Mockery::mock(Store::class);
-        $failingStore->expects('flush')->andReturn(false);
+        $failingStore = Double::for(Store::class);
+        $failingStore->expects('flush')->returns(false);
 
         $repository = new Repository($failingStore, ['store' => 'array']);
         $repository->setEventDispatcher($dispatcher);
@@ -290,8 +291,8 @@ class CacheEventsTest extends TestCase
         $dispatcher = $this->getDispatcher();
 
         // Create a store that fails to flush locks
-        $failingStore = Mockery::mock(ArrayStore::class);
-        $failingStore->expects('flushLocks')->andReturn(false);
+        $failingStore = Double::for(ArrayStore::class);
+        $failingStore->expects('flushLocks')->returns(false);
 
         $repository = new Repository($failingStore, ['store' => 'array']);
         $repository->setEventDispatcher($dispatcher);
@@ -312,7 +313,7 @@ class CacheEventsTest extends TestCase
 
     protected function assertEventMatches($eventClass, $properties = [])
     {
-        return Mockery::on(function ($event) use ($eventClass, $properties) {
+        return Argument::satisfies(function ($event) use ($eventClass, $properties) {
             if (! $event instanceof $eventClass) {
                 return false;
             }
@@ -323,7 +324,7 @@ class CacheEventsTest extends TestCase
 
     protected function getDispatcher()
     {
-        return Mockery::mock(Dispatcher::class);
+        return Double::for(Dispatcher::class);
     }
 
     protected function getRepository($dispatcher)

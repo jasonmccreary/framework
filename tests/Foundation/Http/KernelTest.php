@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Router;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class KernelTest extends TestCase
 {

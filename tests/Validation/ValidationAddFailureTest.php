@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\Validation;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationAddFailureTest extends TestCase
 {

@@ -13,10 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
 {
@@ -31,12 +31,10 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent = new HasManyThroughCreateOrFirstTestParentModel();
         $parent->id = 123;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
-        $parent->getConnection()->expects('insert')->with(
-            'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
+        $parent->getConnection()->expects('insert')->with('insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $parent->children()->createOrFirst(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -55,26 +53,18 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $parent->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $parent->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([[
+                [])->returns([[
                 'id' => 789,
                 'pivot_id' => 456,
                 'laravel_through_key' => 123,
@@ -103,23 +93,16 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
-        $parent->getConnection()->expects('insert')->with(
-            'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $parent->getConnection()->expects('insert')->with('insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $parent->children()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -138,18 +121,13 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([[
+                [])->returns([[
                 'id' => 789,
                 'pivot_id' => 456,
                 'laravel_through_key' => 123,
@@ -178,36 +156,23 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
         $sql = 'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $parent->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $parent->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ? and "val" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ? and "val" = ?) limit 1',
                 [123, 'foo', 'bar'],
                 true,
-                [],
-            )
-            ->andReturn([[
+                [])->returns([[
                 'id' => 789,
                 'pivot_id' => 456,
                 'laravel_through_key' => 123,
@@ -236,26 +201,16 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite', [789]);
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
-        $parent->getConnection()
-            ->expects('insert')
-            ->with(
-                'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-                ['foo', 'baz', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-            )
-            ->andReturnTrue();
+        $parent->getConnection()->expects('insert')->with('insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+                ['foo', 'baz', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $parent->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -274,18 +229,13 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([[
+                [])->returns([[
                 'id' => 789,
                 'pivot_id' => 456,
                 'laravel_through_key' => 123,
@@ -295,13 +245,8 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01T00:00:00.000000Z',
             ]]);
 
-        $parent->getConnection()
-            ->expects('update')
-            ->with(
-                'update "child" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 789],
-            )
-            ->andReturn(1);
+        $parent->getConnection()->expects('update')->with('update "child" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 789])->returns(1);
 
         $result = $parent->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -322,36 +267,23 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $parent->id = 123;
         $parent->exists = true;
         $this->mockConnectionForModel($parent, 'SQLite');
-        $parent->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $parent->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $parent->getConnection()->allows('transactionLevel')->returns(0);
+        $parent->getConnection()->allows('getName')->returns('sqlite');
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ?) limit 1',
                 [123, 'foo'],
                 true,
-                [],
-            )
-            ->andReturn([]);
+                [])->returns([]);
 
         $sql = 'insert into "child" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $parent->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $parent->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $parent->getConnection()
-            ->expects('select')
-            ->with(
-                'select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ? and "val" = ?) limit 1',
+        $parent->getConnection()->expects('select')->with('select "child".*, "pivot"."parent_id" as "laravel_through_key" from "child" inner join "pivot" on "pivot"."id" = "child"."pivot_id" where "pivot"."parent_id" = ? and ("attr" = ? and "val" = ?) limit 1',
                 [123, 'foo', 'bar'],
                 true,
-                [],
-            )
-            ->andReturn([[
+                [])->returns([[
                 'id' => 789,
                 'pivot_id' => 456,
                 'laravel_through_key' => 123,
@@ -387,24 +319,26 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = Mockery::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = Double::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new Builder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $resolver = Mockery::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $connection->allows('getDatabaseName')->returns('database');
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
 
-        $pdo = Mockery::mock(PDO::class);
-        $connection->shouldReceive('getPdo')->andReturn($pdo);
+        $pdo = Double::for(PDO::class);
+        $connection->allows('getPdo')->returns($pdo);
 
         foreach ($lastInsertIds as $id) {
-            $pdo->expects('lastInsertId')->andReturn($id);
+            $pdo->expects('lastInsertId')->returns($id);
         }
     }
 }

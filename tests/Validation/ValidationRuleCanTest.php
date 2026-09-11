@@ -6,12 +6,12 @@ use Illuminate\Auth\Access\Gate;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rules\Can;
 use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class ValidationRuleCanTest extends TestCase

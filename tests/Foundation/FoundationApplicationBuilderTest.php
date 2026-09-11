@@ -6,7 +6,7 @@ use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Http\Middleware\PrefersJsonResponses;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationApplicationBuilderTest extends TestCase
 {

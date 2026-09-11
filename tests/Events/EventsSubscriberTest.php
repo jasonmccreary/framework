@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Events;
 
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class EventsSubscriberTest extends TestCase
 {
@@ -13,11 +13,11 @@ class EventsSubscriberTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $subs = Mockery::mock(ExampleSubscriber::class);
+        $subs = Double::for(ExampleSubscriber::class);
         $subs->expects('subscribe')->with($d);
-        $container->expects('make')->with(ExampleSubscriber::class)->andReturn($subs);
+        $container->expects('make')->with(ExampleSubscriber::class)->returns($subs);
 
         $d->subscribe(ExampleSubscriber::class);
     }
@@ -27,7 +27,7 @@ class EventsSubscriberTest extends TestCase
         $this->expectNotToPerformAssertions();
 
         $d = new Dispatcher;
-        $subs = Mockery::mock(ExampleSubscriber::class);
+        $subs = Double::for(ExampleSubscriber::class);
         $subs->expects('subscribe')->with($d);
 
         $d->subscribe($subs);

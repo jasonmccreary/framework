@@ -7,10 +7,10 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Orchestra\Testbench\Concerns\ApplicationTestingHooks;
 use Orchestra\Testbench\Foundation\Application as Testbench;
-use PHPUnit\Framework\TestCase;
 
 use function Orchestra\Testbench\package_path;
 
@@ -62,7 +62,7 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testDatabaseIsRefreshedOnInteraction()
     {
-        $kernel = Mockery::spy(ConsoleKernel::class);
+        $kernel = Double::for(ConsoleKernel::class);
         $this->app->instance(ConsoleKernelContract::class, $kernel);
 
         $kernel->expects('call')
@@ -78,11 +78,10 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testDatabaseIsNotRefreshedWithoutInteraction()
     {
-        $kernel = Mockery::spy(ConsoleKernel::class);
+        $kernel = Double::for(ConsoleKernel::class);
         $this->app->instance(ConsoleKernelContract::class, $kernel);
 
-        $kernel->shouldReceive('call')
-            ->never();
+        $kernel->expects('call')->never();
 
         $this->refreshDatabase();
 
@@ -92,7 +91,7 @@ class LazilyRefreshDatabaseTest extends TestCase
 
     public function testNonDefaultConnectionTriggersRefresh()
     {
-        $kernel = Mockery::spy(ConsoleKernel::class);
+        $kernel = Double::for(ConsoleKernel::class);
         $this->app->instance(ConsoleKernelContract::class, $kernel);
 
         $kernel->expects('call')

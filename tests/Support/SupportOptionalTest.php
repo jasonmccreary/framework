@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Optional;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use stdClass;
 
 class SupportOptionalTest extends TestCase

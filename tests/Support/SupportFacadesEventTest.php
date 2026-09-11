@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Testing\Fakes\EventFake;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class SupportFacadesEventTest extends TestCase
 {
@@ -27,7 +27,7 @@ class SupportFacadesEventTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->events = Mockery::mock(Dispatcher::class);
+        $this->events = Double::for(Dispatcher::class);
 
         $container = new Container;
         $container->instance('events', $this->events);

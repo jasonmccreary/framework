@@ -8,8 +8,8 @@ use Illuminate\Hashing\Argon2IdHasher;
 use Illuminate\Hashing\ArgonHasher;
 use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Hashing\HashManager;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\Depends;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class HasherTest extends TestCase

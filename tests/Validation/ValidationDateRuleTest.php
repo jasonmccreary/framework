@@ -3,12 +3,12 @@
 namespace Illuminate\Tests\Validation;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Date;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationDateRuleTest extends TestCase
 {

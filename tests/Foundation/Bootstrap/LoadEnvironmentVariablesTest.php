@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Foundation\Bootstrap;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class LoadEnvironmentVariablesTest extends TestCase
 {
@@ -17,16 +17,12 @@ class LoadEnvironmentVariablesTest extends TestCase
 
     protected function getAppMock($file)
     {
-        $app = Mockery::mock(Application::class);
+        $app = Double::for(Application::class);
 
-        $app->expects('configurationIsCached')
-            ->with()->andReturn(false);
-        $app->expects('runningInConsole')
-            ->with()->andReturn(false);
-        $app->expects('environmentPath')
-            ->with()->andReturn(__DIR__.'/../Fixtures');
-        $app->expects('environmentFile')
-            ->with()->andReturn($file);
+        $app->expects('configurationIsCached')->with()->returns(false);
+        $app->expects('runningInConsole')->with()->returns(false);
+        $app->expects('environmentPath')->with()->returns(__DIR__.'/../Fixtures');
+        $app->expects('environmentFile')->with()->returns($file);
 
         return $app;
     }

@@ -6,20 +6,20 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Processors\PostgresProcessor;
 use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\PostgresBuilder;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabasePostgresSchemaBuilderTest extends TestCase
 {
     public function testHasTable()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(PostgresGrammar::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(PostgresGrammar::class);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
         $builder = new PostgresBuilder($connection);
-        $grammar->expects('compileTableExists')->times(2)->andReturn('sql');
-        $connection->expects('getTablePrefix')->times(2)->andReturn('prefix_');
-        $connection->expects('scalar')->times(2)->with('sql')->andReturn(1);
+        $grammar->expects('compileTableExists')->times(2)->returns('sql');
+        $connection->expects('getTablePrefix')->times(2)->returns('prefix_');
+        $connection->expects('scalar')->times(2)->with('sql')->returns(1);
 
         $this->assertTrue($builder->hasTable('table'));
         $this->assertTrue($builder->hasTable('public.table'));
@@ -27,16 +27,16 @@ class DatabasePostgresSchemaBuilderTest extends TestCase
 
     public function testGetColumnListing()
     {
-        $connection = Mockery::mock(Connection::class);
-        $grammar = Mockery::mock(PostgresGrammar::class);
-        $processor = Mockery::mock(PostgresProcessor::class);
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
-        $connection->expects('getPostProcessor')->andReturn($processor);
-        $grammar->expects('compileColumns')->with(null, 'prefix_table')->andReturn('sql');
-        $processor->expects('processColumns')->andReturn([['name' => 'column']]);
+        $connection = Double::for(Connection::class);
+        $grammar = Double::for(PostgresGrammar::class);
+        $processor = Double::for(PostgresProcessor::class);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('getPostProcessor')->returns($processor);
+        $grammar->expects('compileColumns')->with(null, 'prefix_table')->returns('sql');
+        $processor->expects('processColumns')->returns([['name' => 'column']]);
         $builder = new PostgresBuilder($connection);
-        $connection->expects('getTablePrefix')->andReturn('prefix_');
-        $connection->expects('selectFromWriteConnection')->with('sql')->andReturn([['name' => 'column']]);
+        $connection->expects('getTablePrefix')->returns('prefix_');
+        $connection->expects('selectFromWriteConnection')->with('sql')->returns([['name' => 'column']]);
 
         $this->assertEquals(['column'], $builder->getColumnListing('table'));
     }

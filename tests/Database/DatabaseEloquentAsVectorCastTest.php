@@ -10,9 +10,10 @@ use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\MariaDbGrammar;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Support\Collection;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
+use JMac\Testing\Double;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentAsVectorCastTest extends TestCase
 {
@@ -139,12 +140,12 @@ class DatabaseEloquentAsVectorCastTest extends TestCase
 
     protected function useGrammar(string $grammar)
     {
-        $connection = m::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $grammar = new $grammar($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
+        $connection->allows('getQueryGrammar')->returns($grammar);
 
-        $resolver = m::mock(ConnectionResolverInterface::class);
-        $resolver->shouldReceive('connection')->andReturn($connection);
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         Model::setConnectionResolver($resolver);
 

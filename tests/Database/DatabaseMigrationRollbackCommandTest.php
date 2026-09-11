@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Foundation\Application;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -14,16 +14,16 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 {
     public function testRollbackCommandCallsMigratorWithProperArguments()
     {
-        $migrator = Mockery::mock(Migrator::class);
+        $migrator = Double::for(Migrator::class);
         $command = new RollbackCommand($migrator);
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
-        $migrator->expects('paths')->andReturn([]);
-        $migrator->expects('usingConnection')->andReturnUsing(function ($name, $callback) {
+        $migrator->expects('paths')->returns([]);
+        $migrator->expects('usingConnection')->resolves(function ($name, $callback) {
             return $callback();
         });
-        $migrator->expects('setOutput')->andReturn($migrator);
+        $migrator->expects('setOutput')->returns($migrator);
         $migrator->expects('rollback')->with([__DIR__.DIRECTORY_SEPARATOR.'migrations'], ['pretend' => false, 'step' => 0, 'batch' => 0]);
 
         $this->runCommand($command);
@@ -31,16 +31,16 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCallsMigratorWithStepOption()
     {
-        $migrator = Mockery::mock(Migrator::class);
+        $migrator = Double::for(Migrator::class);
         $command = new RollbackCommand($migrator);
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
-        $migrator->expects('paths')->andReturn([]);
-        $migrator->expects('usingConnection')->andReturnUsing(function ($name, $callback) {
+        $migrator->expects('paths')->returns([]);
+        $migrator->expects('usingConnection')->resolves(function ($name, $callback) {
             return $callback();
         });
-        $migrator->expects('setOutput')->andReturn($migrator);
+        $migrator->expects('setOutput')->returns($migrator);
         $migrator->expects('rollback')->with([__DIR__.DIRECTORY_SEPARATOR.'migrations'], ['pretend' => false, 'step' => 2, 'batch' => 0]);
 
         $this->runCommand($command, ['--step' => 2]);
@@ -48,16 +48,16 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCanBePretended()
     {
-        $migrator = Mockery::mock(Migrator::class);
+        $migrator = Double::for(Migrator::class);
         $command = new RollbackCommand($migrator);
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
-        $migrator->expects('paths')->andReturn([]);
-        $migrator->expects('usingConnection')->andReturnUsing(function ($name, $callback) {
+        $migrator->expects('paths')->returns([]);
+        $migrator->expects('usingConnection')->resolves(function ($name, $callback) {
             return $callback();
         });
-        $migrator->expects('setOutput')->andReturn($migrator);
+        $migrator->expects('setOutput')->returns($migrator);
         $migrator->expects('rollback')->with([__DIR__.DIRECTORY_SEPARATOR.'migrations'], true);
 
         $this->runCommand($command, ['--pretend' => true, '--database' => 'foo']);
@@ -65,16 +65,16 @@ class DatabaseMigrationRollbackCommandTest extends TestCase
 
     public function testRollbackCommandCanBePretendedWithStepOption()
     {
-        $migrator = Mockery::mock(Migrator::class);
+        $migrator = Double::for(Migrator::class);
         $command = new RollbackCommand($migrator);
         $app = new ApplicationDatabaseRollbackStub(['path.database' => __DIR__]);
         $app->useDatabasePath(__DIR__);
         $command->setLaravel($app);
-        $migrator->expects('paths')->andReturn([]);
-        $migrator->expects('usingConnection')->andReturnUsing(function ($name, $callback) {
+        $migrator->expects('paths')->returns([]);
+        $migrator->expects('usingConnection')->resolves(function ($name, $callback) {
             return $callback();
         });
-        $migrator->expects('setOutput')->andReturn($migrator);
+        $migrator->expects('setOutput')->returns($migrator);
         $migrator->expects('rollback')->with([__DIR__.DIRECTORY_SEPARATOR.'migrations'], ['pretend' => true, 'step' => 2, 'batch' => 0]);
 
         $this->runCommand($command, ['--pretend' => true, '--database' => 'foo', '--step' => 2]);

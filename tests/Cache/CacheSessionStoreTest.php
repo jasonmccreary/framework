@@ -6,7 +6,7 @@ use Illuminate\Cache\SessionStore;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Store;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use stdClass;
 
 class CacheSessionStoreTest extends TestCase

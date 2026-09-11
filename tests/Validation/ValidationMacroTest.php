@@ -2,8 +2,8 @@
 
 namespace Illuminate\Tests\Validation;
 
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\Rule;
-use PHPUnit\Framework\TestCase;
 
 class ValidationMacroTest extends TestCase
 {

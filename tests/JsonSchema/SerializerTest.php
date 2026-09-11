@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\JsonSchema;
 
 use Illuminate\JsonSchema\Types\Type;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 
 class SerializerTest extends TestCase

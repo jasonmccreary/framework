@@ -3,6 +3,7 @@
 namespace Illuminate\Tests\Broadcasting;
 
 use Illuminate\Broadcasting\Mercure\ChannelEncrypter;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
@@ -10,7 +11,6 @@ use Jose\Component\Encryption\Algorithm\ContentEncryption\A256GCM;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\Dir;
 use Jose\Component\Encryption\JWEDecrypter;
 use Jose\Component\Encryption\Serializer\CompactSerializer;
-use PHPUnit\Framework\TestCase;
 
 class MercureChannelEncrypterTest extends TestCase
 {

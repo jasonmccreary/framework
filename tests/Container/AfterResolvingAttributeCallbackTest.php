@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Container;
 
 use Attribute;
 use Illuminate\Container\Container;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class AfterResolvingAttributeCallbackTest extends TestCase
 {

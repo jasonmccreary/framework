@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Queue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Attributes\Queue as QueueAttribute;
 use Illuminate\Queue\QueueRoutes;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class QueueRoutesTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Pipeline;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Pipeline\Pipeline;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 use stdClass;
 

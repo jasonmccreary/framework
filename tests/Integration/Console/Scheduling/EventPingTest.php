@@ -2,6 +2,7 @@
 
 namespace Illuminate\Tests\Integration\Console\Scheduling;
 
+use JMac\Testing\Matching\Argument;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Handler\MockHandler;
@@ -11,7 +12,6 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Tests\Console\Fixtures\FakeEventMutex;
-use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class EventPingTest extends TestCase
@@ -20,7 +20,7 @@ class EventPingTest extends TestCase
     {
         $this->spy(ExceptionHandler::class)
             ->expects('report')
-            ->with(Mockery::type(ServerException::class));
+            ->with(Argument::type(ServerException::class));
 
         $httpMock = new HttpClient([
             'handler' => HandlerStack::create(

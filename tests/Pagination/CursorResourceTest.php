@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Pagination;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Tests\Pagination\Fixtures\Models\CursorResourceTestModel;
+use Illuminate\Tests\TestCase;
 use LogicException;
-use PHPUnit\Framework\TestCase;
 
 class CursorResourceTest extends TestCase
 {

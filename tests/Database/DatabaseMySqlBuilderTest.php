@@ -8,22 +8,20 @@ use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as MySqlGrammarSchema;
 use Illuminate\Database\Schema\MySqlBuilder;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseMySqlBuilderTest extends TestCase
 {
     public function testCreateDatabase(): void
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $grammar = new MySqlGrammarSchema($connection);
 
-        $connection->expects('getConfig')->with('charset')->andReturn('utf8mb4');
-        $connection->expects('getConfig')->with('collation')->andReturn('utf8mb4_unicode_ci');
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
-        $connection->expects('statement')->with(
-            'create database `my_temporary_database` default character set `utf8mb4` default collate `utf8mb4_unicode_ci`'
-        )->andReturn(true);
+        $connection->expects('getConfig')->with('charset')->returns('utf8mb4');
+        $connection->expects('getConfig')->with('collation')->returns('utf8mb4_unicode_ci');
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('statement')->with('create database `my_temporary_database` default character set `utf8mb4` default collate `utf8mb4_unicode_ci`')->returns(true);
 
         $builder = new MySqlBuilder($connection);
         $builder->createDatabase('my_temporary_database');
@@ -31,13 +29,11 @@ class DatabaseMySqlBuilderTest extends TestCase
 
     public function testDropDatabaseIfExists()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = Double::for(Connection::class);
         $grammar = new MySqlGrammarSchema($connection);
 
-        $connection->expects('getSchemaGrammar')->andReturn($grammar);
-        $connection->expects('statement')->with(
-            'drop database if exists `my_database_a`'
-        )->andReturn(true);
+        $connection->expects('getSchemaGrammar')->returns($grammar);
+        $connection->expects('statement')->with('drop database if exists `my_database_a`')->returns(true);
 
         $builder = new MySqlBuilder($connection);
 
@@ -46,11 +42,11 @@ class DatabaseMySqlBuilderTest extends TestCase
 
     public function testDeleteWithJoinCompilesOrderByAndLimit(): void
     {
-        $connection = Mockery::mock(Connection::class);
-        $processor = Mockery::mock(Processor::class);
+        $connection = Double::for(Connection::class);
+        $processor = Double::for(Processor::class);
         $grammar = new MySqlGrammar($connection);
 
-        $connection->expects('getTablePrefix')->times(5)->andReturn('');
+        $connection->expects('getTablePrefix')->times(5)->returns('');
 
         $builder = new Builder($connection, $grammar, $processor);
 

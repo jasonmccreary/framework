@@ -6,8 +6,8 @@ use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\PasswordBrokerManager;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class AuthPasswordBrokerManagerTest extends TestCase
 {
@@ -15,10 +15,10 @@ class AuthPasswordBrokerManagerTest extends TestCase
     {
         $app = $this->getApp();
 
-        $broker = Mockery::mock(PasswordBroker::class);
+        $broker = Double::for(PasswordBroker::class);
 
-        $manager = Mockery::mock(PasswordBrokerManager::class, [$app])->makePartial()->shouldAllowMockingProtectedMethods();
-        $manager->expects('resolve')->with('users')->andReturn($broker);
+        $manager = Double::for(PasswordBrokerManager::class)->passthru(new PasswordBrokerManager($app));
+        $manager->expects('resolve')->with('users')->returns($broker);
 
         $result1 = $manager->broker(PasswordBrokerName::Users);
         $result2 = $manager->broker('users');

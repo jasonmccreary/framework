@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Console;
 
 use Illuminate\Console\OutputStyle;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 

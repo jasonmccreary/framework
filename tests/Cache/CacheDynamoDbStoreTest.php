@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Cache;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Illuminate\Cache\DynamoDbStore;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class CacheDynamoDbStoreTest extends TestCase
 {

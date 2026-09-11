@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class DatabaseConcernsHasAttributesTest extends TestCase
 {
@@ -27,15 +26,17 @@ class DatabaseConcernsHasAttributesTest extends TestCase
 
     public function testRelationsToArray()
     {
-        $mock = Mockery::mock(HasAttributesWithoutConstructor::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods()
-            ->expects('getArrayableRelations')->andReturn([
-                'arrayable_relation' => new Collection(['foo' => 'bar']),
-                'invalid_relation' => 'invalid',
-                'null_relation' => null,
-            ])
-            ->getMock();
+        $mock = new class extends HasAttributesWithoutConstructor
+        {
+            protected function getArrayableRelations()
+            {
+                return [
+                    'arrayable_relation' => new Collection(['foo' => 'bar']),
+                    'invalid_relation' => 'invalid',
+                    'null_relation' => null,
+                ];
+            }
+        };
 
         $this->assertEquals([
             'arrayable_relation' => ['foo' => 'bar'],

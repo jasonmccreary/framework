@@ -8,22 +8,23 @@ use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class AuthDatabaseTokenRepositoryTest extends TestCase
 {
     public function testCreateInsertsNewRecordIntoTable()
     {
         $repo = $this->getRepo();
-        $repo->getHasher()->expects('make')->andReturn('hashed-token');
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->times(2)->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $repo->getHasher()->expects('make')->returns('hashed-token');
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->times(2)->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $query->expects('delete');
         $query->expects('insert');
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->times(2)->andReturn('email');
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->times(2)->returns('email');
 
         $results = $repo->create($user);
 
@@ -34,12 +35,12 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testExistReturnsFalseIfNoRowFoundForUser()
     {
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
-        $query->expects('first')->andReturn(null);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
+        $query->expects('first')->returns(null);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertFalse($repo->exists($user, 'token'));
     }
@@ -47,13 +48,13 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testExistReturnsFalseIfRecordIsExpired()
     {
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $date = Carbon::now()->subSeconds(300000)->toDateTimeString();
-        $query->expects('first')->andReturn((object) ['created_at' => $date, 'token' => 'hashed-token']);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query->expects('first')->returns((object) ['created_at' => $date, 'token' => 'hashed-token']);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertFalse($repo->exists($user, 'token'));
     }
@@ -61,14 +62,14 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testExistReturnsTrueIfValidRecordExists()
     {
         $repo = $this->getRepo();
-        $repo->getHasher()->expects('check')->with('token', 'hashed-token')->andReturn(true);
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $repo->getHasher()->expects('check')->with('token', 'hashed-token')->returns(true);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $date = Carbon::now()->subMinutes(10)->toDateTimeString();
-        $query->expects('first')->andReturn((object) ['created_at' => $date, 'token' => 'hashed-token']);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query->expects('first')->returns((object) ['created_at' => $date, 'token' => 'hashed-token']);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertTrue($repo->exists($user, 'token'));
     }
@@ -76,14 +77,14 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testExistReturnsFalseIfInvalidToken()
     {
         $repo = $this->getRepo();
-        $repo->getHasher()->expects('check')->with('wrong-token', 'hashed-token')->andReturn(false);
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $repo->getHasher()->expects('check')->with('wrong-token', 'hashed-token')->returns(false);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $date = Carbon::now()->subMinutes(10)->toDateTimeString();
-        $query->expects('first')->andReturn((object) ['created_at' => $date, 'token' => 'hashed-token']);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query->expects('first')->returns((object) ['created_at' => $date, 'token' => 'hashed-token']);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertFalse($repo->exists($user, 'wrong-token'));
     }
@@ -91,12 +92,12 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testRecentlyCreatedReturnsFalseIfNoRowFoundForUser()
     {
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
-        $query->expects('first')->andReturn(null);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
+        $query->expects('first')->returns(null);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertFalse($repo->recentlyCreatedToken($user));
     }
@@ -106,13 +107,13 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
         Carbon::setTestNow($now = Carbon::now());
 
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $date = $now->subSeconds(59)->toDateTimeString();
-        $query->expects('first')->andReturn((object) ['created_at' => $date, 'token' => 'hashed-token']);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query->expects('first')->returns((object) ['created_at' => $date, 'token' => 'hashed-token']);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertTrue($repo->recentlyCreatedToken($user));
     }
@@ -122,13 +123,13 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
         Carbon::setTestNow($now = Carbon::now());
 
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $date = $now->subSeconds(61)->toDateTimeString();
-        $query->expects('first')->andReturn((object) ['created_at' => $date, 'token' => 'hashed-token']);
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $query->expects('first')->returns((object) ['created_at' => $date, 'token' => 'hashed-token']);
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $this->assertFalse($repo->recentlyCreatedToken($user));
     }
@@ -136,12 +137,12 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testDeleteMethodDeletesByToken()
     {
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('email', 'email')->andReturn($query);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('email', 'email')->returns($query);
         $query->expects('delete');
-        $user = Mockery::mock(CanResetPassword::class);
-        $user->expects('getEmailForPasswordReset')->andReturn('email');
+        $user = Double::for(CanResetPassword::class);
+        $user->expects('getEmailForPasswordReset')->returns('email');
 
         $repo->delete($user);
     }
@@ -149,9 +150,9 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     public function testDeleteExpiredMethodDeletesExpiredTokens()
     {
         $repo = $this->getRepo();
-        $query = Mockery::mock(Builder::class);
-        $repo->getConnection()->expects('table')->with('table')->andReturn($query);
-        $query->expects('where')->with('created_at', '<', Mockery::any())->andReturn($query);
+        $query = Double::for(Builder::class);
+        $repo->getConnection()->expects('table')->with('table')->returns($query);
+        $query->expects('where')->with('created_at', '<', Argument::any())->returns($query);
         $query->expects('delete');
 
         $repo->deleteExpired();
@@ -160,8 +161,8 @@ class AuthDatabaseTokenRepositoryTest extends TestCase
     protected function getRepo()
     {
         return new DatabaseTokenRepository(
-            Mockery::mock(Connection::class),
-            Mockery::mock(Hasher::class),
+            Double::for(Connection::class),
+            Double::for(Hasher::class),
             'table', 'key');
     }
 }

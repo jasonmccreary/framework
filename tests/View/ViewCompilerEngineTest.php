@@ -6,11 +6,11 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\ViewException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ViewCompilerEngineTest extends TestCase
@@ -18,8 +18,8 @@ class ViewCompilerEngineTest extends TestCase
     public function testViewsMayBeRecompiledAndRendered()
     {
         $engine = $this->getEngine();
-        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->andReturn(__DIR__.'/Fixtures/basic.php');
-        $engine->getCompiler()->expects('isExpired')->with(__DIR__.'/Fixtures/foo.php')->andReturn(true);
+        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->returns(__DIR__.'/Fixtures/basic.php');
+        $engine->getCompiler()->expects('isExpired')->with(__DIR__.'/Fixtures/foo.php')->returns(true);
         $engine->getCompiler()->expects('compile')->with(__DIR__.'/Fixtures/foo.php');
         $results = $engine->get(__DIR__.'/Fixtures/foo.php');
 
@@ -30,9 +30,9 @@ class ViewCompilerEngineTest extends TestCase
     public function testViewsAreNotRecompiledIfTheyAreNotExpired()
     {
         $engine = $this->getEngine();
-        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->andReturn(__DIR__.'/Fixtures/basic.php');
-        $engine->getCompiler()->expects('isExpired')->andReturn(false);
-        $engine->getCompiler()->shouldReceive('compile')->never();
+        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->returns(__DIR__.'/Fixtures/basic.php');
+        $engine->getCompiler()->expects('isExpired')->returns(false);
+        $engine->getCompiler()->expects('compile')->never();
         $results = $engine->get(__DIR__.'/Fixtures/foo.php');
 
         $this->assertSame('Hello World
@@ -42,8 +42,8 @@ class ViewCompilerEngineTest extends TestCase
     public function testRegularExceptionsAreReThrownAsViewExceptions()
     {
         $engine = $this->getEngine();
-        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->andReturn(__DIR__.'/Fixtures/regular-exception.php');
-        $engine->getCompiler()->expects('isExpired')->andReturn(false);
+        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->returns(__DIR__.'/Fixtures/regular-exception.php');
+        $engine->getCompiler()->expects('isExpired')->returns(false);
 
         $this->expectExceptionObject(new ViewException('regular exception message'));
 
@@ -53,8 +53,8 @@ class ViewCompilerEngineTest extends TestCase
     public function testHttpExceptionsAreNotReThrownAsViewExceptions()
     {
         $engine = $this->getEngine();
-        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->andReturn(__DIR__.'/Fixtures/http-exception.php');
-        $engine->getCompiler()->expects('isExpired')->andReturn(false);
+        $engine->getCompiler()->expects('getCompiledPath')->with(__DIR__.'/Fixtures/foo.php')->returns(__DIR__.'/Fixtures/http-exception.php');
+        $engine->getCompiler()->expects('isExpired')->returns(false);
 
         $this->expectExceptionObject(new HttpException(403, 'http exception message'));
 
@@ -64,9 +64,9 @@ class ViewCompilerEngineTest extends TestCase
     public function testThatViewsAreNotAskTwiceIfTheyAreExpired()
     {
         $engine = $this->getEngine();
-        $engine->getCompiler()->expects('getCompiledPath')->times(4)->with(__DIR__.'/Fixtures/foo.php')->andReturn(__DIR__.'/Fixtures/basic.php');
-        $engine->getCompiler()->expects('isExpired')->times(2)->andReturn(false);
-        $engine->getCompiler()->shouldReceive('compile')->never();
+        $engine->getCompiler()->expects('getCompiledPath')->times(4)->with(__DIR__.'/Fixtures/foo.php')->returns(__DIR__.'/Fixtures/basic.php');
+        $engine->getCompiler()->expects('isExpired')->times(2)->returns(false);
+        $engine->getCompiler()->expects('compile')->never();
 
         $engine->get(__DIR__.'/Fixtures/foo.php');
         $engine->get(__DIR__.'/Fixtures/foo.php');
@@ -82,32 +82,20 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/Fixtures/basic.php';
         $path = __DIR__.'/Fixtures/foo.php';
 
-        $files = Mockery::mock(Filesystem::class);
+        $files = Double::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andReturn('compiled-content');
+        $files->expects('getRequire')->with($compiled, [])->returns('compiled-content');
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new FileNotFoundException(
+        $files->expects('getRequire')->with($compiled, [])->throws(new FileNotFoundException(
                 "File does not exist at path {$path}."
             ));
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andReturn('compiled-content');
+        $files->expects('getRequire')->with($compiled, [])->returns('compiled-content');
 
-        $engine->getCompiler()
-            ->expects('getCompiledPath')
-            ->times(3)
-            ->with($path)
-            ->andReturn($compiled);
+        $engine->getCompiler()->expects('getCompiledPath')->times(3)->with($path)->returns($compiled);
 
-        $engine->getCompiler()
-            ->expects('isExpired')
-            ->andReturn(true);
+        $engine->getCompiler()->expects('isExpired')->returns(true);
 
         $engine->getCompiler()
             ->expects('compile')
@@ -123,32 +111,20 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/Fixtures/basic.php';
         $path = __DIR__.'/Fixtures/foo.php';
 
-        $files = Mockery::mock(Filesystem::class);
+        $files = Double::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andReturn('compiled-content');
+        $files->expects('getRequire')->with($compiled, [])->returns('compiled-content');
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new ErrorException(
+        $files->expects('getRequire')->with($compiled, [])->throws(new ErrorException(
                 "require({$path}): Failed to open stream: No such file or directory",
             ));
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andReturn('compiled-content');
+        $files->expects('getRequire')->with($compiled, [])->returns('compiled-content');
 
-        $engine->getCompiler()
-            ->expects('getCompiledPath')
-            ->times(3)
-            ->with($path)
-            ->andReturn($compiled);
+        $engine->getCompiler()->expects('getCompiledPath')->times(3)->with($path)->returns($compiled);
 
-        $engine->getCompiler()
-            ->expects('isExpired')
-            ->andReturn(true);
+        $engine->getCompiler()->expects('isExpired')->returns(true);
 
         $engine->getCompiler()
             ->expects('compile')
@@ -164,34 +140,22 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/Fixtures/basic.php';
         $path = __DIR__.'/Fixtures/foo.php';
 
-        $files = Mockery::mock(Filesystem::class);
+        $files = Double::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andReturn('compiled-content');
+        $files->expects('getRequire')->with($compiled, [])->returns('compiled-content');
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new FileNotFoundException(
+        $files->expects('getRequire')->with($compiled, [])->throws(new FileNotFoundException(
                 "File does not exist at path {$path}."
             ));
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new FileNotFoundException(
+        $files->expects('getRequire')->with($compiled, [])->throws(new FileNotFoundException(
                 "File does not exist at path {$path}."
             ));
 
-        $engine->getCompiler()
-            ->expects('getCompiledPath')
-            ->times(3)
-            ->with($path)
-            ->andReturn($compiled);
+        $engine->getCompiler()->expects('getCompiledPath')->times(3)->with($path)->returns($compiled);
 
-        $engine->getCompiler()
-            ->expects('isExpired')
-            ->andReturn(true);
+        $engine->getCompiler()->expects('isExpired')->returns(true);
 
         $engine->getCompiler()
             ->expects('compile')
@@ -209,27 +173,18 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/Fixtures/basic.php';
         $path = __DIR__.'/Fixtures/foo.php';
 
-        $files = Mockery::mock(Filesystem::class);
+        $files = Double::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new Exception(
+        $files->expects('getRequire')->with($compiled, [])->throws(new Exception(
                 'Just an regular error...'
             ));
 
-        $engine->getCompiler()
-            ->expects('isExpired')
-            ->andReturn(false);
+        $engine->getCompiler()->expects('isExpired')->returns(false);
 
-        $engine->getCompiler()
-            ->shouldReceive('compile')
-            ->never();
+        $engine->getCompiler()->expects('compile')->never();
 
-        $engine->getCompiler()
-            ->expects('getCompiledPath')
-            ->with($path)
-            ->andReturn($compiled);
+        $engine->getCompiler()->expects('getCompiledPath')->with($path)->returns($compiled);
 
         $this->expectExceptionObject(new ViewException('Just an regular error...'));
         $engine->get($path);
@@ -240,27 +195,20 @@ class ViewCompilerEngineTest extends TestCase
         $compiled = __DIR__.'/Fixtures/basic.php';
         $path = __DIR__.'/Fixtures/foo.php';
 
-        $files = Mockery::mock(Filesystem::class);
+        $files = Double::for(Filesystem::class);
         $engine = $this->getEngine($files);
 
-        $files->expects('getRequire')
-            ->with($compiled, [])
-            ->andThrow(new FileNotFoundException(
+        $files->expects('getRequire')->with($compiled, [])->throws(new FileNotFoundException(
                 "File does not exist at path {$path}."
             ));
 
-        $engine->getCompiler()
-            ->expects('isExpired')
-            ->andReturn(true);
+        $engine->getCompiler()->expects('isExpired')->returns(true);
 
         $engine->getCompiler()
             ->expects('compile')
             ->with($path);
 
-        $engine->getCompiler()
-            ->expects('getCompiledPath')
-            ->with($path)
-            ->andReturn($compiled);
+        $engine->getCompiler()->expects('getCompiledPath')->with($path)->returns($compiled);
 
         $this->expectExceptionObject(new ViewException("File does not exist at path {$path}."));
         $engine->get($path);
@@ -268,6 +216,6 @@ class ViewCompilerEngineTest extends TestCase
 
     protected function getEngine($filesystem = null)
     {
-        return new CompilerEngine(Mockery::mock(CompilerInterface::class), $filesystem ?: new Filesystem);
+        return new CompilerEngine(Double::for(CompilerInterface::class), $filesystem ?: new Filesystem);
     }
 }

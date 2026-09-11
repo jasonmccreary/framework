@@ -5,6 +5,7 @@ namespace Illuminate\Tests\Database;
 use BadMethodCallException;
 use Exception;
 use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -13,9 +14,8 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
-use Mockery;
-use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseEloquentSoftDeletesIntegrationTest extends TestCase
 {
@@ -237,9 +237,10 @@ class DatabaseEloquentSoftDeletesIntegrationTest extends TestCase
 
             public function newModelQuery()
             {
-                return Mockery::spy(parent::newModelQuery(), function (MockInterface $mock) {
-                    $mock->expects('forceDelete')->andThrow(new Exception());
-                });
+                $query = Double::for(EloquentBuilder::class)->passthru(parent::newModelQuery());
+                $query->expects('forceDelete')->throws(new Exception());
+
+                return $query;
             }
         };
 

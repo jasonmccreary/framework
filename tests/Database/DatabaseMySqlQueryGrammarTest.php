@@ -6,16 +6,16 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Illuminate\Tests\TestCase;
 use InvalidArgumentException;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseMySqlQueryGrammarTest extends TestCase
 {
     public function testToRawSql()
     {
-        $connection = Mockery::mock(Connection::class);
-        $connection->expects('escape')->with('foo', false)->andReturn("'foo'");
+        $connection = Double::for(Connection::class);
+        $connection->expects('escape')->with('foo', false)->returns("'foo'");
         $grammar = new MySqlGrammar($connection);
 
         $query = $grammar->substituteBindingsIntoRawSql(
@@ -74,11 +74,11 @@ class DatabaseMySqlQueryGrammarTest extends TestCase
 
     protected function getBuilder()
     {
-        $connection = Mockery::mock(Connection::class);
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
+        $connection = Double::for(Connection::class);
+        $connection->allows('getDatabaseName')->returns('database');
+        $connection->allows('getTablePrefix')->returns('');
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = Double::for(Processor::class);
 
         return new Builder($connection, $grammar, $processor);
     }

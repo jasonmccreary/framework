@@ -7,8 +7,8 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 class RateLimiterTest extends TestCase

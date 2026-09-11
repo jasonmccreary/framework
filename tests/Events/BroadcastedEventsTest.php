@@ -8,14 +8,15 @@ use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Tests\Events\Fixtures\ExampleEvent;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class BroadcastedEventsTest extends TestCase
 {
     public function testShouldBroadcastSuccess()
     {
-        $d = Mockery::mock(Dispatcher::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $d = Double::for(Dispatcher::class)->passthru();
 
         $event = new BroadcastEvent;
 
@@ -29,11 +30,11 @@ class BroadcastedEventsTest extends TestCase
     public function testShouldBroadcastAsQueuedAndCallNormalListeners()
     {
         unset($_SERVER['__event.test']);
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $broadcast->expects('queue');
-        $container->expects('make')->with(BroadcastFactory::class)->andReturn($broadcast);
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $d->listen(AlwaysBroadcastEvent::class, function ($payload) {
             $_SERVER['__event.test'] = $payload;
@@ -46,7 +47,7 @@ class BroadcastedEventsTest extends TestCase
 
     public function testShouldBroadcastFail()
     {
-        $d = Mockery::mock(Dispatcher::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $d = Double::for(Dispatcher::class)->passthru();
 
         $event = new BroadcastFalseCondition;
 
@@ -59,11 +60,11 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithMultipleChannels()
     {
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $broadcast->expects('queue');
-        $container->expects('make')->with(BroadcastFactory::class)->andReturn($broadcast);
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -78,11 +79,11 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomConnectionName()
     {
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $broadcast->expects('queue');
-        $container->expects('make')->with(BroadcastFactory::class)->andReturn($broadcast);
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -99,11 +100,11 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomEventName()
     {
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $broadcast->expects('queue');
-        $container->expects('make')->with(BroadcastFactory::class)->andReturn($broadcast);
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -123,11 +124,11 @@ class BroadcastedEventsTest extends TestCase
 
     public function testBroadcastWithCustomPayload()
     {
-        $container = Mockery::mock(Container::class);
+        $container = Double::for(Container::class);
         $d = new Dispatcher($container);
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $broadcast->expects('queue');
-        $container->expects('make')->with(BroadcastFactory::class)->andReturn($broadcast);
+        $container->expects('make')->with(BroadcastFactory::class)->returns($broadcast);
 
         $event = new class implements ShouldBroadcast
         {
@@ -150,24 +151,22 @@ class BroadcastedEventsTest extends TestCase
     public function testEventBroadcastsUsingNamedArguments()
     {
         $container = new Container;
-        $broadcast = Mockery::mock(BroadcastFactory::class);
+        $broadcast = Double::for(BroadcastFactory::class);
         $container->instance(BroadcastFactory::class, $broadcast);
 
         $originalContainer = Container::getInstance();
         Container::setInstance($container);
 
         try {
-            $pendingBroadcast = Mockery::mock(PendingBroadcast::class);
+            $pendingBroadcast = Double::for(PendingBroadcast::class);
 
-            $broadcast->expects('event')
-                ->with(Mockery::on(function ($event) {
+            $broadcast->expects('event')->with(Argument::satisfies(function ($event) {
                     $this->assertInstanceOf(BroadcastableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);
 
                     return true;
-                }))
-                ->andReturn($pendingBroadcast);
+                }))->returns($pendingBroadcast);
 
             $this->assertSame(
                 $pendingBroadcast,

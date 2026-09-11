@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Database;
 
 use Illuminate\Database\PostgresConnection;
+use Illuminate\Tests\TestCase;
 use PDO;
-use PHPUnit\Framework\TestCase;
 
 class DatabasePostgresConnectionTest extends TestCase
 {

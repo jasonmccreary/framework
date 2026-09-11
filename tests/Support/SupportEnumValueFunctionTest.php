@@ -5,8 +5,8 @@ namespace Illuminate\Tests\Support;
 use Illuminate\Tests\Support\Fixtures\TestBackedEnum;
 use Illuminate\Tests\Support\Fixtures\TestEnum;
 use Illuminate\Tests\Support\Fixtures\TestStringBackedEnum;
+use Illuminate\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 use function Illuminate\Support\enum_value;
 

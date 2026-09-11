@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Support;
 
 use Illuminate\Support\Once;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class OnceTest extends TestCase
 {

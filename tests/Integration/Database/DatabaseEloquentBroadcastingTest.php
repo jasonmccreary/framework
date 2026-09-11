@@ -14,7 +14,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
-use Mockery;
+use JMac\Testing\Double;
 
 class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 {
@@ -194,14 +194,14 @@ class DatabaseEloquentBroadcastingTest extends DatabaseTestCase
 
     private function assertHandldedBroadcastableEvent(BroadcastableModelEventOccurred $event, Closure $closure)
     {
-        $broadcaster = Mockery::mock(Broadcaster::class);
+        $broadcaster = Double::for(Broadcaster::class);
         $broadcaster->expects('broadcast')
-            ->withArgs(function (array $channels, string $eventName, array $payload) use ($closure) {
-                return $closure($channels, $eventName, $payload);
+            ->resolves(function (array $channels, string $eventName, array $payload) use ($closure) {
+                $this->assertTrue($closure($channels, $eventName, $payload));
             });
 
-        $manager = Mockery::mock(BroadcastingFactory::class);
-        $manager->expects('connection')->with(null)->andReturn($broadcaster);
+        $manager = Double::for(BroadcastingFactory::class);
+        $manager->expects('connection')->with(null)->returns($broadcaster);
 
         (new BroadcastEvent($event))->handle($manager);
 

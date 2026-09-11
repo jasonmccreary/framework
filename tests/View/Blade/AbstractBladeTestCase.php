@@ -4,10 +4,10 @@ namespace Illuminate\Tests\View\Blade;
 
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Tests\TestCase;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Component;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use JMac\Testing\Double;
 
 abstract class AbstractBladeTestCase extends TestCase
 {
@@ -31,6 +31,6 @@ abstract class AbstractBladeTestCase extends TestCase
 
     protected function getFiles()
     {
-        return Mockery::mock(Filesystem::class);
+        return Double::for(Filesystem::class);
     }
 }

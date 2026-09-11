@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
 {
@@ -29,13 +29,11 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite', [456]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
-            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
+            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->children()->createOrFirst(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -54,21 +52,15 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)';
         $bindings = ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -94,18 +86,13 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite', [456]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
-            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
+            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->children()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -124,13 +111,10 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -156,26 +140,17 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([]);
 
         $sql = 'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)';
         $bindings = ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -201,18 +176,13 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite', [456]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
-            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
+            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -231,13 +201,10 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -246,10 +213,8 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01T00:00:00.000000Z',
             ]]);
 
-        $model->getConnection()->expects('update')->with(
-            'update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
-            ['baz', '2023-01-01 00:00:00', 456],
-        )->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
+            ['baz', '2023-01-01 00:00:00', 456])->returns(1);
 
         $result = $model->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -268,26 +233,17 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([]);
 
         $sql = 'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)';
         $bindings = ['foo', 'baz', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], false, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -296,10 +252,8 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()->expects('update')->with(
-            'update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
-            ['baz', '2023-01-01 00:00:00', 456],
-        )->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
+            ['baz', '2023-01-01 00:00:00', 456])->returns(1);
 
         $result = $model->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -319,18 +273,13 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite', [456]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
-            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "child_table" ("attr", "val", "parent_id", "updated_at", "created_at") values (?, ?, ?, ?, ?)',
+            ['foo', 'bar', 123, '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->children()->updateOrCreate(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -342,13 +291,10 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -357,10 +303,8 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01T00:00:00.000000Z',
             ]]);
 
-        $model->getConnection()->expects('update')->with(
-            'update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
-            ['baz', '2023-01-01 00:00:00', 456],
-        )->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "child_table" set "val" = ?, "updated_at" = ? where "id" = ?',
+            ['baz', '2023-01-01 00:00:00', 456])->returns(1);
 
         $result = $model->children()->updateOrCreate(['attr' => 'foo'], fn () => ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -372,13 +316,10 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $model = new HasManyCreateOrFirstTestParentModel();
         $model->id = 123;
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "child_table" where "child_table"."parent_id" = ? and "child_table"."parent_id" is not null and ("attr" = ?) limit 1', [123, 'foo'], true, [])->returns([[
                 'id' => 456,
                 'parent_id' => 123,
                 'attr' => 'foo',
@@ -412,24 +353,26 @@ class DatabaseEloquentHasManyCreateOrFirstTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = Mockery::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = Double::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new Builder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $resolver = Mockery::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $connection->allows('getDatabaseName')->returns('database');
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
 
-        $pdo = Mockery::mock(PDO::class);
-        $connection->shouldReceive('getPdo')->andReturn($pdo);
+        $pdo = Double::for(PDO::class);
+        $connection->allows('getPdo')->returns($pdo);
 
         foreach ($lastInsertIds as $id) {
-            $pdo->expects('lastInsertId')->andReturn($id);
+            $pdo->expects('lastInsertId')->returns($id);
         }
     }
 }

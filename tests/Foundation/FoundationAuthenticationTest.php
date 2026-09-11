@@ -8,15 +8,15 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class FoundationAuthenticationTest extends TestCase
 {
     use InteractsWithAuthentication;
 
     /**
-     * @var \Mockery
+     * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
 
@@ -29,76 +29,59 @@ class FoundationAuthenticationTest extends TestCase
     ];
 
     /**
-     * @return \Illuminate\Contracts\Auth\Guard|\Mockery\LegacyMockInterface|\Mockery\MockInterface
+     * @return \Illuminate\Contracts\Auth\Guard
      */
     protected function mockGuard()
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard = Double::for(Guard::class);
 
-        $auth = Mockery::mock(AuthManager::class);
-        $auth->expects('guard')
-            ->andReturn($guard);
+        $auth = Double::for(AuthManager::class);
+        $auth->expects('guard')->returns($guard);
 
-        $this->app = Mockery::mock(Application::class);
-        $this->app->expects('make')
-            ->withArgs(['auth'])
-            ->andReturn($auth);
+        $this->app = Double::for(Application::class);
+        $this->app->expects('make')->with('auth')->returns($auth);
 
         return $guard;
     }
 
     public function testAssertAuthenticated()
     {
-        $this->mockGuard()
-            ->expects('check')
-            ->andReturn(true);
+        $this->mockGuard()->expects('check')->returns(true);
 
         $this->assertAuthenticated();
     }
 
     public function testAssertGuest()
     {
-        $this->mockGuard()
-            ->expects('check')
-            ->andReturn(false);
+        $this->mockGuard()->expects('check')->returns(false);
 
         $this->assertGuest();
     }
 
     public function testAssertAuthenticatedAs()
     {
-        $expected = Mockery::mock(Authenticatable::class);
-        $expected->expects('getAuthIdentifier')
-            ->andReturn('1');
+        $expected = Double::for(Authenticatable::class);
+        $expected->expects('getAuthIdentifier')->returns('1');
 
-        $this->mockGuard()
-            ->expects('user')
-            ->andReturn($expected);
+        $this->mockGuard()->expects('user')->returns($expected);
 
-        $user = Mockery::mock(Authenticatable::class);
-        $user->expects('getAuthIdentifier')
-            ->andReturn('1');
+        $user = Double::for(Authenticatable::class);
+        $user->expects('getAuthIdentifier')->returns('1');
 
         $this->assertAuthenticatedAs($user);
     }
 
     protected function setupProvider(array $credentials)
     {
-        $user = Mockery::mock(Authenticatable::class);
+        $user = Double::for(Authenticatable::class);
 
-        $provider = Mockery::mock(UserProvider::class);
+        $provider = Double::for(UserProvider::class);
 
-        $provider->expects('retrieveByCredentials')
-            ->with($credentials)
-            ->andReturn($user);
+        $provider->expects('retrieveByCredentials')->with($credentials)->returns($user);
 
-        $provider->expects('validateCredentials')
-            ->with($user, $credentials)
-            ->andReturn($this->credentials === $credentials);
+        $provider->expects('validateCredentials')->with($user, $credentials)->returns($this->credentials === $credentials);
 
-        $this->mockGuard()
-            ->expects('getProvider')
-            ->andReturn($provider);
+        $this->mockGuard()->expects('getProvider')->returns($provider);
     }
 
     public function testAssertCredentials()

@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Pagination;
 use Illuminate\Pagination\Cursor;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class CursorPaginatorTest extends TestCase
 {

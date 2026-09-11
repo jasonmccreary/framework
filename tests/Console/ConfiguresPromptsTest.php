@@ -2,14 +2,15 @@
 
 namespace Illuminate\Tests\Console;
 
-use Illuminate\Console\Application;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
+use Illuminate\Foundation\Application;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Laravel\Prompts\Prompt;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -38,10 +39,12 @@ class ConfiguresPromptsTest extends TestCase
             }
         };
 
-        $this->runCommand($command, fn ($components) => $components
-            ->expects('choice')
-            ->with('Test', $expectedOptions, $expectedDefault)
-            ->andReturn($return)
+        $this->runCommand($command, fn ($outputStyle) => $outputStyle->expects('askQuestion')->with(Argument::satisfies(
+            fn ($question) => $question->getQuestion() === 'Test'
+                && $question->getChoices() === $expectedOptions
+                && $question->getDefault() === $expectedDefault
+                && $question->isMultiselect() === false
+        ))->returns($return)
         );
 
         $this->assertSame($expectedReturn, $command->answer);
@@ -79,10 +82,12 @@ class ConfiguresPromptsTest extends TestCase
             }
         };
 
-        $this->runCommand($command, fn ($components) => $components
-            ->expects('choice')
-            ->with('Test', $expectedOptions, $expectedDefault, null, true)
-            ->andReturn($return)
+        $this->runCommand($command, fn ($outputStyle) => $outputStyle->expects('askQuestion')->with(Argument::satisfies(
+            fn ($question) => $question->getQuestion() === 'Test'
+                && $question->getChoices() === $expectedOptions
+                && $question->getDefault() === $expectedDefault
+                && $question->isMultiselect() === true
+        ))->returns($return)
         );
 
         $this->assertSame($expectedReturn, $command->answer);
@@ -108,18 +113,26 @@ class ConfiguresPromptsTest extends TestCase
 
     protected function runCommand($command, $expectations)
     {
-        $application = Mockery::mock(Application::class);
+        $application = Double::for(Application::class);
         $command->setLaravel($application);
 
-        $outputStyle = Mockery::mock(OutputStyle::class);
-        $application->expects('make')->withArgs(fn ($abstract) => $abstract === OutputStyle::class)->andReturn($outputStyle);
-        $factory = Mockery::mock(Factory::class);
-        $application->expects('make')->withArgs(fn ($abstract) => $abstract === Factory::class)->andReturn($factory);
-        $application->shouldReceive('runningUnitTests')->andReturn(false);
-        $application->expects('call')->with([$command, 'handle'])->andReturnUsing(fn ($callback) => call_user_func($callback));
-        $outputStyle->expects('newLinesWritten')->andReturn(1);
+        $outputStyle = Double::for(OutputStyle::class);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === OutputStyle::class), Argument::any())->returns($outputStyle);
+        // Factory::choice() (and friends) is magic-__call'd to dynamically
+        // instantiate a real component object (`new Choice($this->output)`)
+        // rather than delegating to an injectable collaborator, so there's no
+        // seam to stub choice() itself on a double the way whereNotNull() had
+        // via forwardCallTo(). Use a real Factory wrapping the already-doubled
+        // $outputStyle instead, and verify the resulting ChoiceQuestion via
+        // $outputStyle->askQuestion() (a real, declared method), which the
+        // component ultimately calls.
+        $factory = new Factory($outputStyle);
+        $application->expects('make')->with(Argument::satisfies(fn ($abstract) => $abstract === Factory::class), Argument::any())->returns($factory);
+        $application->allows('runningUnitTests')->returns(false);
+        $application->expects('call')->with([$command, 'handle'])->resolves(fn ($callback) => call_user_func($callback));
+        $outputStyle->expects('newLinesWritten')->returns(1);
 
-        $expectations($factory);
+        $expectations($outputStyle);
 
         $command->run(new ArrayInput([]), new NullOutput);
     }

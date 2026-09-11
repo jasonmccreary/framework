@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation;
 
 use Illuminate\Foundation\EnvironmentDetector;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationEnvironmentDetectorTest extends TestCase
 {

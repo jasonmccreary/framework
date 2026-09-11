@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 use Illuminate\Console\CommandMutex;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Foundation\Application;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use Orchestra\Testbench\Concerns\InteractsWithMockery;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -38,7 +38,7 @@ class CommandMutexTest extends TestCase
             }
         };
 
-        $this->commandMutex = Mockery::mock(CommandMutex::class);
+        $this->commandMutex = Double::for(CommandMutex::class);
 
         $app = new Application;
         $app->instance(CommandMutex::class, $this->commandMutex);
@@ -52,10 +52,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunIsolatedCommandIfNotBlocked()
     {
-        $this->commandMutex->expects('create')
-            ->andReturn(true);
-        $this->commandMutex->expects('forget')
-            ->andReturn(true);
+        $this->commandMutex->expects('create')->returns(true);
+        $this->commandMutex->expects('forget')->returns(true);
 
         $this->runCommand();
 
@@ -64,8 +62,7 @@ class CommandMutexTest extends TestCase
 
     public function testCannotRunIsolatedCommandIfBlocked()
     {
-        $this->commandMutex->expects('create')
-            ->andReturn(false);
+        $this->commandMutex->expects('create')->returns(false);
 
         $this->runCommand();
 
@@ -74,12 +71,8 @@ class CommandMutexTest extends TestCase
 
     public function testCanRunCommandAgainAfterOtherCommandFinished()
     {
-        $this->commandMutex->expects('create')
-            ->andReturn(true)
-            ->times(2);
-        $this->commandMutex->expects('forget')
-            ->andReturn(true)
-            ->times(2);
+        $this->commandMutex->expects('create')->returns(true)->times(2);
+        $this->commandMutex->expects('forget')->returns(true)->times(2);
 
         $this->runCommand();
         $this->runCommand();
@@ -91,7 +84,7 @@ class CommandMutexTest extends TestCase
     {
         $this->runCommand(false);
 
-        $this->commandMutex->shouldNotHaveReceived('create');
+        $this->commandMutex->received('create')->never();
         $this->assertEquals(1, $this->command->ran);
     }
 

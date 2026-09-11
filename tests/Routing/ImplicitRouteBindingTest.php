@@ -9,7 +9,7 @@ use Illuminate\Routing\ImplicitRouteBinding;
 use Illuminate\Routing\Route;
 use Illuminate\Tests\Routing\Fixtures\CategoryBackedEnum;
 use Illuminate\Tests\Routing\Fixtures\CategoryEnum;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 include_once 'Fixtures/Enums.php';
 

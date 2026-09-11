@@ -2,6 +2,8 @@
 
 namespace Illuminate\Tests\Integration\Database;
 
+use JMac\Testing\Matching\Argument;
+use JMac\Testing\Double;
 use Illuminate\Cache\DatabaseLock;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
@@ -9,7 +11,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Mockery;
 use Orchestra\Testbench\Attributes\WithMigration;
 use PDOException;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -148,23 +149,21 @@ class DatabaseLockTest extends DatabaseTestCase
     #[TestWith(['Table does not exist', 1146, false])]
     public function testIgnoresConcurrencyException(string $message, int $code, bool $hasConcurrenyError)
     {
-        $connection = Mockery::mock(Connection::class);
-        $insertBuilder = Mockery::mock(Builder::class);
-        $deleteBuilder = Mockery::mock(Builder::class);
+        $connection = Double::for(Connection::class);
+        $insertBuilder = Double::for(Builder::class);
+        $deleteBuilder = Double::for(Builder::class);
 
-        $insertBuilder->expects('insert')->andReturn(true);
+        $insertBuilder->expects('insert')->returns(true);
 
-        $deleteBuilder->expects('where')->with('expiration', '<=', Mockery::any())->andReturnSelf();
-        $deleteBuilder->expects('delete')->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('where')->with('expiration', '<=', Argument::any())->returns($deleteBuilder);
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where expiration <= ?',
                 [],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->expects('table')->times(2)->with('cache_locks')->andReturn($insertBuilder, $deleteBuilder);
+        $connection->expects('table')->times(2)->with('cache_locks')->returns($insertBuilder, $deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 0, lottery: [1, 1]);
 
@@ -180,23 +179,21 @@ class DatabaseLockTest extends DatabaseTestCase
     #[TestWith(['Table does not exist', 1146, false])]
     public function testReleaseIgnoresConcurrencyException(string $message, int $code, bool $hasConcurrencyError)
     {
-        $connection = Mockery::mock(Connection::class);
-        $deleteBuilder = Mockery::mock(Builder::class);
+        $connection = Double::for(Connection::class);
+        $deleteBuilder = Double::for(Builder::class);
 
         $owner = 'owner-123';
 
-        $deleteBuilder->expects('where')->with('key', 'foo')->andReturnSelf();
-        $deleteBuilder->expects('where')->with('owner', $owner)->andReturnSelf();
-        $deleteBuilder->expects('delete')->andThrow(
-            new QueryException(
+        $deleteBuilder->expects('where')->with('key', 'foo')->returns($deleteBuilder);
+        $deleteBuilder->expects('where')->with('owner', $owner)->returns($deleteBuilder);
+        $deleteBuilder->expects('delete')->throws(new QueryException(
                 'mysql',
                 'delete from cache_locks where key = ? and owner = ?',
                 ['foo', $owner],
                 new PDOException($message, $code)
-            )
-        );
+            ));
 
-        $connection->expects('table')->with('cache_locks')->andReturn($deleteBuilder);
+        $connection->expects('table')->with('cache_locks')->returns($deleteBuilder);
 
         $lock = new DatabaseLock($connection, 'cache_locks', 'foo', 10, $owner); // same owner...
 

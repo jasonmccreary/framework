@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Support;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use Illuminate\Support\HigherOrderTapProxy;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class HigherOrderProxyTest extends TestCase
 {

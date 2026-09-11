@@ -3,9 +3,9 @@
 namespace Illuminate\Tests\Validation;
 
 use Illuminate\Support\Fluent;
+use Illuminate\Tests\TestCase;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationRuleParser;
-use PHPUnit\Framework\TestCase;
 
 class ValidationRuleParserTest extends TestCase
 {

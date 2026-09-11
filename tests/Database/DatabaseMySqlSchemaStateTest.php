@@ -6,9 +6,9 @@ use Exception;
 use Generator;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\Schema\MySqlSchemaState;
+use Illuminate\Tests\TestCase;
 use Pdo\Mysql;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Symfony\Component\Process\Process;
 

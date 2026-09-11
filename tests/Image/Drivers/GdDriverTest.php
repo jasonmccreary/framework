@@ -19,10 +19,10 @@ use Illuminate\Image\Transformations\Resize;
 use Illuminate\Image\Transformations\Rotate;
 use Illuminate\Image\Transformations\Scale;
 use Illuminate\Image\Transformations\Sharpen;
+use Illuminate\Tests\TestCase;
 use Intervention\Image\Interfaces\ImageInterface;
 use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
-use PHPUnit\Framework\TestCase;
 
 #[RequiresPhpExtension('gd')]
 class GdDriverTest extends TestCase

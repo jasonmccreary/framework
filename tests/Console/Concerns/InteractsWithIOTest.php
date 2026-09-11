@@ -6,9 +6,9 @@ use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Console\OutputStyle;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -20,12 +20,10 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = Mockery::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = Double::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
-        $output->expects('createProgressBar')
-            ->with(count($iterable))
-            ->andReturnUsing(function ($steps) use ($bufferedOutput) {
+        $output->expects('createProgressBar')->with(count($iterable))->resolves(function ($steps) use ($bufferedOutput) {
                 // we can't mock ProgressBar because it's final, so return a real one
                 return new ProgressBar($bufferedOutput, $steps);
             });
@@ -53,14 +51,12 @@ class InteractsWithIOTest extends TestCase
     {
         $command = new CommandInteractsWithIO;
         $bufferedOutput = new BufferedOutput();
-        $output = Mockery::mock(OutputStyle::class, [new ArgvInput(), $bufferedOutput])->makePartial();
+        $output = Double::for(OutputStyle::class)->passthru(new OutputStyle(new ArgvInput(), $bufferedOutput));
         $command->setOutput($output);
 
         $totalSteps = 5;
 
-        $output->expects('createProgressBar')
-            ->with($totalSteps)
-            ->andReturnUsing(function ($steps) use ($bufferedOutput) {
+        $output->expects('createProgressBar')->with($totalSteps)->resolves(function ($steps) use ($bufferedOutput) {
                 // we can't mock ProgressBar because it's final, so return a real one
                 return new ProgressBar($bufferedOutput, $steps);
             });

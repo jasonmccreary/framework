@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
 {
@@ -27,13 +27,11 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->newQuery()->createOrFirst(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -50,21 +48,15 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
         $sql = 'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -87,13 +79,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -116,18 +105,13 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->newQuery()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -144,26 +128,17 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
         $sql = 'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -186,13 +161,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -200,13 +172,8 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -223,18 +190,13 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -251,26 +213,17 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
         $sql = 'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', 'baz', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -278,13 +231,8 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -301,13 +249,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'count' => 1,
@@ -315,18 +260,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('raw')
-            ->with('"count" + 1')
-            ->andReturn('2');
+        $model->getConnection()->expects('raw')->with('"count" + 1')->returns('2');
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "count" = ?, "updated_at" = ? where "id" = ?',
-                ['2', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "count" = ?, "updated_at" = ? where "id" = ?',
+                ['2', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->incrementOrCreate(['attr' => 'foo'], 'count');
         $this->assertFalse($result->wasRecentlyCreated);
@@ -343,18 +280,13 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "count", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', '1', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "count", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', '1', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->newQuery()->incrementOrCreate(['attr' => 'foo']);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -371,13 +303,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -386,18 +315,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('raw')
-            ->with('"count" + 2')
-            ->andReturn('3');
+        $model->getConnection()->expects('raw')->with('"count" + 2')->returns('3');
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "count" = ?, "val" = ?, "updated_at" = ? where "id" = ?',
-                ['3', 'baz', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "count" = ?, "val" = ?, "updated_at" = ? where "id" = ?',
+                ['3', 'baz', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->incrementOrCreate(['attr' => 'foo'], step: 2, extra: ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -415,26 +336,17 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
         $sql = 'insert into "table" ("attr", "count", "updated_at", "created_at") values (?, ?, ?, ?)';
         $bindings = ['foo', '1', '2023-01-01 00:00:00', '2023-01-01 00:00:00'];
 
-        $model->getConnection()
-            ->expects('insert')
-            ->with($sql, $bindings)
-            ->andThrow(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
+        $model->getConnection()->expects('insert')->with($sql, $bindings)->throws(new UniqueConstraintViolationException('sqlite', $sql, $bindings, new Exception()));
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], false, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'count' => 1,
@@ -442,18 +354,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('raw')
-            ->with('"count" + 1')
-            ->andReturn('2');
+        $model->getConnection()->expects('raw')->with('"count" + 1')->returns('2');
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "count" = ?, "updated_at" = ? where "id" = ?',
-                ['2', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "count" = ?, "updated_at" = ? where "id" = ?',
+                ['2', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->incrementOrCreate(['attr' => 'foo']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -471,18 +375,13 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], $values);
         $this->assertTrue($result->wasRecentlyCreated);
@@ -499,13 +398,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -513,13 +409,8 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 123])->returns(1);
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], fn () => ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
@@ -530,18 +421,13 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite', [123]);
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
-        $model->getConnection()->expects('insert')->with(
-            'insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
-            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'],
-        )->andReturnTrue();
+        $model->getConnection()->expects('insert')->with('insert into "table" ("attr", "val", "updated_at", "created_at") values (?, ?, ?, ?)',
+            ['foo', 'bar', '2023-01-01 00:00:00', '2023-01-01 00:00:00'])->returns(true);
 
         $callCount = 0;
         $model->newQuery()->updateOrCreate(['attr' => 'foo'], function () use (&$callCount) {
@@ -557,13 +443,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -571,13 +454,8 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
                 'updated_at' => '2023-01-01 00:00:00',
             ]]);
 
-        $model->getConnection()
-            ->expects('update')
-            ->with(
-                'update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
-                ['baz', '2023-01-01 00:00:00', 123],
-            )
-            ->andReturn(1);
+        $model->getConnection()->expects('update')->with('update "table" set "val" = ?, "updated_at" = ? where "id" = ?',
+                ['baz', '2023-01-01 00:00:00', 123])->returns(1);
 
         $callCount = 0;
         $model->newQuery()->updateOrCreate(['attr' => 'foo'], function () use (&$callCount) {
@@ -594,13 +472,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([]);
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([]);
 
         $result = $model->newQuery()->firstOrNew(['attr' => 'foo'], $values);
         $this->assertFalse($result->exists);
@@ -612,13 +487,10 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
     {
         $model = new EloquentBuilderCreateOrFirstTestModel();
         $this->mockConnectionForModel($model, 'SQLite');
-        $model->getConnection()->shouldReceive('transactionLevel')->andReturn(0);
-        $model->getConnection()->shouldReceive('getName')->andReturn('sqlite');
+        $model->getConnection()->allows('transactionLevel')->returns(0);
+        $model->getConnection()->allows('getName')->returns('sqlite');
 
-        $model->getConnection()
-            ->expects('select')
-            ->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])
-            ->andReturn([[
+        $model->getConnection()->expects('select')->with('select * from "table" where ("attr" = ?) limit 1', ['foo'], true, [])->returns([[
                 'id' => 123,
                 'attr' => 'foo',
                 'val' => 'bar',
@@ -651,24 +523,26 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
         $grammarClass = 'Illuminate\Database\Query\Grammars\\'.$database.'Grammar';
         $processorClass = 'Illuminate\Database\Query\Processors\\'.$database.'Processor';
         $processor = new $processorClass;
-        $connection = Mockery::mock(Connection::class, ['getPostProcessor' => $processor]);
+        $connection = Double::for(Connection::class);
+        $connection->allows('getPostProcessor')->returns($processor);
         $grammar = new $grammarClass($connection);
-        $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-        $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
+        $connection->allows('getQueryGrammar')->returns($grammar);
+        $connection->allows('getTablePrefix')->returns('');
+        $connection->allows('query')->resolves(function () use ($connection, $grammar, $processor) {
             return new Builder($connection, $grammar, $processor);
         });
-        $connection->shouldReceive('getDatabaseName')->andReturn('database');
-        $resolver = Mockery::mock(ConnectionResolverInterface::class, ['connection' => $connection]);
+        $connection->allows('getDatabaseName')->returns('database');
+        $resolver = Double::for(ConnectionResolverInterface::class);
+        $resolver->allows('connection')->returns($connection);
 
         $class = get_class($model);
         $class::setConnectionResolver($resolver);
 
-        $pdo = Mockery::mock(PDO::class);
-        $connection->shouldReceive('getPdo')->andReturn($pdo);
+        $pdo = Double::for(PDO::class);
+        $connection->allows('getPdo')->returns($pdo);
 
         foreach ($lastInsertIds as $id) {
-            $pdo->expects('lastInsertId')->andReturn($id);
+            $pdo->expects('lastInsertId')->returns($id);
         }
     }
 }

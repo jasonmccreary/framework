@@ -24,12 +24,12 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Testing\TestResponse;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use JsonSerializable;
-use Mockery;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
@@ -3293,7 +3293,7 @@ EOT
     private function makeMockResponse($content)
     {
         $baseResponse = tap(new Response, function ($response) use ($content) {
-            $response->setContent(Mockery::mock(View::class, $content));
+            $response->setContent(Double::for(View::class, $content));
         });
 
         return TestResponse::fromBaseResponse($baseResponse);

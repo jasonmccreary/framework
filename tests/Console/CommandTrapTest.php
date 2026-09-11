@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Console;
 use Illuminate\Console\Command;
 use Illuminate\Console\Signals;
 use Illuminate\Tests\Console\Fixtures\FakeSignalsRegistry;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class CommandTrapTest extends TestCase
 {

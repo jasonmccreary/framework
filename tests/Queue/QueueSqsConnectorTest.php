@@ -9,7 +9,7 @@ use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Queue\AwsCredentialCache;
 use Illuminate\Queue\Connectors\SqsConnector;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use RuntimeException;
 
 class QueueSqsConnectorTest extends TestCase

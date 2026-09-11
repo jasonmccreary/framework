@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Foundation;
 
 use Illuminate\Foundation\AliasLoader;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class FoundationAliasLoaderTest extends TestCase
 {

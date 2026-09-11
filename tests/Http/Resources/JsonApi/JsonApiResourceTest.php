@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Http\Resources\JsonApi;
 use BadMethodCallException;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class JsonApiResourceTest extends TestCase
 {

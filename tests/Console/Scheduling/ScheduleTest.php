@@ -10,10 +10,10 @@ use Illuminate\Console\Scheduling\SchedulingMutex;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Tests\Queue\Fixtures\JobToTestWithSchedule;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Schedule::class)]
 final class ScheduleTest extends TestCase
@@ -24,9 +24,9 @@ final class ScheduleTest extends TestCase
     {
         $this->container = new Container;
         Container::setInstance($this->container);
-        $eventMutex = Mockery::mock(EventMutex::class);
+        $eventMutex = Double::for(EventMutex::class);
         $this->container->instance(EventMutex::class, $eventMutex);
-        $schedulingMutex = Mockery::mock(SchedulingMutex::class);
+        $schedulingMutex = Double::for(SchedulingMutex::class);
         $this->container->instance(SchedulingMutex::class, $schedulingMutex);
     }
 

@@ -3,8 +3,8 @@
 namespace Illuminate\Tests\Database;
 
 use Illuminate\Database\Eloquent\Concerns\PreventsCircularRecursion;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class DatabaseConcernsPreventsCircularRecursionTest extends TestCase
 {
@@ -174,7 +174,7 @@ class DatabaseConcernsPreventsCircularRecursionTest extends TestCase
 
     public function testMockedModelCallToWithoutRecursionMethodWorks(): void
     {
-        $mock = Mockery::mock(TestModel::class)->makePartial();
+        $mock = Double::for(TestModel::class)->passthru();
 
         // Model toArray method implementation
         $toArray = $mock->withoutRecursion(

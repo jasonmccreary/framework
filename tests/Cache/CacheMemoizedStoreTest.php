@@ -9,8 +9,8 @@ use Illuminate\Cache\NullStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Carbon;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 
 class CacheMemoizedStoreTest extends TestCase
 {
@@ -38,7 +38,7 @@ class CacheMemoizedStoreTest extends TestCase
     {
         $this->expectException(BadMethodCallException::class);
 
-        $stub = Mockery::mock(Store::class);
+        $stub = Double::for(Store::class);
         (new MemoizedStore('test', new Repository($stub)))->flushLocks();
     }
 

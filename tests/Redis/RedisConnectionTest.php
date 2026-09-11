@@ -9,8 +9,9 @@ use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Redis\RedisManager;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 use Predis\Client;
 use Redis;
 
@@ -553,10 +554,10 @@ class RedisConnectionTest extends TestCase
     public function testItDispatchesQueryEvent()
     {
         foreach ($this->connections() as $redis) {
-            $events = Mockery::mock(Dispatcher::class);
+            $events = Double::for(Dispatcher::class);
             $redis->setEventDispatcher($events);
 
-            $events->expects('dispatch')->with(Mockery::on(function ($event) {
+            $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
                 $this->assertSame('get', $event->command);
                 $this->assertEquals(['foobar'], $event->parameters);
                 $this->assertSame('default', $event->connectionName);

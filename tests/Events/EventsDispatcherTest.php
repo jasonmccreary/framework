@@ -7,8 +7,9 @@ use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Tests\Events\Fixtures\ExampleEvent;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
+use JMac\Testing\Matching\Argument;
 
 class EventsDispatcherTest extends TestCase
 {
@@ -250,8 +251,8 @@ class EventsDispatcherTest extends TestCase
 
     public function testContainerResolutionOfEventHandlers()
     {
-        $container = Mockery::mock(Container::class);
-        $container->expects('make')->with(TestEventListener::class)->andReturn(new TestEventListener);
+        $container = Double::for(Container::class);
+        $container->expects('make')->with(TestEventListener::class)->returns(new TestEventListener);
         $d = new Dispatcher($container);
         $d->listen('foo', TestEventListener::class.'@onFooEvent');
         $response = $d->dispatch('foo', ['foo', 'bar']);
@@ -723,22 +724,20 @@ class EventsDispatcherTest extends TestCase
     public function testEventDispatchesUsingNamedArguments()
     {
         $container = new Container;
-        $events = Mockery::mock(Dispatcher::class);
+        $events = Double::for(Dispatcher::class);
         $container->instance('events', $events);
 
         $originalContainer = Container::getInstance();
         Container::setInstance($container);
 
         try {
-            $events->expects('dispatch')
-                ->with(Mockery::on(function ($event) {
+            $events->expects('dispatch')->with(Argument::satisfies(function ($event) {
                     $this->assertInstanceOf(DispatchableNamedArgumentsEvent::class, $event);
                     $this->assertSame('first-value', $event->first);
                     $this->assertSame('second-value', $event->second);
 
                     return true;
-                }))
-                ->andReturn(['dispatched']);
+                }))->returns(['dispatched']);
 
             $this->assertSame(
                 ['dispatched'],

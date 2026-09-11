@@ -4,8 +4,8 @@ namespace Illuminate\Tests\Routing;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\RouteSignatureParameters;
+use Illuminate\Tests\TestCase;
 use Laravel\SerializableClosure\SerializableClosure;
-use PHPUnit\Framework\TestCase;
 use ReflectionParameter;
 
 class RouteSignatureParametersTest extends TestCase

@@ -4,7 +4,7 @@ namespace Illuminate\Tests\Http\Middleware;
 
 use Illuminate\Http\Middleware\PrefersJsonResponses;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class PrefersJsonResponsesTest extends TestCase

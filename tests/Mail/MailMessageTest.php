@@ -6,7 +6,7 @@ use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 

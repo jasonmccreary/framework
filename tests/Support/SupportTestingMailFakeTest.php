@@ -8,14 +8,14 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\MailManager;
 use Illuminate\Support\Testing\Fakes\MailFake;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\TestCase;
 
 class SupportTestingMailFakeTest extends TestCase
 {
     /**
-     * @var \Mockery
+     * @var \Illuminate\Mail\MailManager
      */
     private $mailManager;
 
@@ -31,10 +31,8 @@ class SupportTestingMailFakeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mailManager = Mockery::mock(MailManager::class, function ($mock) {
-            $mock->expects('getDefaultDriver')
-                ->andReturn('smtp');
-        });
+        $this->mailManager = Double::for(MailManager::class);
+        $this->mailManager->expects('getDefaultDriver')->returns('smtp');
         $this->fake = new MailFake($this->mailManager);
         $this->mailable = new MailableStub;
     }
@@ -422,7 +420,7 @@ class SupportTestingMailFakeTest extends TestCase
 
     public function testMissingMethodsAreForwarded()
     {
-        $this->mailManager->expects('foo')->andReturn('bar');
+        $this->mailManager->expects('foo')->returns('bar');
 
         $this->assertSame('bar', $this->fake->foo());
     }

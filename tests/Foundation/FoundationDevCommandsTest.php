@@ -11,9 +11,9 @@ use Illuminate\Foundation\DevCommandMode;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
-use Mockery;
+use Illuminate\Tests\TestCase;
+use JMac\Testing\Double;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class FoundationDevCommandsTest extends TestCase
@@ -322,8 +322,8 @@ class FoundationDevCommandsTest extends TestCase
     {
         File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
 
-        $provider = Mockery::mock('alias:Laravel\Pail\PailServiceProvider');
-        $provider->shouldReceive('register');
+        $provider = Double::for('alias:Laravel\Pail\PailServiceProvider');
+        $provider->allows('register');
 
         Application::getInstance()->register($provider);
 

@@ -5,12 +5,12 @@ namespace Illuminate\Tests\Validation;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Tests\TestCase;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 
 class ValidationUniqueRuleTest extends TestCase
 {

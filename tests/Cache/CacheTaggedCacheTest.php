@@ -5,7 +5,7 @@ namespace Illuminate\Tests\Cache;
 use DateInterval;
 use DateTime;
 use Illuminate\Cache\ArrayStore;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Tests\TestCase;
 
 class CacheTaggedCacheTest extends TestCase
 {
