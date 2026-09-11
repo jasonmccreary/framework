@@ -131,8 +131,8 @@ class MailMailerTest extends TestCase
     {
         $view = Double::for(Factory::class, View::class);
         $view->expects('make')->times(2)->returns($view);
-        $view->expects('render')->returns('rendered.view');
         $view->expects('render')->returns('rendered.plain');
+        $view->expects('render')->returns('rendered.view');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
@@ -163,8 +163,8 @@ class MailMailerTest extends TestCase
     {
         $view = Double::for(Factory::class, View::class);
         $view->expects('make')->times(2)->returns($view);
-        $view->expects('render')->returns('rendered.view');
         $view->expects('render')->returns('rendered.plain');
+        $view->expects('render')->returns('rendered.view');
 
         $mailer = new Mailer('array', $view, new ArrayTransport);
 
