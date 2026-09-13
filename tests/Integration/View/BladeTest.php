@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 use Illuminate\View\Component;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Symfony\Component\Finder\Finder;
@@ -17,6 +18,8 @@ use function Orchestra\Testbench\phpunit_version_compare;
 
 class BladeTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function tearDown(): void
     {
         artisan($this, 'view:clear');
@@ -248,9 +251,12 @@ class BladeTest extends TestCase
         View::addNamespace('templates', join_paths(__DIR__, 'Fixtures', 'templates'));
         View::addNamespace('components', join_paths(__DIR__, 'Fixtures', 'templates', 'components'));
 
-        Blade::partialMock()->expects('compile')->with(realpath(__DIR__.'/Fixtures/templates/components/panel.blade.php'));
+        $blade = Blade::partialMock();
+        $blade->allows('compile')->with(realpath(__DIR__.'/Fixtures/templates/components/panel.blade.php'));
 
         $this->artisan('view:cache');
+
+        $blade->received('compile')->times(1)->with(realpath(__DIR__.'/Fixtures/templates/components/panel.blade.php'));
     }
 
     /** {@inheritdoc} */

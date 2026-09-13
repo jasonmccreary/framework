@@ -5,6 +5,7 @@ namespace Illuminate\Tests\Foundation\Cloud;
 use Illuminate\Foundation\Cloud\CloudManager;
 use Illuminate\Foundation\Cloud\Queue as CloudQueue;
 use Illuminate\Support\Facades\Cloud;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -12,6 +13,8 @@ use RuntimeException;
 
 class CloudManagerTest extends TestCase
 {
+    use VerifiesDoubles;
+
     #[TestWith([null, false])]
     #[TestWith(['sqs', false])]
     #[TestWith(['cloud', true])]
@@ -39,8 +42,8 @@ class CloudManagerTest extends TestCase
         $cloudQueue->shouldReceive('managedQueues')->andReturn(['emails']);
 
         $cloud = Cloud::partialMock();
-        $cloud->shouldReceive('usesManagedQueues')->andReturn(true);
-        $cloud->shouldReceive('queue')->andReturn($cloudQueue);
+        $cloud->allows('usesManagedQueues')->returns(true);
+        $cloud->allows('queue')->returns($cloudQueue);
 
         $this->assertSame($managed, Cloud::isManagedQueue($queue));
     }

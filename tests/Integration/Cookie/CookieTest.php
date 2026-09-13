@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Orchestra\Testbench\TestCase;
 
 class CookieTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function test_cookie_is_sent_back_with_proper_expire_time_when_should_expire_on_close()
     {
         $this->app['config']->set('session.expire_on_close', true);
@@ -43,7 +46,7 @@ class CookieTest extends TestCase
 
     protected function defineEnvironment($app)
     {
-        Exceptions::spy()->shouldReceive('render')->andReturn(new Response);
+        Exceptions::shouldReceive('render')->returns(new Response);
 
         $app['config']->set('app.key', Str::random(32));
         $app['config']->set('session.driver', 'fake-null');

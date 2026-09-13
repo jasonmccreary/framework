@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Orchestra\Testbench\TestCase;
 
 class SessionPersistenceTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testSessionIsPersistedEvenIfExceptionIsThrownFromRoute()
     {
         $handler = new FakeNullSessionHandler;
@@ -32,7 +35,7 @@ class SessionPersistenceTest extends TestCase
 
     protected function defineEnvironment($app)
     {
-        Exceptions::spy()->expects('render')->andReturn(new Response);
+        Exceptions::expects('render')->returns(new Response);
 
         $app['config']->set('app.key', Str::random(32));
         $app['config']->set('session.driver', 'fake-null');

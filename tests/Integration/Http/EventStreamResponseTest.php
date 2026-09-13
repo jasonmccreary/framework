@@ -6,10 +6,14 @@ use Exception;
 use Illuminate\Http\StreamedEvent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\TestCase;
 
 class EventStreamResponseTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testEventStreamResponse()
     {
         Route::get('/stream', function () {
@@ -54,7 +58,7 @@ class EventStreamResponseTest extends TestCase
         });
 
         Log::expects('error')
-            ->with('Something went wrong during streaming', \Mockery::type('array'));
+            ->with('Something went wrong during streaming', Argument::type('array'));
 
         $response = $this->get('/stream');
         $content = $response->streamedContent();
@@ -75,7 +79,7 @@ class EventStreamResponseTest extends TestCase
         });
 
         Log::expects('error')
-            ->with('Test exception reporting', \Mockery::type('array'));
+            ->with('Test exception reporting', Argument::type('array'));
 
         $response = $this->get('/stream');
         $response->streamedContent();

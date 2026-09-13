@@ -8,12 +8,15 @@ use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
-use Mockery;
-use Mockery\LegacyMockInterface;
+use JMac\Testing\DoubleInterface;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
 use PHPUnit\Framework\TestCase;
 
 class CacheSpyMemoTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         $container = new Container;
@@ -42,45 +45,45 @@ class CacheSpyMemoTest extends TestCase
 
     public function test_cache_spy_works_with_memoized_cache()
     {
-        $cache = Cache::spy();
+        Cache::spy();
 
         Cache::memo()->remember('key', 60, fn () => 'bar');
 
-        $cache->shouldHaveReceived('memo')->once();
+        Cache::shouldHaveReceived('memo');
     }
 
     public function test_cache_spy_tracks_remember_on_memoized_cache_as_described_in_issue()
     {
-        $cache = Cache::spy();
+        Cache::spy();
 
         $memoizedCache = Cache::memo();
         $value = $memoizedCache->remember('key', 60, fn () => 'bar');
 
         $this->assertSame('bar', $value);
 
-        $memoizedCache->shouldHaveReceived('remember')->once()->with('key', 60, Mockery::type(Closure::class));
+        $memoizedCache->received('remember')->times(1)->with('key', 60, Argument::type(Closure::class));
     }
 
     public function test_cache_spy_tracks_remember_calls_on_memoized_cache()
     {
-        $cache = Cache::spy();
+        Cache::spy();
 
         $memoizedCache = Cache::memo();
         $memoizedCache->remember('key', 60, fn () => 'bar');
 
-        $memoizedCache->shouldHaveReceived('remember')->once()->with('key', 60, Mockery::type(Closure::class));
+        $memoizedCache->received('remember')->times(1)->with('key', 60, Argument::type(Closure::class));
     }
 
     public function test_cache_spy_memo_returns_spied_repository()
     {
-        $cache = Cache::spy();
+        Cache::spy();
 
         $memoizedCache = Cache::memo();
 
-        $this->assertInstanceOf(LegacyMockInterface::class, $memoizedCache);
+        $this->assertInstanceOf(DoubleInterface::class, $memoizedCache);
 
         $memoizedCache->remember('key', 60, fn () => 'bar');
 
-        $memoizedCache->shouldHaveReceived('remember')->once();
+        $memoizedCache->received('remember')->times(1);
     }
 }

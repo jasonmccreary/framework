@@ -11,6 +11,7 @@ use Illuminate\Foundation\DevCommandMode;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystem;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,8 @@ use ReflectionClass;
 
 class FoundationDevCommandsTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         $ref = new ReflectionClass(DevCommands::class);
@@ -320,7 +323,7 @@ class FoundationDevCommandsTest extends TestCase
     #[RequiresOperatingSystem('Linux|Darwin')]
     public function testRegisterDefaultsRegistersExpectedCommands()
     {
-        File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
+        File::shouldReceive('exists')->with(base_path('package.json'))->returns(true);
 
         $provider = Mockery::mock('alias:Laravel\Pail\PailServiceProvider');
         $provider->shouldReceive('register');
@@ -344,7 +347,7 @@ class FoundationDevCommandsTest extends TestCase
     #[RequiresOperatingSystem('Linux|Darwin')]
     public function testRegisterDefaultsExcludesPailWhenNotInstalled()
     {
-        File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
+        File::shouldReceive('exists')->with(base_path('package.json'))->returns(true);
 
         DevCommands::registerDefaults();
 
@@ -362,7 +365,7 @@ class FoundationDevCommandsTest extends TestCase
     #[RequiresOperatingSystem('Windows')]
     public function testRegisterDefaultsExcludesPailOnWindows()
     {
-        File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
+        File::shouldReceive('exists')->with(base_path('package.json'))->returns(true);
 
         DevCommands::registerDefaults();
 
@@ -379,7 +382,7 @@ class FoundationDevCommandsTest extends TestCase
 
     public function testRegisterDefaultsExcludesViteWithoutPackageJson()
     {
-        File::shouldReceive('exists')->with(base_path('package.json'))->andReturnFalse();
+        File::shouldReceive('exists')->with(base_path('package.json'))->returns(false);
 
         DevCommands::registerDefaults();
 
