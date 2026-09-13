@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use Orchestra\Testbench\Attributes\WithMigration;
 use RuntimeException;
@@ -23,6 +24,7 @@ use RuntimeException;
 class WorkCommandTest extends QueueTestCase
 {
     use DatabaseMigrations;
+    use VerifiesDoubles;
 
     protected function setUp(): void
     {
@@ -198,8 +200,8 @@ class WorkCommandTest extends QueueTestCase
         $cache->expects('get')->with('illuminate:queues:paused')->andReturn(null);
         $cache->expects('many')->andReturn([]);
 
-        Cache::expects('driver')->times(2)->andReturn($cache);
-        Cache::expects('store')->andReturn($cache);
+        Cache::expects('driver')->times(2)->returns($cache);
+        Cache::expects('store')->returns($cache);
 
         Queue::push(new FirstJob);
 
@@ -225,8 +227,7 @@ class WorkCommandTest extends QueueTestCase
         $cache->expects('get')->times(2)->with('illuminate:queue:restart')->andReturn(null);
         $cache->shouldNotReceive('many');
 
-        Cache::expects('driver')->times(2)->andReturn($cache);
-        Cache::shouldNotReceive('store');
+        Cache::expects('driver')->times(2)->returns($cache);
 
         Queue::push(new FirstJob);
 
@@ -234,6 +235,8 @@ class WorkCommandTest extends QueueTestCase
             '--max-jobs' => 1,
             '--stop-when-empty' => true,
         ]);
+
+        Cache::shouldNotHaveReceived('store');
 
         $this->assertSame(0, Queue::size());
         $this->assertTrue(FirstJob::$ran);

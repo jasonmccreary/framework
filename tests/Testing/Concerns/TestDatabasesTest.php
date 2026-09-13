@@ -4,8 +4,11 @@ namespace Illuminate\Tests\Testing\Concerns;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
+use Illuminate\Database\Connectors\ConnectionFactory;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Concerns\TestDatabases;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,6 +16,8 @@ use ReflectionMethod;
 
 class TestDatabasesTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         Container::setInstance($container = new Container);
@@ -24,6 +29,10 @@ class TestDatabasesTest extends TestCase
                 ->andReturn('mysql')
                 ->getMock();
         });
+
+        $container->instance('db', new DatabaseManager($container, new ConnectionFactory($container)));
+
+        DB::setFacadeApplication($container);
 
         $_SERVER['LARAVEL_PARALLEL_TESTING'] = 1;
     }

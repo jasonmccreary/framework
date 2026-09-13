@@ -8,11 +8,14 @@ use Illuminate\Database\Schema\SQLiteBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSQLiteBuilderTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         $app = new Container;
@@ -38,13 +41,13 @@ class DatabaseSQLiteBuilderTest extends TestCase
 
         File::expects('put')
             ->with('my_temporary_database_a', '')
-            ->andReturn(20); // bytes
+            ->returns(20); // bytes
 
         $this->assertTrue($builder->createDatabase('my_temporary_database_a'));
 
         File::expects('put')
             ->with('my_temporary_database_b', '')
-            ->andReturn(false);
+            ->returns(false);
 
         $this->assertFalse($builder->createDatabase('my_temporary_database_b'));
     }
@@ -57,25 +60,25 @@ class DatabaseSQLiteBuilderTest extends TestCase
         $builder = new SQLiteBuilder($connection);
 
         File::expects('exists')
-            ->andReturn(true);
+            ->returns(true);
 
         File::expects('delete')
             ->with('my_temporary_database_b')
-            ->andReturn(true);
+            ->returns(true);
 
         $this->assertTrue($builder->dropDatabaseIfExists('my_temporary_database_b'));
 
         File::expects('exists')
-            ->andReturn(false);
+            ->returns(false);
 
         $this->assertTrue($builder->dropDatabaseIfExists('my_temporary_database_c'));
 
         File::expects('exists')
-            ->andReturn(true);
+            ->returns(true);
 
         File::expects('delete')
             ->with('my_temporary_database_c')
-            ->andReturn(false);
+            ->returns(false);
 
         $this->assertFalse($builder->dropDatabaseIfExists('my_temporary_database_c'));
     }

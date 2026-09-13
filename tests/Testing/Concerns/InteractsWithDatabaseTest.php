@@ -2,20 +2,31 @@
 
 namespace Illuminate\Tests\Testing\Concerns;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
+use Illuminate\Database\Connectors\ConnectionFactory;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class InteractsWithDatabaseTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         Facade::clearResolvedInstances();
-        Facade::setFacadeApplication(null);
+
+        $container = new Container;
+
+        $container->instance('db', new DatabaseManager($container, new ConnectionFactory($container)));
+
+        Facade::setFacadeApplication($container);
     }
 
     public function testCastToJsonSqlite()
@@ -149,7 +160,7 @@ class InteractsWithDatabaseTest extends TestCase
             return "'".$value."'";
         });
 
-        DB::shouldReceive('connection')->with(null)->andReturn($connection);
+        DB::shouldReceive('connection')->with(null)->returns($connection);
 
         $instance = new class
         {

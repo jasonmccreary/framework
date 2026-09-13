@@ -2,16 +2,42 @@
 
 namespace Illuminate\Tests\Database;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Connection;
+use Illuminate\Database\Connectors\ConnectionFactory;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Facade;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseQueryExceptionTest extends TestCase
 {
+    use VerifiesDoubles;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $container = new Container;
+
+        $container->instance('db', new DatabaseManager($container, new ConnectionFactory($container)));
+
+        Facade::setFacadeApplication($container);
+    }
+
+    protected function tearDown(): void
+    {
+        Facade::clearResolvedInstances();
+        Facade::setFacadeApplication(null);
+
+        parent::tearDown();
+    }
+
     public function testIfItEmbedsBindingsIntoSql()
     {
         $connection = $this->getConnection();
@@ -24,7 +50,7 @@ class DatabaseQueryExceptionTest extends TestCase
         $pdoException = new PDOException('Mock SQL error');
         $exception = new QueryException($connection->getName(), $sql, $bindings, $pdoException);
 
-        DB::shouldReceive('connection')->andReturn($connection);
+        DB::shouldReceive('connection')->returns($connection);
         $result = $exception->getRawSql();
 
         $this->assertSame($expectedSql, $result);
@@ -42,7 +68,7 @@ class DatabaseQueryExceptionTest extends TestCase
         $pdoException = new PDOException('Mock SQL error');
         $exception = new QueryException($connection->getName(), $sql, $bindings, $pdoException);
 
-        DB::shouldReceive('connection')->andReturn($connection);
+        DB::shouldReceive('connection')->returns($connection);
         $result = $exception->getRawSql();
 
         $this->assertSame($expectedSql, $result);
