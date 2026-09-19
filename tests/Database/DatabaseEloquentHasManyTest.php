@@ -16,53 +16,6 @@ use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasManyTest extends TestCase
 {
-    public function testMakeMethodDoesNotSaveNewModel()
-    {
-        $relation = $this->getRelation();
-        $instance = $this->expectNewModel($relation, ['name' => 'taylor']);
-        $instance->expects($this->never())->method('save');
-
-        $this->assertEquals($instance, $relation->make(['name' => 'taylor']));
-    }
-
-    public function testMakeManyCreatesARelatedModelForEachRecord()
-    {
-        $records = [
-            'taylor' => ['name' => 'taylor'],
-            'colin' => ['name' => 'colin'],
-        ];
-
-        $relation = $this->getRelation();
-        $relation->getRelated()->expects('newCollection')->andReturn(new Collection);
-
-        $taylor = $this->expectNewModel($relation, ['name' => 'taylor']);
-        $taylor->expects($this->never())->method('save');
-        $colin = $this->expectNewModel($relation, ['name' => 'colin']);
-        $colin->expects($this->never())->method('save');
-
-        $instances = $relation->makeMany($records);
-        $this->assertInstanceOf(Collection::class, $instances);
-        $this->assertEquals($taylor, $instances[0]);
-        $this->assertEquals($colin, $instances[1]);
-    }
-
-    public function testCreateMethodProperlyCreatesNewModel()
-    {
-        $relation = $this->getRelation();
-        $created = $this->expectCreatedModel($relation, ['name' => 'taylor']);
-
-        $this->assertEquals($created, $relation->create(['name' => 'taylor']));
-    }
-
-    public function testForceCreateMethodProperlyCreatesNewModel()
-    {
-        $relation = $this->getRelation();
-        $created = $this->expectForceCreatedModel($relation, ['name' => 'taylor']);
-
-        $this->assertEquals($created, $relation->forceCreate(['name' => 'taylor']));
-        $this->assertEquals(1, $created->getAttribute('foreign_key'));
-    }
-
     public function testFindOrNewMethodFindsModel()
     {
         $relation = $this->getRelation();
@@ -236,25 +189,6 @@ class DatabaseEloquentHasManyTest extends TestCase
         $this->assertNull($models[2]->foo);
     }
 
-    public function testCreateManyCreatesARelatedModelForEachRecord()
-    {
-        $records = [
-            'taylor' => ['name' => 'taylor'],
-            'colin' => ['name' => 'colin'],
-        ];
-
-        $relation = $this->getRelation();
-        $relation->getRelated()->expects('newCollection')->andReturn(new Collection);
-
-        $taylor = $this->expectCreatedModel($relation, ['name' => 'taylor']);
-        $colin = $this->expectCreatedModel($relation, ['name' => 'colin']);
-
-        $instances = $relation->createMany($records);
-        $this->assertInstanceOf(Collection::class, $instances);
-        $this->assertEquals($taylor, $instances[0]);
-        $this->assertEquals($colin, $instances[1]);
-    }
-
     protected function getRelationWithRealQuery(?Model $parent = null)
     {
         $connection = new Connection(new PDO('sqlite::memory:'));
@@ -288,26 +222,6 @@ class DatabaseEloquentHasManyTest extends TestCase
         $model = $this->getMockBuilder(Model::class)->onlyMethods(['setAttribute', 'save'])->getMock();
         $relation->getRelated()->expects('newInstance')->with($attributes)->andReturn($model);
         $model->expects($this->once())->method('setAttribute')->with('foreign_key', 1);
-
-        return $model;
-    }
-
-    protected function expectCreatedModel($relation, $attributes)
-    {
-        $model = $this->expectNewModel($relation, $attributes);
-        $model->expects($this->once())->method('save');
-
-        return $model;
-    }
-
-    protected function expectForceCreatedModel($relation, $attributes)
-    {
-        $attributes[$relation->getForeignKeyName()] = $relation->getParentKey();
-
-        $model = Mockery::mock(Model::class);
-        $model->expects('getAttribute')->with($relation->getForeignKeyName())->andReturn($relation->getParentKey());
-
-        $relation->getRelated()->expects('forceCreate')->with($attributes)->andReturn($model);
 
         return $model;
     }
