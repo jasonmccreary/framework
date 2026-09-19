@@ -5,27 +5,17 @@ declare(strict_types=1);
 namespace Illuminate\Tests\Database;
 
 use Illuminate\Database\ConnectionResolver;
-use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\SQLiteConnection;
+use Illuminate\Tests\Database\Concerns\RestoresConnectionResolver;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentBelongsToManyWithoutTouchingTest extends TestCase
 {
-    protected ?ConnectionResolverInterface $previousResolver = null;
-
-    protected function setUp(): void
-    {
-        $this->previousResolver = Model::getConnectionResolver();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->previousResolver ? Model::setConnectionResolver($this->previousResolver) : Model::unsetConnectionResolver();
-    }
+    use RestoresConnectionResolver;
 
     protected function newConnection(): SQLiteConnection
     {

@@ -150,7 +150,7 @@ class DatabaseEloquentInverseRelationTest extends TestCase
     public function testProvidesPossibleInverseRelationBasedOnParent()
     {
         $builder = Mockery::mock(Builder::class);
-        $builder->shouldReceive('getModel')->andReturn(new HasOneInverseChildModel);
+        $builder->shouldReceive('getModel')->andReturn(new HasInverseRelationRelatedStub);
 
         $relation = (new HasInverseRelationStub($builder, new HasInverseRelationParentStub));
 

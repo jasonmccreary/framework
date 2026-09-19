@@ -21,6 +21,7 @@ use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Tests\Database\Concerns\RestoresConnectionResolver;
 use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
@@ -28,6 +29,13 @@ use stdClass;
 
 class DatabaseEloquentBuilderTest extends TestCase
 {
+    use RestoresConnectionResolver;
+
+    protected function setUp(): void
+    {
+        $this->useInMemoryConnection();
+    }
+
     public function testFindMethod()
     {
         $builder = Mockery::mock(Builder::class.'[first]', [$this->getMockQueryBuilder()]);
