@@ -233,7 +233,7 @@ Working directory: expected-working-directory');
     {
         $GLOBALS['open-strategy-output-path'] = __DIR__.'/output.txt';
         putenv('ARTISAN_DOCS_OPEN_STRATEGY='.__DIR__.'/Fixtures/open-strategy.php');
-        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null));
+        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null)->setSystemOsFamily('Laravel OS'));
 
         @unlink($GLOBALS['open-strategy-output-path']);
 
@@ -254,7 +254,7 @@ Working directory: expected-working-directory');
     public function testItHandlesBadSyntaxInOpeners()
     {
         putenv('ARTISAN_DOCS_OPEN_STRATEGY='.__DIR__.'/Fixtures/bad-syntax-strategy.php');
-        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null));
+        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null)->setSystemOsFamily('Laravel OS'));
 
         $this->artisan('docs installation')
             ->expectsOutputToContain('Unable to open the URL with your custom strategy. You will need to open it yourself.')
@@ -264,7 +264,7 @@ Working directory: expected-working-directory');
     public function testItHandlesBadReturnTypesInOpeners()
     {
         putenv('ARTISAN_DOCS_OPEN_STRATEGY='.__DIR__.'/Fixtures/bad-return-strategy.php');
-        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null));
+        $this->app[Kernel::class]->registerCommand($this->command()->setUrlOpener(null)->setSystemOsFamily('Laravel OS'));
 
         $this->artisan('docs installation')
             ->expectsOutputToContain('Unable to open the URL with your custom strategy. You will need to open it yourself.')
