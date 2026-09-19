@@ -378,15 +378,20 @@ class ImageManagerTest extends TestCase
 
     public function test_from_url_is_lazy()
     {
-        $http = Mockery::mock(HttpFactory::class);
-        $http->shouldNotReceive('get');
+        $http = new HttpFactory;
+        $http->fake();
 
         $app = $this->makeApp([]);
+        $app->allows('make')
+            ->with(HttpFactory::class)
+            ->andReturn($http);
 
         $manager = new ImageManager($app);
         $image = $manager->fromUrl('https://example.com/photo.jpg');
 
         $this->assertInstanceOf(Image::class, $image);
+
+        $http->assertNothingSent();
     }
 
     public function test_from_base64_returns_image()
