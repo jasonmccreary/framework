@@ -237,7 +237,8 @@ class DatabaseEloquentRelationTest extends TestCase
         });
 
         $model = new EloquentRelationResetModelStub;
-        $relation = new EloquentRelationStub($model->newQuery(), $model);
+        $builder = (new Builder($this->newConnection()->query()))->setModel($model);
+        $relation = new EloquentRelationStub($builder, $model);
 
         $result = $relation->foo();
         $this->assertSame('foo', $result);
