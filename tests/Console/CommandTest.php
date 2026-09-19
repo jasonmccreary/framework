@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 use Illuminate\Console\CommandInput;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
+use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Support\Carbon;
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -38,9 +39,9 @@ class CommandTest extends TestCase
 
         $input = new ArrayInput([]);
         $output = new NullOutput;
-        $outputStyle = Mockery::mock(OutputStyle::class);
+        $outputStyle = new OutputStyle($input, $output);
         $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(Mockery::mock(Factory::class));
+        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(new Factory($outputStyle));
 
         $application->expects('call')->with([$command, 'handle'])->andReturnUsing(function () use ($command, $application) {
             $commandCalled = Mockery::mock(Command::class);
@@ -95,7 +96,7 @@ class CommandTest extends TestCase
             }
         };
 
-        $application = app();
+        $application = new FoundationApplication(__DIR__);
         $command->setLaravel($application);
 
         $input = new ArrayInput([
@@ -153,9 +154,9 @@ class CommandTest extends TestCase
             '--role' => 'user',
         ]);
         $output = new NullOutput;
-        $outputStyle = Mockery::mock(OutputStyle::class);
+        $outputStyle = new OutputStyle($input, $output);
         $application->expects('make')->with(OutputStyle::class, ['input' => $input, 'output' => $output])->andReturn($outputStyle);
-        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(Mockery::mock(Factory::class));
+        $application->expects('make')->with(Factory::class, ['output' => $outputStyle])->andReturn(new Factory($outputStyle));
         $application->shouldReceive('runningUnitTests')->andReturn(true);
         $application->expects('call')->with([$command, 'handle'])->andReturn(0);
 
