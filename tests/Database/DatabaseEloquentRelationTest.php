@@ -255,6 +255,7 @@ class DatabaseEloquentRelationTest extends TestCase
     protected function tearDown(): void
     {
         Carbon::setTestNow();
+        Relation::morphMap([], false);
 
         parent::tearDown();
     }
