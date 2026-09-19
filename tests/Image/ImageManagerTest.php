@@ -4,6 +4,7 @@ namespace Illuminate\Tests\Image;
 
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
+use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Image\Driver;
 use Illuminate\Contracts\Image\Transformation;
@@ -132,7 +133,7 @@ class ImageManagerTest extends TestCase
     {
         $contents = $this->fakeImageContents();
 
-        $disk = Mockery::mock();
+        $disk = Mockery::mock(FilesystemContract::class);
         $disk->expects('get')
             ->with('images/avatar.jpg')
             ->andReturn($contents);
@@ -158,7 +159,7 @@ class ImageManagerTest extends TestCase
     {
         $contents = $this->fakeImageContents();
 
-        $disk = Mockery::mock();
+        $disk = Mockery::mock(FilesystemContract::class);
         $disk->expects('get')
             ->with('images/avatar.jpg')
             ->andReturn($contents);
