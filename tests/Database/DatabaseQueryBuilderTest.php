@@ -37,6 +37,7 @@ use Illuminate\Tests\Database\Fixtures\Enums\StringStatus;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use PDO;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -4063,7 +4064,7 @@ class DatabaseQueryBuilderTest extends TestCase
     public function testFindOrReturnsFirstResultByID()
     {
         $builder = $this->getMockQueryBuilder();
-        $data = Mockery::mock(stdClass::class);
+        $data = new stdClass;
         $builder->expects('first')->andReturn($data);
         $builder->expects('first')->with(['column'])->andReturn($data);
         $builder->expects('first')->andReturn(null);
@@ -5069,11 +5070,11 @@ class DatabaseQueryBuilderTest extends TestCase
 
     public function testUpdateOrInsertMethod()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = new Connection(new PDO('sqlite::memory:'));
         $builder = Mockery::mock(Builder::class.'[where,exists,insert]', [
             $connection,
             new Grammar($connection),
-            Mockery::mock(Processor::class),
+            new Processor,
         ]);
 
         $builder->expects('where')->with(['email' => 'foo'])->andReturn(Mockery::self());
@@ -5082,11 +5083,11 @@ class DatabaseQueryBuilderTest extends TestCase
 
         $this->assertTrue($builder->updateOrInsert(['email' => 'foo'], ['name' => 'bar']));
 
-        $connection = Mockery::mock(Connection::class);
+        $connection = new Connection(new PDO('sqlite::memory:'));
         $builder = Mockery::mock(Builder::class.'[where,exists,update]', [
             $connection,
             new Grammar($connection),
-            Mockery::mock(Processor::class),
+            new Processor,
         ]);
 
         $builder->expects('where')->with(['email' => 'foo'])->andReturn(Mockery::self());
@@ -5098,11 +5099,11 @@ class DatabaseQueryBuilderTest extends TestCase
 
     public function testUpdateOrInsertMethodWorksWithEmptyUpdateValues()
     {
-        $connection = Mockery::mock(Connection::class);
+        $connection = new Connection(new PDO('sqlite::memory:'));
         $builder = Mockery::spy(Builder::class.'[where,exists,update]', [
             $connection,
             new Grammar($connection),
-            Mockery::mock(Processor::class),
+            new Processor,
         ]);
 
         $builder->expects('where')->with(['email' => 'foo'])->andReturn(Mockery::self());
@@ -5409,7 +5410,7 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $connection = $this->createMock(Connection::class);
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
 
         $connection->expects($this->once())
             ->method('update')
@@ -5427,7 +5428,7 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $connection = $this->createMock(Connection::class);
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
 
         $connection->expects($this->once())
             ->method('update')
@@ -5445,7 +5446,7 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $connection = $this->createMock(Connection::class);
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
 
         $connection->expects($this->once())
             ->method('update')
@@ -5472,7 +5473,7 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $connection = $this->createMock(Connection::class);
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
 
         $connection->expects($this->once())
             ->method('update')
@@ -5495,7 +5496,7 @@ class DatabaseQueryBuilderTest extends TestCase
     {
         $connection = $this->getConnection();
         $grammar = new MySqlGrammar($connection);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
 
         $connection->expects('update')
             ->with(
@@ -7955,7 +7956,7 @@ SQL;
         $grammar->expects('substituteBindingsIntoRawSql')
             ->with('select * from "users" where "email" = ?', ['foo'])
             ->andReturn('select * from "users" where "email" = \'foo\'');
-        $builder = new Builder($connection, $grammar, Mockery::mock(Processor::class));
+        $builder = new Builder($connection, $grammar, new Processor);
         $builder->select('*')->from('users')->where('email', 'foo');
 
         $this->assertSame('select * from "users" where "email" = \'foo\'', $builder->toRawSql());
@@ -8050,7 +8051,7 @@ SQL;
         return Mockery::mock(Builder::class, [
             $connection = $this->getConnection(),
             new Grammar($connection),
-            Mockery::mock(Processor::class),
+            new Processor,
         ])->makePartial();
     }
 }

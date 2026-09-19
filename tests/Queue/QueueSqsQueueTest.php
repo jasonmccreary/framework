@@ -121,7 +121,7 @@ class QueueSqsQueueTest extends TestCase
     public function testPopProperlyPopsJobOffOfSqs()
     {
         $queue = $this->getMockBuilder(SqsQueue::class)->onlyMethods(['getQueue'])->setConstructorArgs([$this->sqs, $this->queueName, $this->account])->getMock();
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->with($this->queueName)->willReturn($this->queueUrl);
         $this->sqs->expects('receiveMessage')->with(['QueueUrl' => $this->queueUrl, 'AttributeNames' => ['ApproximateReceiveCount']])->andReturn($this->mockedReceiveMessageResponseModel);
         $result = $queue->pop($this->queueName);
@@ -131,7 +131,7 @@ class QueueSqsQueueTest extends TestCase
     public function testPopProperlyHandlesEmptyMessage()
     {
         $queue = $this->getMockBuilder(SqsQueue::class)->onlyMethods(['getQueue'])->setConstructorArgs([$this->sqs, $this->queueName, $this->account])->getMock();
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->with($this->queueName)->willReturn($this->queueUrl);
         $this->sqs->expects('receiveMessage')->with(['QueueUrl' => $this->queueUrl, 'AttributeNames' => ['ApproximateReceiveCount']])->andReturn($this->mockedReceiveEmptyMessageResponseModel);
         $result = $queue->pop($this->queueName);
@@ -889,7 +889,7 @@ class QueueSqsQueueTest extends TestCase
             'always' => false,
             'delete_after_processing' => true,
         ]);
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
 
         $this->sqs->expects('sendMessage')->withArgs(function ($args) use ($smallPayload) {
             return $args['MessageBody'] === $smallPayload;
@@ -934,7 +934,7 @@ class QueueSqsQueueTest extends TestCase
         $largePayload = json_encode(['uuid' => 'test-uuid', 'job' => 'App\\Jobs\\TestJob', 'data' => str_repeat('x', SqsQueue::MAX_SQS_PAYLOAD_SIZE)]);
 
         $queue = new SqsQueue($this->sqs, $this->queueName, $this->prefix);
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
 
         $this->sqs->expects('sendMessage')->withArgs(function ($args) use ($largePayload) {
             return $args['MessageBody'] === $largePayload;
@@ -1057,7 +1057,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->with($this->queueName)->willReturn($this->queueUrl);
         $queue->expects($this->exactly(3))->method('createPayload')->willReturnOnConsecutiveCalls('p1', 'p2', 'p3');
 
@@ -1087,7 +1087,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
         $queue->method('createPayload')->willReturnCallback(fn ($job) => "payload-{$job}");
 
@@ -1110,7 +1110,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
 
         $halfPayload = str_repeat('x', (int) (SqsQueue::MAX_SQS_PAYLOAD_SIZE * 0.6));
@@ -1182,7 +1182,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload', 'secondsUntil'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
         $queue->method('createPayload')->willReturnCallback(fn ($job, $q, $data, $delay) => 'payload-'.($delay ?? 'none'));
         $queue->expects($this->once())->method('secondsUntil')->with(30)->willReturn(30);
@@ -1207,7 +1207,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload', 'secondsUntil'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
         $queue->method('createPayload')->willReturnCallback(fn ($job, $q, $data, $delay) => 'payload-'.($delay ?? 'none'));
         $queue->expects($this->once())->method('secondsUntil')->with(15)->willReturn(15);
@@ -1232,7 +1232,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
         $queue->expects($this->once())->method('createPayload')->willReturn('payload-a');
 
@@ -1266,7 +1266,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->fifoQueueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->with($this->fifoQueueName)->willReturn($this->fifoQueueUrl);
         $queue->method('createPayload')->willReturnCallback(fn ($job) => "payload-{$job}");
 
@@ -1292,7 +1292,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->fifoQueueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->fifoQueueUrl);
         $queue->method('createPayload')->willReturnCallback(fn ($job) => "payload-{$job}");
 
@@ -1474,7 +1474,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue', 'createPayload'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account])
             ->getMock();
-        $queue->setContainer(Mockery::spy(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->willReturn($this->queueUrl);
         $queue->expects($this->once())->method('createPayload')->willReturn('payload-a');
 
@@ -1488,7 +1488,7 @@ class QueueSqsQueueTest extends TestCase
     public function testBulkDoesNothingWithEmptyInput()
     {
         $queue = new SqsQueue($this->sqs, $this->queueName, $this->account);
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
 
         $this->sqs->shouldNotReceive('sendMessageBatch');
 
@@ -1508,7 +1508,7 @@ class QueueSqsQueueTest extends TestCase
             ->onlyMethods(['getQueue'])
             ->setConstructorArgs([$this->sqs, $this->queueName, $this->account, '', false, $overflowStorage])
             ->getMock();
-        $queue->setContainer(Mockery::mock(Container::class));
+        $queue->setContainer(new Container);
         $queue->expects($this->once())->method('getQueue')->with($this->queueName)->willReturn($this->queueUrl);
 
         $this->sqs->expects('receiveMessage')->andReturn($this->mockedReceiveMessageResponseModel);

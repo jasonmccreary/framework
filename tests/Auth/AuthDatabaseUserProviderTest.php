@@ -8,7 +8,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Hashing\BcryptHasher;
 use Mockery;
+use PDO;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -19,7 +21,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn = Mockery::mock(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(['id' => 1, 'name' => 'Dayle']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
 
@@ -33,7 +35,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn = Mockery::mock(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveById(1);
 
@@ -48,7 +50,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn = Mockery::mock(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn($mockUser);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -60,7 +62,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn = Mockery::mock(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -75,7 +77,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn = Mockery::mock(Connection::class);
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('find')->with(1)->andReturn($mockUser);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByToken(1, 'a');
 
@@ -89,7 +91,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
         $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle', 'password' => 'foo', 'group' => ['one', 'two']]);
 
@@ -105,7 +107,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('whereIn')->with('group', ['one', 'two']);
         $conn->expects('first')->andReturn(['id' => 1, 'name' => 'taylor']);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
 
         $user = $provider->retrieveByCredentials([function ($builder) {
@@ -124,7 +126,7 @@ class AuthDatabaseUserProviderTest extends TestCase
         $conn->expects('table')->with('foo')->andReturn($conn);
         $conn->expects('where')->with('username', 'dayle');
         $conn->expects('first')->andReturn(null);
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials(['username' => 'dayle']);
 
@@ -133,8 +135,8 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testRetrieveByCredentialsWithMultiplyPasswordsReturnsNull()
     {
-        $conn = Mockery::mock(Connection::class);
-        $hasher = Mockery::mock(Hasher::class);
+        $conn = new Connection(new PDO('sqlite::memory:'));
+        $hasher = new BcryptHasher;
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
         $user = $provider->retrieveByCredentials([
             'password' => 'dayle',
@@ -146,7 +148,7 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidation()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = new Connection(new PDO('sqlite::memory:'));
         $hasher = Mockery::mock(Hasher::class);
         $hasher->expects('check')->with('plain', 'hash')->andReturn(true);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
@@ -159,7 +161,7 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidationFails()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = new Connection(new PDO('sqlite::memory:'));
         $hasher = Mockery::mock(Hasher::class);
         $hasher->expects('check')->with('plain', 'hash')->andReturn(false);
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');
@@ -172,7 +174,7 @@ class AuthDatabaseUserProviderTest extends TestCase
 
     public function testCredentialValidationFailsGracefullyWithNullPassword()
     {
-        $conn = Mockery::mock(Connection::class);
+        $conn = new Connection(new PDO('sqlite::memory:'));
         $hasher = Mockery::mock(Hasher::class);
         $hasher->shouldReceive('check')->never();
         $provider = new DatabaseUserProvider($conn, $hasher, 'foo');

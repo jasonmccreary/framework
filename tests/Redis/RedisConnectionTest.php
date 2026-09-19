@@ -3,7 +3,7 @@
 namespace Illuminate\Tests\Redis;
 
 use Exception;
-use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Redis\Connections\Connection;
@@ -553,7 +553,7 @@ class RedisConnectionTest extends TestCase
     public function testItDispatchesQueryEvent()
     {
         foreach ($this->connections() as $redis) {
-            $events = Mockery::mock(Dispatcher::class);
+            $events = new Dispatcher;
             $redis->setEventDispatcher($events);
 
             $events->expects('dispatch')->with(Mockery::on(function ($event) {

@@ -5,6 +5,7 @@ namespace Illuminate\Tests\Auth;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Hashing\BcryptHasher;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -193,7 +194,7 @@ class AuthEloquentUserProviderTest extends TestCase
 
     public function testModelsCanBeCreated()
     {
-        $hasher = Mockery::mock(Hasher::class);
+        $hasher = new BcryptHasher;
         $provider = new EloquentUserProvider($hasher, EloquentProviderUserStub::class);
         $model = $provider->createModel();
 

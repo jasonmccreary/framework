@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Database;
 use BadMethodCallException;
 use Closure;
 use Illuminate\Database\Connection;
-use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -790,9 +789,9 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         unset($_SERVER['__test.builder']);
         $builder = new Builder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
         $builder->macro('fooBar', function ($builder) {
             $_SERVER['__test.builder'] = $builder;
@@ -2707,7 +2706,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
         $connection = Mockery::mock(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2723,7 +2722,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $connection = Mockery::mock(Connection::class);
         $connection->expects('getTablePrefix')->times(2)->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2739,7 +2738,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $connection = Mockery::mock(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2755,7 +2754,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $connection = Mockery::mock(Connection::class);
         $connection->expects('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStubWithoutTimestamp;
         $this->mockConnectionForModel($model, '');
@@ -2773,7 +2772,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
         $connection = Mockery::mock(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2791,7 +2790,7 @@ class DatabaseEloquentBuilderTest extends TestCase
 
         $connection = Mockery::mock(Connection::class);
         $connection->shouldReceive('getTablePrefix')->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $model = new EloquentBuilderTestStub;
         $this->mockConnectionForModel($model, '');
@@ -2914,7 +2913,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $connection = Mockery::mock(Connection::class);
         $connection->expects('getTablePrefix')->times(2)->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = new Builder($query);
         $builder->select('*')->from('users');
         $clone = $builder->clone()->where('email', 'foo');
@@ -2928,7 +2927,7 @@ class DatabaseEloquentBuilderTest extends TestCase
     {
         $connection = Mockery::mock(Connection::class);
         $connection->expects('getTablePrefix')->times(2)->andReturn('');
-        $query = new BaseBuilder($connection, new Grammar($connection), Mockery::mock(Processor::class));
+        $query = new BaseBuilder($connection, new Grammar($connection), new Processor);
         $builder = (new Builder($query))->setModel(new EloquentBuilderTestStub);
         $builder->select('*')->from('users');
 

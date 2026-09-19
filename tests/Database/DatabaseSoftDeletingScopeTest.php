@@ -2,7 +2,7 @@
 
 namespace Illuminate\Tests\Database;
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -10,6 +10,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Mockery;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseSoftDeletingScopeTest extends TestCase
@@ -29,9 +30,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testRestoreExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
         $scope = new SoftDeletingScope;
         $scope->extend($builder);
@@ -49,9 +50,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testRestoreOrCreateExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
 
         $scope = new SoftDeletingScope;
@@ -72,9 +73,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testCreateOrRestoreExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
 
         $scope = new SoftDeletingScope;
@@ -95,9 +96,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testWithTrashedExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
         $scope = Mockery::mock(SoftDeletingScope::class.'[remove]');
         $scope->extend($builder);
@@ -113,9 +114,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testOnlyTrashedExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
         $model = Mockery::mock(Model::class)->makePartial();
         $scope = Mockery::mock(SoftDeletingScope::class.'[remove]');
@@ -135,9 +136,9 @@ class DatabaseSoftDeletingScopeTest extends TestCase
     public function testWithoutTrashedExtension()
     {
         $builder = new EloquentBuilder(new BaseBuilder(
-            Mockery::mock(ConnectionInterface::class),
+            new Connection(new PDO('sqlite::memory:')),
             Mockery::mock(Grammar::class),
-            Mockery::mock(Processor::class)
+            new Processor
         ));
         $model = Mockery::mock(Model::class)->makePartial();
         $scope = Mockery::mock(SoftDeletingScope::class.'[remove]');

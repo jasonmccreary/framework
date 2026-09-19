@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueRoutes;
+use Illuminate\Queue\SyncQueue;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -159,7 +160,7 @@ class BusDispatcherTest extends TestCase
     public function testDispatcherCanDispatchStandAloneHandler()
     {
         $container = new Container;
-        $mock = Mockery::mock(Queue::class);
+        $mock = new SyncQueue;
         $dispatcher = new Dispatcher($container, function () use ($mock) {
             return $mock;
         });

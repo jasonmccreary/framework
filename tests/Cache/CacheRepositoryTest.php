@@ -669,7 +669,7 @@ class CacheRepositoryTest extends TestCase
 
     protected function getRepository()
     {
-        $dispatcher = new Dispatcher(Mockery::mock(Container::class));
+        $dispatcher = new Dispatcher(new Container);
         $repository = new Repository(Mockery::mock(Store::class));
 
         $repository->setEventDispatcher($dispatcher);

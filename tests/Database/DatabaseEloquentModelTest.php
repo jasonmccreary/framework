@@ -1421,7 +1421,7 @@ class DatabaseEloquentModelTest extends TestCase
     {
         $conn = Mockery::mock(Connection::class);
         $grammar = Mockery::mock(Grammar::class);
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
         $resolver = Mockery::mock(ConnectionResolverInterface::class);
         EloquentModelStub::setConnectionResolver($resolver);
         $conn->expects('query')->andReturnUsing(function () use ($conn, $grammar, $processor) {
@@ -3646,7 +3646,7 @@ class DatabaseEloquentModelTest extends TestCase
         $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
         $grammar->shouldReceive('getBitwiseOperators')->andReturn([]);
         $grammar->shouldReceive('isExpression')->andReturnFalse();
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
         $connection->shouldReceive('getPostProcessor')->andReturn($processor);
         $connection->shouldReceive('query')->andReturnUsing(function () use ($connection, $grammar, $processor) {
             return new BaseBuilder($connection, $grammar, $processor);
@@ -4321,7 +4321,7 @@ class EloquentModelSaveStub extends Model
         $mock->shouldReceive('getQueryGrammar')->andReturn($grammar);
         $grammar->shouldReceive('getBitwiseOperators')->andReturn([]);
         $grammar->shouldReceive('isExpression')->andReturnFalse();
-        $processor = Mockery::mock(Processor::class);
+        $processor = new Processor;
         $mock->shouldReceive('getPostProcessor')->andReturn($processor);
         $mock->shouldReceive('getName')->andReturn('name');
         $mock->shouldReceive('query')->andReturnUsing(function () use ($mock, $grammar, $processor) {

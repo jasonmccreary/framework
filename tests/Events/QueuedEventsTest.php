@@ -8,7 +8,6 @@ use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Cache\Lock;
-use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Contracts\Queue\Queue;
@@ -22,6 +21,7 @@ use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\QueueRoutes;
+use Illuminate\Queue\SyncQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
 use Laravel\SerializableClosure\SerializableClosure;
@@ -359,7 +359,7 @@ class QueuedEventsTest extends TestCase
     public function testDispatchesOnQueueDefinedWithEnum()
     {
         $d = new Dispatcher;
-        $queue = Mockery::mock(Queue::class);
+        $queue = new SyncQueue;
 
         $fakeQueue = new QueueFake(new Container);
 
@@ -385,7 +385,7 @@ class QueuedEventsTest extends TestCase
         $container->instance(Cache::class, $cache);
 
         $cache->expects('lock')->andReturn($lock);
-        $cache->expects('getStore')->andReturn(Mockery::mock(LockProvider::class));
+        $cache->expects('getStore')->andReturn(new ArrayStore);
         $lock->expects('get')->andReturn(true);
         $lock->expects('owner')->andReturn('unique-lock-owner');
 
@@ -440,7 +440,7 @@ class QueuedEventsTest extends TestCase
         $container->instance(Cache::class, $cache);
 
         $cache->expects('lock')->andReturn($lock);
-        $cache->expects('getStore')->andReturn(Mockery::mock(LockProvider::class));
+        $cache->expects('getStore')->andReturn(new ArrayStore);
         $lock->expects('get')->andReturn(true);
         $lock->expects('owner')->andReturn('unique-lock-owner');
 
@@ -469,7 +469,7 @@ class QueuedEventsTest extends TestCase
         $container->instance(Cache::class, $cache);
 
         $cache->expects('lock')->andReturn($lock);
-        $cache->expects('getStore')->andReturn(Mockery::mock(LockProvider::class));
+        $cache->expects('getStore')->andReturn(new ArrayStore);
         $lock->expects('get')->andReturn(true);
         $lock->expects('owner')->andReturn('unique-lock-owner');
 
@@ -514,7 +514,7 @@ class QueuedEventsTest extends TestCase
         $cache->expects('lock')
             ->with($expectedKey, 60)
             ->andReturn($lock);
-        $cache->expects('getStore')->andReturn(Mockery::mock(LockProvider::class));
+        $cache->expects('getStore')->andReturn(new ArrayStore);
         $lock->expects('get')->andReturn(true);
         $lock->expects('owner')->andReturn('unique-lock-owner');
 
@@ -549,7 +549,7 @@ class QueuedEventsTest extends TestCase
         $uniqueCache->expects('lock')
             ->with($expectedKey, 60)
             ->andReturn($lock);
-        $uniqueCache->expects('getStore')->andReturn(Mockery::mock(LockProvider::class));
+        $uniqueCache->expects('getStore')->andReturn(new ArrayStore);
         $lock->expects('get')->andReturn(true);
         $lock->expects('owner')->andReturn('unique-lock-owner');
 
