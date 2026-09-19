@@ -2,12 +2,16 @@
 
 namespace Illuminate\Tests\Database;
 
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Database\Query\Processors\Processor;
 use Mockery;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseEloquentHasManyTest extends TestCase
@@ -175,28 +179,30 @@ class DatabaseEloquentHasManyTest extends TestCase
 
     public function testEagerConstraintsAreProperlyAdded()
     {
-        $relation = $this->getRelation();
-        $relation->getParent()->expects('getKeyName')->andReturn('id');
-        $relation->getParent()->expects('getKeyType')->andReturn('int');
-        $relation->getQuery()->expects('whereIntegerInRaw')->with('table.foreign_key', [1, 2]);
+        $relation = $this->getRelationWithRealQuery();
         $model1 = new EloquentHasManyModelStub;
         $model1->id = 1;
         $model2 = new EloquentHasManyModelStub;
         $model2->id = 2;
         $relation->addEagerConstraints([$model1, $model2]);
+
+        $this->assertSame('select * from "eloquent_has_many_model_stubs" where "table"."foreign_key" = ? and "table"."foreign_key" is not null and "table"."foreign_key" in (1, 2)', $relation->toSql());
+        $this->assertSame([1], $relation->getBindings());
     }
 
     public function testEagerConstraintsAreProperlyAddedWithStringKey()
     {
-        $relation = $this->getRelation();
-        $relation->getParent()->expects('getKeyName')->andReturn('id');
-        $relation->getParent()->expects('getKeyType')->andReturn('string');
-        $relation->getQuery()->expects('whereIn')->with('table.foreign_key', [1, 2]);
+        $parent = new EloquentHasManyModelStub;
+        $parent->setKeyType('string');
+        $relation = $this->getRelationWithRealQuery($parent);
         $model1 = new EloquentHasManyModelStub;
         $model1->id = 1;
         $model2 = new EloquentHasManyModelStub;
         $model2->id = 2;
         $relation->addEagerConstraints([$model1, $model2]);
+
+        $this->assertSame('select * from "eloquent_has_many_model_stubs" where "table"."foreign_key" = ? and "table"."foreign_key" is not null and "table"."foreign_key" in (?, ?)', $relation->toSql());
+        $this->assertSame(['1', 1, 2], $relation->getBindings());
     }
 
     public function testModelsAreProperlyMatchedToParents()
@@ -247,6 +253,18 @@ class DatabaseEloquentHasManyTest extends TestCase
         $this->assertInstanceOf(Collection::class, $instances);
         $this->assertEquals($taylor, $instances[0]);
         $this->assertEquals($colin, $instances[1]);
+    }
+
+    protected function getRelationWithRealQuery(?Model $parent = null)
+    {
+        $connection = new Connection(new PDO('sqlite::memory:'));
+        $query = new QueryBuilder($connection, new Grammar($connection), new Processor);
+        $builder = (new Builder($query))->setModel(new EloquentHasManyModelStub);
+
+        $parent ??= new EloquentHasManyModelStub;
+        $parent->id = 1;
+
+        return new HasMany($builder, $parent, 'table.foreign_key', 'id');
     }
 
     protected function getRelation()
