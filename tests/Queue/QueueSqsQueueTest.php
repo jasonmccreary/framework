@@ -6,6 +6,8 @@ use Aws\Result;
 use Aws\Sqs\Exception\SqsException;
 use Aws\Sqs\SqsClient;
 use Illuminate\Bus\Dispatcher;
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Cache\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Bus\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
@@ -945,8 +947,8 @@ class QueueSqsQueueTest extends TestCase
 
     public function testClearFlushesOverflowStoreWhenFlushOnClearEnabled()
     {
-        $store = Mockery::mock(CacheRepository::class);
-        $store->expects('flush');
+        $store = new Repository(new ArrayStore);
+        $store->put('foo', 'bar');
 
         $cache = Mockery::mock(CacheFactory::class);
         $cache->expects('store')->with('database')->andReturn($store);
@@ -971,6 +973,8 @@ class QueueSqsQueueTest extends TestCase
         $this->sqs->expects('purgeQueue');
 
         $queue->clear($this->queueName);
+
+        $this->assertNull($store->get('foo'));
     }
 
     public function testClearDoesNotFlushOverflowStoreWhenFlushOnClearDisabled()
@@ -1023,8 +1027,8 @@ class QueueSqsQueueTest extends TestCase
 
     public function testClearForwardsConfiguredStoreNameToFactory()
     {
-        $store = Mockery::mock(CacheRepository::class);
-        $store->expects('flush');
+        $store = new Repository(new ArrayStore);
+        $store->put('foo', 'bar');
 
         $cache = Mockery::mock(CacheFactory::class);
         $cache->expects('store')->with('redis')->andReturn($store);
@@ -1049,6 +1053,8 @@ class QueueSqsQueueTest extends TestCase
         $this->sqs->expects('purgeQueue');
 
         $queue->clear($this->queueName);
+
+        $this->assertNull($store->get('foo'));
     }
 
     public function testBulkSendsAllJobsInASingleBatchRequest()

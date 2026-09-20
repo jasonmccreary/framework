@@ -5,7 +5,6 @@ namespace Illuminate\Tests\Database;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Console\View\Components\Factory;
-use Illuminate\Container\Container;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Console\Seeds\SeedCommand;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -13,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Events\NullDispatcher;
+use Illuminate\Foundation\Application;
 use Illuminate\Testing\Assert;
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +37,7 @@ class SeedCommandTest extends TestCase
         $resolver->expects('getDefaultConnection');
         $resolver->expects('setDefaultConnection')->with('sqlite');
 
-        $container = Mockery::mock(Container::class);
+        $container = Mockery::mock(Application::class);
         $container->expects('call');
         $container->expects('environment')->andReturn('testing');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
@@ -78,7 +78,7 @@ class SeedCommandTest extends TestCase
             $connections[] = $name;
         });
 
-        $container = Mockery::mock(Container::class);
+        $container = Mockery::mock(Application::class);
         $container->expects('call');
         $container->expects('environment')->andReturn('testing');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
@@ -126,7 +126,7 @@ class SeedCommandTest extends TestCase
         $resolver->expects('getDefaultConnection');
         $resolver->expects('setDefaultConnection')->with('sqlite');
 
-        $container = Mockery::mock(Container::class);
+        $container = Mockery::mock(Application::class);
         $container->expects('call');
         $container->expects('environment')->andReturn('testing');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
@@ -161,7 +161,7 @@ class SeedCommandTest extends TestCase
 
         $resolver = Mockery::mock(ConnectionResolverInterface::class);
 
-        $container = Mockery::mock(Container::class);
+        $container = Mockery::mock(Application::class);
         $container->expects('call');
         $container->shouldReceive('runningUnitTests')->andReturn('true');
         $container->expects('make')->with(OutputStyle::class, Mockery::any())->andReturn(

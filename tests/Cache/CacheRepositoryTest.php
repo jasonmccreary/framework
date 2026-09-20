@@ -393,7 +393,7 @@ class CacheRepositoryTest extends TestCase
         $store = Mockery::mock(ArrayStore::class);
         $repo = new Repository($store);
 
-        $taggedCache = Mockery::mock();
+        $taggedCache = Mockery::mock(TaggedCache::class);
         $taggedCache->expects('setDefaultCacheTime');
         $store->expects('tags')->with(['foo', 'bar', 'baz'])->andReturn($taggedCache);
         $repo->tags('foo', 'bar', 'baz');

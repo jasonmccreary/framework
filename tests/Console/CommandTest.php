@@ -2,7 +2,6 @@
 
 namespace Illuminate\Tests\Console;
 
-use Illuminate\Console\Application;
 use Illuminate\Console\Attributes\Aliases;
 use Illuminate\Console\Attributes\Help;
 use Illuminate\Console\Attributes\Hidden;
@@ -34,7 +33,7 @@ class CommandTest extends TestCase
             }
         };
 
-        $application = Mockery::mock(Application::class);
+        $application = Mockery::mock(FoundationApplication::class);
         $command->setLaravel($application);
 
         $input = new ArrayInput([]);
@@ -143,7 +142,7 @@ class CommandTest extends TestCase
             }
         };
 
-        $application = Mockery::mock(Application::class);
+        $application = Mockery::mock(FoundationApplication::class);
         $command->setLaravel($application);
 
         $input = new ArrayInput([

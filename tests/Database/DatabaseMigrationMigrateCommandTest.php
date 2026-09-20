@@ -160,7 +160,6 @@ class ApplicationDatabaseMigrationStub extends Application
     {
         $mutex = Mockery::mock(CommandMutex::class);
         $mutex->shouldReceive('create')->andReturn(true);
-        $mutex->shouldReceive('release')->andReturn(true);
         $this->instance(CommandMutex::class, $mutex);
 
         foreach ($data as $abstract => $instance) {

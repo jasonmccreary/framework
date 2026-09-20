@@ -4,6 +4,7 @@ namespace Illuminate\Tests\Foundation\Testing;
 
 use Illuminate\Config\Repository;
 use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\PostgresBuilder;
 use Illuminate\Events\Dispatcher;
@@ -198,7 +199,7 @@ class DatabaseTruncationTest extends TestCase
             ->andReturnUsing(function (string $tableName) use (&$actual) {
                 $actual[] = $tableName;
 
-                $table = Mockery::mock();
+                $table = Mockery::mock(QueryBuilder::class);
                 $table->expects('exists')->andReturnTrue();
                 $table->expects('truncate');
 

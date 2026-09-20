@@ -766,11 +766,11 @@ class DatabaseEloquentBuilderTest extends TestCase
         $builder->setEagerLoads(['orders' => function ($query) {
             $_SERVER['__eloquent.constrain'] = $query;
         }]);
-        $relation = Mockery::mock(stdClass::class);
+        $relation = Mockery::mock(Relation::class);
         $relation->expects('addEagerConstraints')->with(['models']);
         $relation->expects('initRelation')->with(['models'], 'orders')->andReturn(['models']);
-        $relation->expects('getEager')->andReturn(['results']);
-        $relation->expects('match')->with(['models'], ['results'], 'orders')->andReturn(['models.matched']);
+        $relation->expects('getEager')->andReturn($eager = new Collection(['results']));
+        $relation->expects('match')->with(['models'], $eager, 'orders')->andReturn(['models.matched']);
         $builder->expects('getRelation')->with('orders')->andReturn($relation);
         $results = $builder->eagerLoadRelations(['models']);
 

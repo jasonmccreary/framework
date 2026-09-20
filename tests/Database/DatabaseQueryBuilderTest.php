@@ -6233,14 +6233,13 @@ SQL;
         $builder->expects('limit')->times(3)->with(2)->andReturnSelf();
         $builder->expects('get')->times(3)->andReturn($chunk1, $chunk2, $chunk3);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->expects('doSomething')->with($chunk2);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk3);
+        $seen = [];
 
-        $builder->chunk(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunk(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         });
+
+        $this->assertSame([$chunk1, $chunk2], $seen);
     }
 
     public function testChunkWithLastChunkPartial()
@@ -6258,13 +6257,13 @@ SQL;
         $builder->expects('limit')->times(2)->with(2)->andReturnSelf();
         $builder->expects('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->expects('doSomething')->with($chunk2);
+        $seen = [];
 
-        $builder->chunk(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunk(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         });
+
+        $this->assertSame([$chunk1, $chunk2], $seen);
     }
 
     public function testChunkCanBeStoppedByReturningFalse()
@@ -6280,15 +6279,15 @@ SQL;
         $builder->expects('limit')->with(2)->andReturnSelf();
         $builder->expects('get')->times(1)->andReturn($chunk1);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk2);
+        $seen = [];
 
-        $builder->chunk(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunk(2, function ($results) use (&$seen) {
+            $seen[] = $results;
 
             return false;
         });
+
+        $this->assertSame([$chunk1], $seen);
     }
 
     public function testChunkWithCountZero()
@@ -6320,14 +6319,13 @@ SQL;
         $builder->expects('forPageAfterId')->with(2, 11, 'someIdField')->andReturnSelf();
         $builder->expects('get')->times(3)->andReturn($chunk1, $chunk2, $chunk3);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->expects('doSomething')->with($chunk2);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk3);
+        $seen = [];
 
-        $builder->chunkById(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunkById(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         }, 'someIdField');
+
+        $this->assertSame([$chunk1, $chunk2], $seen);
     }
 
     public function testChunkPaginatesUsingIdWithLastChunkComplete()
@@ -6343,14 +6341,13 @@ SQL;
         $builder->expects('forPageAfterId')->with(2, 11, 'someIdField')->andReturnSelf();
         $builder->expects('get')->times(3)->andReturn($chunk1, $chunk2, $chunk3);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->expects('doSomething')->with($chunk2);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk3);
+        $seen = [];
 
-        $builder->chunkById(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunkById(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         }, 'someIdField');
+
+        $this->assertSame([$chunk1, $chunk2], $seen);
     }
 
     public function testChunkPaginatesUsingIdWithLastChunkPartial()
@@ -6364,13 +6361,13 @@ SQL;
         $builder->expects('forPageAfterId')->with(2, 2, 'someIdField')->andReturnSelf();
         $builder->expects('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->expects('doSomething')->with($chunk2);
+        $seen = [];
 
-        $builder->chunkById(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunkById(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         }, 'someIdField');
+
+        $this->assertSame([$chunk1, $chunk2], $seen);
     }
 
     public function testChunkPaginatesUsingIdWithCountZero()
@@ -6397,13 +6394,13 @@ SQL;
         $builder->expects('forPageAfterId')->with(2, 10, 'table.id')->andReturnSelf();
         $builder->expects('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk2);
+        $seen = [];
 
-        $builder->chunkById(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunkById(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         }, 'table.id', 'table_id');
+
+        $this->assertSame([$chunk1], $seen);
     }
 
     public function testChunkPaginatesUsingIdDesc()
@@ -6417,13 +6414,13 @@ SQL;
         $builder->expects('forPageBeforeId')->with(2, 1, 'someIdField')->andReturnSelf();
         $builder->expects('get')->times(2)->andReturn($chunk1, $chunk2);
 
-        $callbackAssertor = Mockery::mock(stdClass::class);
-        $callbackAssertor->expects('doSomething')->with($chunk1);
-        $callbackAssertor->shouldReceive('doSomething')->never()->with($chunk2);
+        $seen = [];
 
-        $builder->chunkByIdDesc(2, function ($results) use ($callbackAssertor) {
-            $callbackAssertor->doSomething($results);
+        $builder->chunkByIdDesc(2, function ($results) use (&$seen) {
+            $seen[] = $results;
         }, 'someIdField');
+
+        $this->assertSame([$chunk1], $seen);
     }
 
     public function testPaginate()
