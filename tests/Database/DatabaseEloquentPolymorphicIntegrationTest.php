@@ -173,6 +173,17 @@ class DatabaseEloquentPolymorphicIntegrationTest extends TestCase
         $this->assertSame(TestPost::class, $comment->commentable_type);
     }
 
+    public function testFindOrNewReturnsExistingMorphModel()
+    {
+        $post = $this->createPost();
+        $existing = $post->comments()->create(['body' => 'foo', 'user_id' => 1]);
+
+        $comment = $post->comments()->findOrNew($existing->id);
+
+        $this->assertTrue($comment->exists);
+        $this->assertSame($existing->id, $comment->id);
+    }
+
     public function testFirstOrNewReturnsNewMorphModelWithMorphKeysSet()
     {
         $post = $this->createPost();
