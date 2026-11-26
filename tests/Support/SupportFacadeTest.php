@@ -4,8 +4,10 @@ namespace Illuminate\Tests\Support;
 
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Traits\Macroable;
 use JMac\Testing\Double;
 use JMac\Testing\DoubleInterface;
+use JMac\Testing\Exceptions\UnknownMethodException;
 use JMac\Testing\Integrations\PHPUnit\PHPUnitUnexpectedCallException;
 use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Mockery;
@@ -281,6 +283,96 @@ class SupportFacadeTest extends TestCase
         $this->assertSame('baz', FacadeStub::foo());
     }
 
+    public function testForwardedMethodExplainsTheTestingAlternative()
+    {
+        $this->setUpApplicationWith(new FacadeStubForwardingTarget);
+
+        $exception = $this->catchRuntimeException(fn () => FacadeStubWithAlternative::shouldReceive('forwarded'));
+
+        $this->assertSame(
+            "`FacadeStubWithAlternative::forwarded()` is forwarded through `FacadeStubForwardingTarget::__call()`, so it can't be mocked with Double. Use the real thing. Or call `Facade::useMockery()` to mock it with Mockery.",
+            $exception->getMessage()
+        );
+        $this->assertInstanceOf(UnknownMethodException::class, $exception->getPrevious());
+    }
+
+    public function testForwardedMethodWithoutTestingAlternative()
+    {
+        $this->setUpApplicationWith(new FacadeStubForwardingTarget);
+
+        $exception = $this->catchRuntimeException(fn () => FacadeStub::expects('forwarded'));
+
+        $this->assertSame(
+            "`FacadeStub::forwarded()` is forwarded through `FacadeStubForwardingTarget::__call()`, so it can't be mocked with Double. Or call `Facade::useMockery()` to mock it with Mockery.",
+            $exception->getMessage()
+        );
+    }
+
+    public function testReceivedForwardedMethodExplainsTheTestingAlternative()
+    {
+        $this->setUpApplicationWith(new FacadeStubForwardingTarget);
+
+        FacadeStubWithAlternative::spy();
+
+        $exception = $this->catchRuntimeException(fn () => FacadeStubWithAlternative::shouldHaveReceived('forwarded'));
+
+        $this->assertStringContainsString('Use the real thing.', $exception->getMessage());
+    }
+
+    public function testCloseMatchKeepsTheSuggestion()
+    {
+        $this->setUpApplicationWith(new FacadeStubForwardingTarget);
+
+        $this->expectException(UnknownMethodException::class);
+        $this->expectExceptionMessage('store');
+
+        FacadeStub::shouldReceive('stor');
+    }
+
+    public function testMacroIsExplained()
+    {
+        $this->setUpApplicationWith(new FacadeStubMacroableTarget);
+
+        FacadeStubMacroableTarget::macro('shout', fn () => 'HEY');
+
+        try {
+            $exception = $this->catchRuntimeException(fn () => FacadeStub::shouldReceive('shout'));
+
+            $this->assertStringStartsWith("`FacadeStub::shout()` is a macro, so it can't be mocked with Double.", $exception->getMessage());
+        } finally {
+            FacadeStubMacroableTarget::flushMacros();
+        }
+    }
+
+    public function testUndeclaredMethodOnMacroOnlyRootIsUnchanged()
+    {
+        $this->setUpApplicationWith(new FacadeStubMacroableTarget);
+
+        $this->expectException(UnknownMethodException::class);
+
+        FacadeStub::shouldReceive('missing');
+    }
+
+    protected function setUpApplicationWith(object $root): ApplicationStub
+    {
+        $app = new ApplicationStub;
+        $app->setAttributes(['foo' => $root]);
+        FacadeStub::setFacadeApplication($app);
+
+        return $app;
+    }
+
+    protected function catchRuntimeException(callable $callback): RuntimeException
+    {
+        try {
+            $callback();
+        } catch (RuntimeException $exception) {
+            return $exception;
+        }
+
+        $this->fail('Expected a RuntimeException to be thrown.');
+    }
+
     public function testFacadeResolvesAgainAfterClearingSpecific()
     {
         $app = new ApplicationStub;
@@ -324,6 +416,37 @@ class FacadeStub extends Facade
     {
         return 'foo';
     }
+}
+
+class FacadeStubWithAlternative extends Facade
+{
+    protected static function testingAlternative()
+    {
+        return 'Use the real thing.';
+    }
+
+    protected static function getFacadeAccessor()
+    {
+        return 'foo';
+    }
+}
+
+class FacadeStubForwardingTarget
+{
+    public function store()
+    {
+        return 'store';
+    }
+
+    public function __call($method, $parameters)
+    {
+        return $method;
+    }
+}
+
+class FacadeStubMacroableTarget
+{
+    use Macroable;
 }
 
 class FacadeStubTarget
