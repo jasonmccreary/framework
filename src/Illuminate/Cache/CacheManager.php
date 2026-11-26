@@ -10,8 +10,8 @@ use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\RebindsCallbacksToSelf;
 use InvalidArgumentException;
-use Mockery;
-use Mockery\LegacyMockInterface;
+use JMac\Testing\Double;
+use JMac\Testing\DoubleInterface;
 use ReflectionException;
 use RuntimeException;
 
@@ -92,14 +92,14 @@ class CacheManager implements FactoryContract
 
         $bindingKey = "cache.__memoized:{$driver}";
 
-        $isSpy = isset($this->app['cache']) && $this->app['cache'] instanceof LegacyMockInterface;
+        $isSpy = isset($this->app['cache']) && $this->app['cache'] instanceof DoubleInterface;
 
         $this->app->scopedIf($bindingKey, function () use ($driver, $isSpy) {
             $repository = $this->repository(
                 new MemoizedStore($driver, $this->store($driver)), ['events' => false]
             );
 
-            return $isSpy ? Mockery::spy($repository) : $repository;
+            return $isSpy ? Double::for($repository)->passthru() : $repository;
         });
 
         return $this->app->make($bindingKey);
