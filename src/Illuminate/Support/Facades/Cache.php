@@ -77,6 +77,16 @@ use Mockery;
 class Cache extends Facade
 {
     /**
+     * Get the alternative to mocking the methods the facade forwards.
+     *
+     * @return string
+     */
+    protected static function testingAlternative()
+    {
+        return 'Put real values in the cache with `Cache::put()` and assert with `Cache::has()`, using the array store during tests.';
+    }
+
+    /**
      * Get the registered name of the component.
      *
      * @return string
@@ -87,25 +97,31 @@ class Cache extends Facade
     }
 
     /**
-     * Convert the facade into a Mockery spy.
+     * Convert the facade into a spy that passes calls through to the real cache.
      *
-     * @return \Mockery\MockInterface
+     * @return \JMac\Testing\DoubleInterface|\Mockery\MockInterface
      */
     public static function spy()
     {
         if (! static::isMock()) {
-            $class = static::getMockableClass();
-            $instance = static::getFacadeRoot();
+            if (static::$usesMockery) {
+                static::ensureMockingLibraryIsInstalled();
 
-            if ($class && $instance) {
-                return tap(Mockery::spy($instance)->makePartial(), function ($spy) {
+                $class = static::getMockableClass();
+                $instance = static::getFacadeRoot();
+
+                if ($class && $instance) {
+                    return tap(Mockery::spy($instance)->makePartial(), function ($spy) {
+                        static::swap($spy);
+                    });
+                }
+
+                return tap($class ? Mockery::spy($class) : Mockery::spy(), function ($spy) {
                     static::swap($spy);
                 });
             }
 
-            return tap($class ? Mockery::spy($class) : Mockery::spy(), function ($spy) {
-                static::swap($spy);
-            });
+            return static::createFreshMockInstance()->passthru();
         }
     }
 }

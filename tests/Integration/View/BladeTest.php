@@ -266,9 +266,11 @@ class BladeTest extends TestCase
         View::addNamespace('templates', join_paths(__DIR__, 'Fixtures', 'templates'));
         View::addNamespace('components', join_paths(__DIR__, 'Fixtures', 'templates', 'components'));
 
-        Blade::partialMock()->expects('compile')->with(realpath(__DIR__.'/Fixtures/templates/components/panel.blade.php'));
+        Blade::partialMock();
 
         $this->artisan('view:cache');
+
+        Blade::shouldHaveReceived('compile')->with(realpath(__DIR__.'/Fixtures/templates/components/panel.blade.php'))->times(1);
     }
 
     #[RequiresOperatingSystem('Linux|Darwin')]

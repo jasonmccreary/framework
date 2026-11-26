@@ -4,6 +4,7 @@ namespace Illuminate\Tests\Testing\Concerns;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Concerns\TestDatabases;
 use JMac\Testing\Double;
@@ -22,6 +23,7 @@ class TestDatabasesTest extends TestCase
 
         DB::clearResolvedInstance();
         DB::setFacadeApplication(null);
+        DB::swap(Double::for(DatabaseManager::class));
 
         $container->singleton('config', function () {
             $config = Double::for(Config::class);

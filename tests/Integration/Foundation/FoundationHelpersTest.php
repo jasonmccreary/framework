@@ -6,12 +6,15 @@ use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Orchestra\Testbench\Attributes\WithConfig;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LogLevel;
 
 class FoundationHelpersTest extends TestCase
 {
+    use VerifiesDoubles;
+
     public function testReportHelpersForwardContextAndLevel()
     {
         $handler = new FakeHandler;
@@ -30,9 +33,7 @@ class FoundationHelpersTest extends TestCase
     {
         $exception = new Exception('Test');
 
-        $this->mock(ExceptionHandler::class, function ($mock) use ($exception) {
-            $mock->expects('report')->times(3)->withArgs(fn (...$arguments) => $arguments === [$exception, ['id' => 1]]);
-        });
+        $this->mock(ExceptionHandler::class)->expects('report')->times(3)->with($exception, ['id' => 1]);
 
         report($exception, ['id' => 1]);
         report_if(true, $exception, ['id' => 1]);
