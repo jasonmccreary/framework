@@ -2,6 +2,8 @@
 
 namespace Illuminate\Support\Facades;
 
+use Mockery;
+
 /**
  * @method static \Illuminate\Contracts\Cache\Repository store(\UnitEnum|string|null $name = null)
  * @method static \Illuminate\Contracts\Cache\Repository driver(\UnitEnum|string|null $driver = null)
@@ -87,11 +89,28 @@ class Cache extends Facade
     /**
      * Convert the facade into a spy that passes calls through to the real cache.
      *
-     * @return \JMac\Testing\DoubleInterface
+     * @return \JMac\Testing\DoubleInterface|\Mockery\MockInterface
      */
     public static function spy()
     {
         if (! static::isMock()) {
+            if (static::$usesMockery) {
+                static::ensureMockingLibraryIsInstalled();
+
+                $class = static::getMockableClass();
+                $instance = static::getFacadeRoot();
+
+                if ($class && $instance) {
+                    return tap(Mockery::spy($instance)->makePartial(), function ($spy) {
+                        static::swap($spy);
+                    });
+                }
+
+                return tap($class ? Mockery::spy($class) : Mockery::spy(), function ($spy) {
+                    static::swap($spy);
+                });
+            }
+
             return static::createFreshMockInstance()->passthru();
         }
     }

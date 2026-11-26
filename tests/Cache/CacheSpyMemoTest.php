@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Facade;
 use JMac\Testing\DoubleInterface;
 use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use JMac\Testing\Matching\Argument;
+use Mockery\LegacyMockInterface;
 use PHPUnit\Framework\TestCase;
 
 class CacheSpyMemoTest extends TestCase
@@ -39,6 +40,7 @@ class CacheSpyMemoTest extends TestCase
 
     protected function tearDown(): void
     {
+        Facade::useDouble();
         Facade::clearResolvedInstances();
         Facade::setFacadeApplication(null);
     }
@@ -85,5 +87,20 @@ class CacheSpyMemoTest extends TestCase
         $memoizedCache->remember('key', 60, fn () => 'bar');
 
         $memoizedCache->received('remember')->times(1);
+    }
+
+    public function test_cache_spy_memo_returns_mockery_spy_when_using_mockery()
+    {
+        Facade::useMockery();
+
+        $this->assertInstanceOf(LegacyMockInterface::class, Cache::spy());
+
+        $memoizedCache = Cache::memo();
+
+        $this->assertInstanceOf(LegacyMockInterface::class, $memoizedCache);
+
+        $this->assertSame('bar', $memoizedCache->remember('key', 60, fn () => 'bar'));
+
+        $memoizedCache->shouldHaveReceived('remember')->once();
     }
 }

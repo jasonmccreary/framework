@@ -8,6 +8,8 @@ use JMac\Testing\Double;
 use JMac\Testing\DoubleInterface;
 use JMac\Testing\Integrations\PHPUnit\PHPUnitUnexpectedCallException;
 use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -20,6 +22,13 @@ class SupportFacadeTest extends TestCase
     {
         Facade::clearResolvedInstances();
         FacadeStub::setFacadeApplication(null);
+    }
+
+    protected function tearDown(): void
+    {
+        Facade::useDouble();
+
+        parent::tearDown();
     }
 
     protected function setUpApplication(): ApplicationStub
@@ -194,6 +203,82 @@ class SupportFacadeTest extends TestCase
         $this->assertTrue(FacadeStub::allows('ability'));
 
         FacadeStub::shouldHaveReceived('allows')->with('ability');
+    }
+
+    public function testUsesDoubleByDefault()
+    {
+        $this->assertFalse(Facade::usesMockery());
+
+        Facade::useMockery();
+        $this->assertTrue(Facade::usesMockery());
+
+        Facade::useDouble();
+        $this->assertFalse(Facade::usesMockery());
+    }
+
+    public function testShouldReceiveReturnsAMockeryExpectationWhenUsingMockery()
+    {
+        Facade::useMockery();
+        $app = $this->setUpApplication();
+
+        $this->assertInstanceOf(MockInterface::class, FacadeStub::shouldReceive('foo')->with('bar')->andReturn('baz')->getMock());
+        $this->assertSame('baz', $app['foo']->foo('bar'));
+    }
+
+    public function testSpyReturnsAMockerySpyWhenUsingMockery()
+    {
+        Facade::useMockery();
+        $this->setUpApplication();
+
+        $this->assertInstanceOf(MockInterface::class, $spy = FacadeStub::spy());
+
+        FacadeStub::foo();
+        $spy->shouldHaveReceived('foo');
+        FacadeStub::shouldHaveReceived('foo')->once();
+        FacadeStub::shouldNotHaveReceived('foo2');
+    }
+
+    public function testPartialMockPassesThroughWhenUsingMockery()
+    {
+        Facade::useMockery();
+        $this->setUpApplication();
+
+        FacadeStub::partialMock()->shouldReceive('foo2')->andReturn('baz');
+
+        $this->assertSame('real', FacadeStub::foo());
+        $this->assertSame('baz', FacadeStub::foo2());
+    }
+
+    public function testCanBeMockedWithoutUnderlyingInstanceWhenUsingMockery()
+    {
+        Facade::useMockery();
+
+        FacadeStub::expects('foo')->andReturn('bar');
+
+        $this->assertSame('bar', FacadeStub::foo());
+    }
+
+    public function testSwappedDoubleIsConfiguredByTheFacadeWhenUsingMockery()
+    {
+        Facade::useMockery();
+        $app = $this->setUpApplication();
+
+        FacadeStub::swap($double = Double::for(FacadeStubTarget::class));
+        FacadeStub::shouldReceive('foo')->returns('baz');
+
+        $this->assertSame($double, $app['foo']);
+        $this->assertSame('baz', FacadeStub::foo());
+    }
+
+    public function testSwappedMockeryMockIsConfiguredByTheFacadeWhenUsingDouble()
+    {
+        $app = $this->setUpApplication();
+
+        FacadeStub::swap($mock = Mockery::mock(FacadeStubTarget::class));
+        FacadeStub::shouldReceive('foo')->andReturn('baz');
+
+        $this->assertSame($mock, $app['foo']);
+        $this->assertSame('baz', FacadeStub::foo());
     }
 
     public function testFacadeResolvesAgainAfterClearingSpecific()
