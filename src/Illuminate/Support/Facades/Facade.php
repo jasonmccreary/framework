@@ -12,8 +12,8 @@ use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Illuminate\Support\Testing\Fakes\Fake;
 use Illuminate\Support\Uri;
-use Mockery;
-use Mockery\LegacyMockInterface;
+use JMac\Testing\Double;
+use JMac\Testing\DoubleInterface;
 use RuntimeException;
 
 abstract class Facade
@@ -31,6 +31,13 @@ abstract class Facade
      * @var array
      */
     protected static $resolvedInstance;
+
+    /**
+     * The doubles swapped in behind the facades.
+     *
+     * @var array<string, \JMac\Testing\DoubleInterface>
+     */
+    protected static $doubles = [];
 
     /**
      * Indicates if the resolved instance should be cached.
@@ -59,93 +66,148 @@ abstract class Facade
     }
 
     /**
-     * Convert the facade into a Mockery spy.
+     * Convert the facade into a spy.
      *
-     * @return \Mockery\MockInterface
+     * @return \JMac\Testing\DoubleInterface
      */
     public static function spy()
     {
         if (! static::isMock()) {
-            $class = static::getMockableClass();
-
-            return tap($class ? Mockery::spy($class) : Mockery::spy(), function ($spy) {
-                static::swap($spy);
-            });
+            return static::createFreshMockInstance();
         }
     }
 
     /**
      * Initiate a partial mock on the facade.
      *
-     * @return \Mockery\MockInterface
+     * @return \JMac\Testing\DoubleInterface
      */
     public static function partialMock()
     {
-        $name = static::getFacadeAccessor();
-
         $mock = static::isMock()
-            ? static::$resolvedInstance[$name]
+            ? static::getMock()
             : static::createFreshMockInstance();
 
-        return $mock->makePartial();
+        return $mock->passthru();
     }
 
     /**
      * Initiate a mock expectation on the facade.
      *
-     * @return \Mockery\Expectation
+     * @return \JMac\Testing\Engine\MethodExpectation
      */
     public static function shouldReceive()
     {
-        $name = static::getFacadeAccessor();
-
-        $mock = static::isMock()
-            ? static::$resolvedInstance[$name]
-            : static::createFreshMockInstance();
-
-        return $mock->shouldReceive(...func_get_args());
+        return static::getOrCreateMock()->allows(...func_get_args());
     }
 
     /**
      * Initiate a mock expectation on the facade.
      *
-     * @return \Mockery\Expectation
+     * @return \JMac\Testing\Engine\MethodExpectation
      */
     public static function expects()
     {
-        $name = static::getFacadeAccessor();
+        return static::getOrCreateMock()->expects(...func_get_args());
+    }
 
-        $mock = static::isMock()
-            ? static::$resolvedInstance[$name]
-            : static::createFreshMockInstance();
+    /**
+     * Initiate a mock expectation that the given method is never called on the facade.
+     *
+     * @param  string  $method
+     * @return \JMac\Testing\Engine\MethodExpectation
+     */
+    public static function shouldNotReceive($method)
+    {
+        return static::getOrCreateMock()->expects($method)->never();
+    }
 
-        return $mock->expects(...func_get_args());
+    /**
+     * Assert that the mocked facade received the given method.
+     *
+     * @param  string  $method
+     * @param  array|null  $args
+     * @return \JMac\Testing\Engine\ReceivedAssertion
+     *
+     * @throws \RuntimeException
+     */
+    public static function shouldHaveReceived($method, $args = null)
+    {
+        $assertion = static::getMockOrFail()->received($method);
+
+        return is_null($args) ? $assertion : $assertion->with(...$args);
+    }
+
+    /**
+     * Assert that the mocked facade did not receive the given method.
+     *
+     * @param  string  $method
+     * @param  array|null  $args
+     * @return \JMac\Testing\Engine\ReceivedAssertion
+     *
+     * @throws \RuntimeException
+     */
+    public static function shouldNotHaveReceived($method, $args = null)
+    {
+        $assertion = static::getMockOrFail()->received($method);
+
+        return (is_null($args) ? $assertion : $assertion->with(...$args))->never();
+    }
+
+    /**
+     * Get the existing mock for the facade or create a strict one.
+     *
+     * @return \JMac\Testing\DoubleInterface
+     */
+    protected static function getOrCreateMock()
+    {
+        return static::isMock()
+            ? static::getMock()
+            : static::createFreshMockInstance()->strict();
+    }
+
+    /**
+     * Get the existing mock for the facade or throw an exception.
+     *
+     * @return \JMac\Testing\DoubleInterface
+     *
+     * @throws \RuntimeException
+     */
+    protected static function getMockOrFail()
+    {
+        return static::getMock() ?? throw new RuntimeException(
+            sprintf('The [%s] facade must be spied or mocked before asserting what it received.', static::class)
+        );
     }
 
     /**
      * Create a fresh mock instance for the given class.
      *
-     * @return \Mockery\MockInterface
+     * @return \JMac\Testing\DoubleInterface
      */
     protected static function createFreshMockInstance()
     {
         return tap(static::createMock(), function ($mock) {
             static::swap($mock);
-
-            $mock->shouldAllowMockingProtectedMethods();
         });
     }
 
     /**
      * Create a fresh mock instance for the given class.
      *
-     * @return \Mockery\MockInterface
+     * @return \JMac\Testing\DoubleInterface
+     *
+     * @throws \RuntimeException
      */
     protected static function createMock()
     {
-        $class = static::getMockableClass();
+        if (! is_object($root = static::getFacadeRoot())) {
+            throw new RuntimeException(
+                sprintf('Unable to mock the [%s] facade because it does not have a resolvable root.', static::class)
+            );
+        }
 
-        return $class ? Mockery::mock($class) : Mockery::mock();
+        return Double::for($root, override: true);
     }
 
     /**
@@ -155,10 +217,25 @@ abstract class Facade
      */
     protected static function isMock()
     {
+        return static::getMock() !== null;
+    }
+
+    /**
+     * Get the mock set as the instance of the facade, if any.
+     *
+     * @return \JMac\Testing\DoubleInterface|null
+     */
+    protected static function getMock()
+    {
         $name = static::getFacadeAccessor();
 
-        return isset(static::$resolvedInstance[$name]) &&
-               static::$resolvedInstance[$name] instanceof LegacyMockInterface;
+        $root = static::getFacadeRoot();
+
+        if (isset(static::$doubles[$name]) && static::$doubles[$name]->instance() === $root) {
+            return static::$doubles[$name];
+        }
+
+        return $root instanceof DoubleInterface ? $root : null;
     }
 
     /**
@@ -181,10 +258,20 @@ abstract class Facade
      */
     public static function swap($instance)
     {
-        static::$resolvedInstance[static::getFacadeAccessor()] = $instance;
+        $name = static::getFacadeAccessor();
+
+        if ($instance instanceof DoubleInterface) {
+            static::$doubles[$name] = $instance;
+
+            $instance = $instance->instance();
+        } else {
+            unset(static::$doubles[$name]);
+        }
+
+        static::$resolvedInstance[$name] = $instance;
 
         if (isset(static::$app)) {
-            static::$app->instance(static::getFacadeAccessor(), $instance);
+            static::$app->instance($name, $instance);
         }
     }
 
@@ -252,7 +339,9 @@ abstract class Facade
      */
     public static function clearResolvedInstance($name = null)
     {
-        unset(static::$resolvedInstance[$name ?? static::getFacadeAccessor()]);
+        $name ??= static::getFacadeAccessor();
+
+        unset(static::$resolvedInstance[$name], static::$doubles[$name]);
     }
 
     /**
@@ -263,6 +352,7 @@ abstract class Facade
     public static function clearResolvedInstances()
     {
         static::$resolvedInstance = [];
+        static::$doubles = [];
     }
 
     /**

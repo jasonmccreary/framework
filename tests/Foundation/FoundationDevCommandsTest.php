@@ -413,7 +413,7 @@ class FoundationDevCommandsTest extends TestCase
     #[RequiresOperatingSystem('Windows')]
     public function testRegisterDefaultsExcludesPailOnWindows()
     {
-        File::shouldReceive('exists')->with(base_path('package.json'))->andReturnTrue();
+        File::shouldReceive('exists')->with(base_path('package.json'))->returns(true);
 
         DevCommands::registerDefaults();
 

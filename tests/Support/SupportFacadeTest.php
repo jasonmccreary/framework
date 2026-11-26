@@ -4,16 +4,31 @@ namespace Illuminate\Tests\Support;
 
 use ArrayAccess;
 use Illuminate\Support\Facades\Facade;
-use Mockery\MockInterface;
+use JMac\Testing\Double;
+use JMac\Testing\DoubleInterface;
+use JMac\Testing\Integrations\PHPUnit\PHPUnitUnexpectedCallException;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
-use stdClass;
+use RuntimeException;
 
 class SupportFacadeTest extends TestCase
 {
+    use VerifiesDoubles;
+
     protected function setUp(): void
     {
         Facade::clearResolvedInstances();
         FacadeStub::setFacadeApplication(null);
+    }
+
+    protected function setUpApplication(): ApplicationStub
+    {
+        $app = new ApplicationStub;
+        $app->setAttributes(['foo' => new FacadeStubTarget]);
+        FacadeStub::setFacadeApplication($app);
+
+        return $app;
     }
 
     public function testFacadeCallsUnderlyingApplication()
@@ -30,54 +45,155 @@ class SupportFacadeTest extends TestCase
         $this->assertSame('baz', FacadeStub::bar());
     }
 
-    public function testShouldReceiveReturnsAMockeryMock()
+    public function testShouldReceiveSwapsInADouble()
     {
-        $app = new ApplicationStub;
-        $app->setAttributes(['foo' => new stdClass]);
-        FacadeStub::setFacadeApplication($app);
+        $app = $this->setUpApplication();
 
-        $this->assertInstanceOf(MockInterface::class, $mock = FacadeStub::expects('foo')->with('bar')->andReturn('baz')->getMock());
-        $this->assertSame('baz', $app['foo']->foo('bar'));
+        FacadeStub::shouldReceive('foo')->with('bar')->returns('baz');
+
+        $this->assertInstanceOf(DoubleInterface::class, $app['foo']);
+        $this->assertInstanceOf(FacadeStubTarget::class, $app['foo']);
+        $this->assertSame('baz', FacadeStub::foo('bar'));
     }
 
-    public function testSpyReturnsAMockerySpy()
+    public function testShouldReceiveCreatesAStrictDouble()
     {
-        $app = new ApplicationStub;
-        $app->setAttributes(['foo' => new stdClass]);
-        FacadeStub::setFacadeApplication($app);
+        $this->setUpApplication();
 
-        $this->assertInstanceOf(MockInterface::class, $spy = FacadeStub::spy());
+        FacadeStub::shouldReceive('foo');
 
-        FacadeStub::foo();
-        $spy->shouldHaveReceived('foo');
+        $this->expectException(PHPUnitUnexpectedCallException::class);
+
+        FacadeStub::foo2();
+    }
+
+    public function testSpyReturnsADouble()
+    {
+        $app = $this->setUpApplication();
+
+        $this->assertInstanceOf(DoubleInterface::class, $spy = FacadeStub::spy());
+        $this->assertSame($spy, $app['foo']);
+
+        $this->assertNull(FacadeStub::foo());
+
+        $spy->received('foo');
+        FacadeStub::shouldHaveReceived('foo');
     }
 
     public function testShouldReceiveCanBeCalledTwice()
     {
-        $app = new ApplicationStub;
-        $app->setAttributes(['foo' => new stdClass]);
-        FacadeStub::setFacadeApplication($app);
+        $app = $this->setUpApplication();
 
-        $this->assertInstanceOf(MockInterface::class, $mock = FacadeStub::expects('foo')->with('bar')->andReturn('baz')->getMock());
-        $this->assertInstanceOf(MockInterface::class, $mock = FacadeStub::expects('foo2')->with('bar2')->andReturn('baz2')->getMock());
+        FacadeStub::expects('foo')->with('bar')->returns('baz');
+        FacadeStub::expects('foo2')->with('bar2')->returns('baz2');
+
         $this->assertSame('baz', $app['foo']->foo('bar'));
         $this->assertSame('baz2', $app['foo']->foo2('bar2'));
     }
 
-    public function testCanBeMockedWithoutUnderlyingInstance()
+    public function testCannotBeMockedWithoutUnderlyingInstance()
     {
-        FacadeStub::expects('foo')->andReturn('bar');
-        $this->assertSame('bar', FacadeStub::foo());
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('does not have a resolvable root');
+
+        FacadeStub::expects('foo');
     }
 
-    public function testExpectsReturnsAMockeryMockWithExpectationRequired()
+    public function testExpectsReturnsADoubleWithExpectationRequired()
+    {
+        $app = $this->setUpApplication();
+
+        FacadeStub::expects('foo')->with('bar')->returns('baz');
+
+        $this->assertInstanceOf(DoubleInterface::class, $app['foo']);
+        $this->assertSame('baz', $app['foo']->foo('bar'));
+    }
+
+    public function testShouldNotReceive()
+    {
+        $this->setUpApplication();
+
+        FacadeStub::shouldReceive('foo');
+        FacadeStub::shouldNotReceive('foo2');
+
+        FacadeStub::foo();
+
+        $this->expectException(AssertionFailedError::class);
+
+        FacadeStub::foo2();
+    }
+
+    public function testShouldHaveReceivedWithArguments()
+    {
+        $this->setUpApplication();
+
+        FacadeStub::spy();
+
+        FacadeStub::foo('bar');
+
+        FacadeStub::shouldHaveReceived('foo', ['bar']);
+        FacadeStub::shouldHaveReceived('foo')->with('bar')->times(1);
+        FacadeStub::shouldNotHaveReceived('foo', ['baz']);
+        FacadeStub::shouldNotHaveReceived('foo2');
+    }
+
+    public function testShouldHaveReceivedRequiresAMock()
+    {
+        $this->setUpApplication();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('must be spied or mocked');
+
+        FacadeStub::shouldHaveReceived('foo');
+    }
+
+    public function testPartialMockPassesThroughToTheRealInstance()
+    {
+        $this->setUpApplication();
+
+        FacadeStub::partialMock()->allows('foo2')->returns('baz');
+
+        $this->assertSame('real', FacadeStub::foo());
+        $this->assertSame('baz', FacadeStub::foo2());
+    }
+
+    public function testSwappedDoubleIsConfiguredByTheFacade()
+    {
+        $app = $this->setUpApplication();
+
+        FacadeStub::swap($double = Double::for(FacadeStubTarget::class));
+        FacadeStub::shouldReceive('foo')->returns('baz');
+
+        $this->assertSame($double, $app['foo']);
+        $this->assertSame('baz', FacadeStub::foo());
+    }
+
+    public function testDoubleIsReusedAfterClearingResolvedInstances()
+    {
+        $this->setUpApplication();
+
+        FacadeStub::shouldReceive('foo')->returns('baz');
+
+        Facade::clearResolvedInstances();
+
+        FacadeStub::shouldReceive('foo2')->returns('baz2');
+
+        $this->assertSame('baz', FacadeStub::foo());
+        $this->assertSame('baz2', FacadeStub::foo2());
+    }
+
+    public function testRootWithReservedMethodNamesCanBeMocked()
     {
         $app = new ApplicationStub;
-        $app->setAttributes(['foo' => new stdClass]);
+        $app->setAttributes(['foo' => new FacadeStubTargetWithReservedNames]);
         FacadeStub::setFacadeApplication($app);
 
-        $this->assertInstanceOf(MockInterface::class, $mock = FacadeStub::expects('foo')->with('bar')->andReturn('baz')->getMock());
-        $this->assertSame('baz', $app['foo']->foo('bar'));
+        FacadeStub::expects('allows')->with('ability')->returns(true);
+
+        $this->assertInstanceOf(FacadeStubTargetWithReservedNames::class, $app['foo']);
+        $this->assertTrue(FacadeStub::allows('ability'));
+
+        FacadeStub::shouldHaveReceived('allows')->with('ability');
     }
 
     public function testFacadeResolvesAgainAfterClearingSpecific()
@@ -122,6 +238,27 @@ class FacadeStub extends Facade
     protected static function getFacadeAccessor()
     {
         return 'foo';
+    }
+}
+
+class FacadeStubTarget
+{
+    public function foo($arg = null)
+    {
+        return 'real';
+    }
+
+    public function foo2($arg = null)
+    {
+        return 'real';
+    }
+}
+
+class FacadeStubTargetWithReservedNames
+{
+    public function allows($ability)
+    {
+        return false;
     }
 }
 

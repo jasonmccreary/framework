@@ -43,7 +43,7 @@ class CookieTest extends TestCase
 
     protected function defineEnvironment($app)
     {
-        Exceptions::spy()->shouldReceive('render')->andReturn(new Response);
+        Exceptions::spy()->allows('render')->returns(new Response);
 
         $app['config']->set('app.key', Str::random(32));
         $app['config']->set('session.driver', 'fake-null');

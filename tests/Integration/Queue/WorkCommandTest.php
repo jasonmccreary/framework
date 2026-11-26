@@ -229,8 +229,8 @@ class WorkCommandTest extends QueueTestCase
         $cache->expects('get')->with('illuminate:queues:paused')->returns(null);
         $cache->expects('many')->returns([]);
 
-        Cache::expects('driver')->times(2)->andReturn($cache);
-        Cache::expects('store')->andReturn($cache);
+        Cache::expects('driver')->times(2)->returns($cache);
+        Cache::expects('store')->returns($cache);
 
         Queue::push(new FirstJob);
 
@@ -256,7 +256,7 @@ class WorkCommandTest extends QueueTestCase
         $cache->expects('get')->times(2)->with('illuminate:queue:restart')->returns(null);
         $cache->expects('many')->never();
 
-        Cache::expects('driver')->times(2)->andReturn($cache);
+        Cache::expects('driver')->times(2)->returns($cache);
         Cache::shouldNotReceive('store');
 
         Queue::push(new FirstJob);

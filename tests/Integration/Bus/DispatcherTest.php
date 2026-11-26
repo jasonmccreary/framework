@@ -3,12 +3,15 @@
 namespace Illuminate\Tests\Integration\Bus;
 
 use Illuminate\Support\Facades\Log;
-use Mockery;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
+use JMac\Testing\Matching\Argument;
 use Orchestra\Testbench\TestCase;
 use RuntimeException;
 
 class DispatcherTest extends TestCase
 {
+    use VerifiesDoubles;
+
     /** {@inheritdoc} */
     protected function defineRoutes($router)
     {
@@ -23,7 +26,7 @@ class DispatcherTest extends TestCase
     public function test_dispatching_after_response_does_not_interrupt_response_output_even_with_exceptions()
     {
         Log::expects('error')
-            ->with('thrown after response', Mockery::type('array'));
+            ->with('thrown after response', Argument::type('array'));
 
         $this->get('/test')
             ->assertSee('response before dispatch')
