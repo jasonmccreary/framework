@@ -43,6 +43,7 @@ use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
 use Illuminate\View\Component;
+use JMac\Testing\Double;
 use Laravel\Prompts\Prompt;
 use Mockery;
 use Mockery\Exception\InvalidCountException;
@@ -96,6 +97,10 @@ trait InteractsWithTestCaseLifecycle
      */
     protected function setUpTheTestEnvironment(): void
     {
+        if (class_exists(Double::class)) {
+            Double::enableAutoVerify();
+        }
+
         Facade::clearResolvedInstances();
 
         if (! $this->app) {
@@ -144,6 +149,10 @@ trait InteractsWithTestCaseLifecycle
 
         if (property_exists($this, 'defaultHeaders')) {
             $this->defaultHeaders = [];
+        }
+
+        if (class_exists(Double::class)) {
+            Double::verifyAll(testFailed: ! $this->status()->isSuccess());
         }
 
         if (class_exists('Mockery')) {
